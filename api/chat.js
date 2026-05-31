@@ -4,23 +4,23 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Agora o back-end puxa exatamente os nomes que o front-end envia
     const { history, systemPrompt } = req.body;
-    
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
       return res.status(500).json({ error: 'Chave de API não configurada no servidor.' });
     }
 
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+    // Nome exato e oficial do modelo que funciona na versão v1beta
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const geminiRes = await fetch(GEMINI_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemPrompt }] },
-        contents: history, // O index.html já envia no formato exato que o Gemini pede
+        // O Google exige underline aqui: system_instruction
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents: history,
         generationConfig: { maxOutputTokens: 600, temperature: 0.5 }
       })
     });
@@ -31,10 +31,10 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: data.error.message });
     }
 
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Desculpe, ocorreu um erro ao processar a resposta.';
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Erro ao processar a resposta.';
     return res.status(200).json({ reply });
 
   } catch (err) {
-    return res.status(500).json({ error: 'Falha na comunicação com o servidor da API.' });
+    return res.status(500).json({ error: 'Falha na comunicação com o Google.' });
   }
 }
