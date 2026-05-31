@@ -11,14 +11,14 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Chave de API não configurada no servidor.' });
     }
 
-    // Nome exato e oficial do modelo que funciona na versão v1beta
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // Usando o gemini-2.5-flash: Modelo atual, existente e com cota gratuita nativa.
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const geminiRes = await fetch(GEMINI_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        // O Google exige underline aqui: system_instruction
+        // O Google exige system_instruction com underline nesta versão da API
         system_instruction: { parts: [{ text: systemPrompt }] },
         contents: history,
         generationConfig: { maxOutputTokens: 600, temperature: 0.5 }
