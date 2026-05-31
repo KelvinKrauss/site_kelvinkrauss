@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kelvin Krauss — Dev</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #090c10;
@@ -42,7 +42,7 @@
       opacity: 0.5;
     }
 
-    /* NAV */
+    /* ── NAV ── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -64,7 +64,6 @@
     }
 
     .nav-links { display: flex; gap: 32px; list-style: none; }
-
     .nav-links a {
       color: var(--muted);
       text-decoration: none;
@@ -80,14 +79,14 @@
       color: var(--muted);
       border: 1px solid var(--border);
       background: transparent;
-      padding: 6px 12px;
+      padding: 6px 14px;
       cursor: pointer;
       transition: all 0.2s;
-      text-decoration: none;
+      user-select: none;
     }
     .lang-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-    /* HERO */
+    /* ── HERO ── */
     .hero {
       position: relative;
       min-height: 100vh;
@@ -279,7 +278,7 @@
       font-size: 5rem;
     }
 
-    /* SECTIONS */
+    /* ── SECTIONS ── */
     section {
       position: relative;
       z-index: 1;
@@ -306,7 +305,7 @@
       background: var(--border);
     }
 
-    /* SKILLS */
+    /* ── SKILLS ── */
     .skills-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -326,7 +325,6 @@
       border-color: var(--accent);
       background: var(--surface2);
     }
-    .skill-item.active { border-color: var(--accent); }
 
     .skill-icon { font-size: 1.4rem; margin-bottom: 8px; }
 
@@ -351,9 +349,7 @@
       transform-origin: left;
       transition: transform 1.2s cubic-bezier(0.16,1,0.3,1);
     }
-    .skill-bar-fill.go { transform: scaleX(1); }
 
-    /* Skill tooltip/popup */
     .skill-popup {
       display: none;
       position: fixed;
@@ -365,7 +361,6 @@
       pointer-events: none;
       box-shadow: 0 16px 40px rgba(0,0,0,0.6);
     }
-
     .skill-popup.visible { display: block; }
 
     .skill-popup-name {
@@ -382,7 +377,7 @@
       line-height: 1.6;
     }
 
-    /* EDUCATION */
+    /* ── EDUCATION ── */
     .edu-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -411,7 +406,7 @@
       color: var(--muted);
     }
 
-    /* CERTS */
+    /* ── CERTS ── */
     .certs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -426,9 +421,7 @@
       transition: all 0.2s;
       position: relative;
     }
-
     .cert-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-
     .cert-card::after {
       content: '↗';
       position: absolute;
@@ -473,7 +466,6 @@
     }
     .cert-card:hover .cert-img-preview { opacity: 1; }
 
-    /* COLLAPSIBLE CERTS */
     .certs-toggle-btn {
       width: 100%;
       background: var(--surface);
@@ -492,17 +484,10 @@
     }
     .certs-toggle-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-    .certs-toggle-icon {
-      transition: transform 0.3s ease;
-      font-size: 0.9rem;
-    }
+    .certs-toggle-icon { transition: transform 0.3s ease; }
     .certs-toggle-btn.open .certs-toggle-icon { transform: rotate(180deg); }
 
-    .certs-extra {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease;
-    }
+    .certs-extra { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
     .certs-extra.open { max-height: 2000px; }
 
     .certs-extra-inner {
@@ -512,7 +497,7 @@
       padding-top: 10px;
     }
 
-    /* LANGUAGES */
+    /* ── LANGUAGES ── */
     .lang-items {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -526,14 +511,9 @@
     }
 
     .lang-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .lang-level { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); }
 
-    .lang-level {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--accent);
-    }
-
-    /* AI CHAT */
+    /* ── AI CHAT ── */
     .ai-section {
       max-width: 1100px;
       margin: 0 auto;
@@ -561,6 +541,7 @@
       display: flex;
       align-items: center;
       gap: 14px;
+      flex-wrap: wrap;
     }
 
     .ai-badge {
@@ -584,16 +565,10 @@
     }
 
     .ai-title { font-weight: 700; font-size: 1rem; }
-
-    .ai-subtitle {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-left: auto;
-    }
+    .ai-subtitle { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-left: auto; }
 
     .ai-messages {
-      height: 320px;
+      height: 340px;
       overflow-y: auto;
       padding: 20px 28px;
       display: flex;
@@ -601,7 +576,6 @@
       gap: 14px;
       scroll-behavior: smooth;
     }
-
     .ai-messages::-webkit-scrollbar { width: 3px; }
     .ai-messages::-webkit-scrollbar-thumb { background: var(--border); }
 
@@ -630,18 +604,18 @@
       font-size: 0.88rem;
       line-height: 1.6;
     }
-
-    .msg.user .msg-bubble {
-      background: rgba(0,229,160,0.07);
-      border-color: rgba(0,229,160,0.2);
-    }
+    .msg.user .msg-bubble { background: rgba(0,229,160,0.07); border-color: rgba(0,229,160,0.2); }
 
     .typing-wrap {
-      padding: 0 28px 0;
+      padding: 0 28px;
       display: flex;
       align-items: center;
       gap: 10px;
+      min-height: 0;
+      overflow: hidden;
+      transition: min-height 0.2s, padding 0.2s;
     }
+    .typing-wrap.active { min-height: 56px; padding: 12px 28px; }
 
     .typing-indicator {
       display: none;
@@ -651,6 +625,7 @@
       background: var(--surface2);
       border: 1px solid var(--border);
     }
+    .typing-indicator.show { display: flex; }
 
     .typing-indicator span {
       width: 5px; height: 5px;
@@ -661,12 +636,9 @@
     .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
     .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
 
-    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
 
-    .ai-input-area {
-      display: flex;
-      border-top: 1px solid var(--border);
-    }
+    .ai-input-area { display: flex; border-top: 1px solid var(--border); }
 
     .ai-input {
       flex: 1;
@@ -679,7 +651,6 @@
       color: var(--text);
       caret-color: var(--accent);
     }
-
     .ai-input::placeholder { color: var(--muted); }
 
     .ai-send {
@@ -692,6 +663,7 @@
       color: #000;
       cursor: pointer;
       transition: background 0.2s;
+      white-space: nowrap;
     }
     .ai-send:hover { background: #00ffb3; }
     .ai-send:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
@@ -716,7 +688,7 @@
     }
     .suggestion-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-    /* MODAL */
+    /* ── MODAL ── */
     .modal {
       display: none;
       position: fixed;
@@ -729,7 +701,7 @@
     .modal.active { display: grid; }
     .modal img { max-width: 90vw; max-height: 90vh; object-fit: contain; border: 1px solid var(--border); }
 
-    /* FOOTER */
+    /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--border);
       padding: 40px 48px;
@@ -741,9 +713,7 @@
     }
 
     .footer-name { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
-
     .footer-links { display: flex; gap: 24px; }
-
     .footer-links a {
       font-family: var(--mono);
       font-size: 0.72rem;
@@ -753,7 +723,7 @@
     }
     .footer-links a:hover { color: var(--accent); }
 
-    /* REVEAL */
+    /* ── REVEAL ── */
     .reveal {
       opacity: 0;
       transform: translateY(28px);
@@ -761,6 +731,7 @@
     }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
+    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       nav { padding: 14px 20px; }
       .nav-links { display: none; }
@@ -768,35 +739,44 @@
       .hero-avatar { display: none; }
       section, .ai-section { padding: 60px 20px; }
       .ai-messages { padding: 16px; }
+      .ai-header { padding: 16px; }
       .ai-input { padding: 15px 16px; }
       .ai-send { padding: 15px 16px; }
       .ai-suggestions { padding: 12px 16px; }
+      .typing-wrap { padding: 0 16px; }
+      .typing-wrap.active { padding: 12px 16px; }
       footer { padding: 28px 20px; flex-direction: column; gap: 16px; text-align: center; }
     }
   </style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════ NAV ═══════════════════════════════ -->
 <nav>
   <div class="nav-logo">kelvin_krauss.dev</div>
   <ul class="nav-links">
-    <li><a href="#skills">Stack</a></li>
-    <li><a href="#education">Formação</a></li>
-    <li><a href="#certs">Certificados</a></li>
-    <li><a href="#ai-chat">IA</a></li>
+    <li><a href="#skills"    data-pt="Stack"        data-en="Stack">Stack</a></li>
+    <li><a href="#education" data-pt="Formação"      data-en="Education">Formação</a></li>
+    <li><a href="#certs"     data-pt="Certificados"  data-en="Certificates">Certificados</a></li>
+    <li><a href="#ai-chat"   data-pt="IA"            data-en="AI">IA</a></li>
   </ul>
-  <a href="index-en.html" class="lang-btn">EN →</a>
+  <button class="lang-btn" id="lang-btn" onclick="toggleLang()">EN →</button>
 </nav>
 
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
 <div class="hero">
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
   <div class="hero-glow2"></div>
 
   <div class="hero-content">
-    <div class="hero-tag">Disponível para oportunidades</div>
+    <div class="hero-tag" data-pt="Disponível para oportunidades" data-en="Open to opportunities">Disponível para oportunidades</div>
     <h1>Kelvin<br><span>Krauss</span></h1>
-    <p class="hero-bio">Bacharelando em Ciência da Computação no IFC. Construindo sistemas com Java, Python e JavaScript — de microsserviços a interfaces inteligentes com IA.</p>
+    <p class="hero-bio"
+       data-pt="Bacharelando em Ciência da Computação no IFC. Construindo sistemas com Java, Python e JavaScript — de microsserviços a interfaces inteligentes com IA."
+       data-en="Computer Science undergraduate at IFC. Building systems with Java, Python and JavaScript — from microservices to AI-powered interfaces.">
+      Bacharelando em Ciência da Computação no IFC. Construindo sistemas com Java, Python e JavaScript — de microsserviços a interfaces inteligentes com IA.
+    </p>
     <p class="hero-contact">
       kelvin.krauss.br@gmail.com &nbsp;·&nbsp; (47) 99910-4771
     </p>
@@ -815,66 +795,114 @@
   </div>
 </div>
 
-<!-- SKILLS -->
+<!-- ═══════════════════════════════ SKILLS ═══════════════════════════════ -->
 <section id="skills">
-  <h2 class="section-title reveal">Stack & Ferramentas</h2>
+  <h2 class="section-title reveal" data-pt="Stack & Ferramentas" data-en="Stack & Tools">Stack & Ferramentas</h2>
   <div class="skills-grid reveal" id="skills-grid">
-    <div class="skill-item" data-skill="Java" data-desc="Linguagem principal. Usado em POO, sistemas de controle financeiro, jogos em console e no Bootcamp NTT DATA. Base sólida em orientação a objetos, coleções e tratamento de exceções.">
+
+    <div class="skill-item"
+      data-skill="Java"
+      data-desc-pt="Linguagem principal. Usado em POO, sistemas de controle financeiro, jogos em console e no Bootcamp NTT DATA. Base sólida em orientação a objetos, coleções e tratamento de exceções."
+      data-desc-en="Primary language. Used in OOP, financial control systems, console games and the NTT DATA Bootcamp. Solid foundation in object-orientation, collections and exception handling.">
       <div class="skill-icon">☕</div>
       <div class="skill-name">Java</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.88"></div></div>
     </div>
-    <div class="skill-item" data-skill="SQL" data-desc="Linguagem de consulta para bancos de dados relacionais. Utilizado para manipulação de dados em projetos com persistência, queries complexas e integração com aplicações Java.">
+
+    <div class="skill-item"
+      data-skill="SQL"
+      data-desc-pt="Linguagem de consulta para bancos de dados relacionais. Utilizado para manipulação de dados em projetos com persistência, queries complexas e integração com aplicações Java."
+      data-desc-en="Query language for relational databases. Used for data manipulation in persistence projects, complex queries and Java application integration.">
       <div class="skill-icon">🗄️</div>
       <div class="skill-name">SQL</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.75"></div></div>
     </div>
-    <div class="skill-item" data-skill="H2 Database" data-desc="Banco de dados relacional em memória, usado em projetos Spring Boot para persistência durante desenvolvimento e testes, sem necessidade de configurar banco externo.">
+
+    <div class="skill-item"
+      data-skill="H2 Database"
+      data-desc-pt="Banco de dados relacional em memória, usado em projetos Spring Boot para persistência durante desenvolvimento e testes, sem necessidade de configurar banco externo."
+      data-desc-en="In-memory relational database used in Spring Boot projects for persistence during development and testing, without needing an external database.">
       <div class="skill-icon">💾</div>
       <div class="skill-name">H2 Database</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.70"></div></div>
     </div>
-    <div class="skill-item" data-skill="CSS" data-desc="Estilização de interfaces web. Certificado pela Fundação Bradesco em 'Inovando com CSS' (26h). Domina layout, animações, responsividade e design moderno.">
+
+    <div class="skill-item"
+      data-skill="CSS"
+      data-desc-pt="Estilização de interfaces web. Certificado pela Fundação Bradesco em 'Inovando com CSS' (26h). Domina layout, animações, responsividade e design moderno."
+      data-desc-en="Web interface styling. Certified by Fundação Bradesco in 'Innovating with CSS' (26h). Masters layout, animations, responsiveness and modern design.">
       <div class="skill-icon">🎨</div>
       <div class="skill-name">CSS</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.78"></div></div>
     </div>
-    <div class="skill-item" data-skill="JavaScript" data-desc="Linguagem web para front e back-end. Utilizada em projetos interativos e interfaces dinâmicas, complementando o stack Java.">
+
+    <div class="skill-item"
+      data-skill="JavaScript"
+      data-desc-pt="Linguagem web para front e back-end. Utilizada em projetos interativos e interfaces dinâmicas, complementando o stack Java."
+      data-desc-en="Web language for front and back-end. Used in interactive projects and dynamic interfaces, complementing the Java stack.">
       <div class="skill-icon">⚡</div>
       <div class="skill-name">JavaScript</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.74"></div></div>
     </div>
-    <div class="skill-item" data-skill="Git" data-desc="Controle de versão distribuído. Usado no dia a dia para versionamento de código, branches, merges e colaboração em todos os projetos do portfólio.">
+
+    <div class="skill-item"
+      data-skill="Git"
+      data-desc-pt="Controle de versão distribuído. Usado no dia a dia para versionamento de código, branches, merges e colaboração em todos os projetos do portfólio."
+      data-desc-en="Distributed version control. Used daily for code versioning, branches, merges and collaboration across all portfolio projects.">
       <div class="skill-icon">🔀</div>
       <div class="skill-name">Git</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.80"></div></div>
     </div>
-    <div class="skill-item" data-skill="Maven" data-desc="Ferramenta de automação e gerenciamento de dependências para projetos Java. Usada em todos os projetos Spring Boot para build, testes e empacotamento.">
+
+    <div class="skill-item"
+      data-skill="Maven"
+      data-desc-pt="Ferramenta de automação e gerenciamento de dependências para projetos Java. Usada em todos os projetos Spring Boot para build, testes e empacotamento."
+      data-desc-en="Automation and dependency management tool for Java projects. Used in all Spring Boot projects for build, testing and packaging.">
       <div class="skill-icon">📦</div>
       <div class="skill-name">Maven</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.72"></div></div>
     </div>
-    <div class="skill-item" data-skill="HTML" data-desc="Estrutura de páginas web. Base de todos os projetos front-end, combinando semântica correta com acessibilidade e boas práticas.">
+
+    <div class="skill-item"
+      data-skill="HTML"
+      data-desc-pt="Estrutura de páginas web. Base de todos os projetos front-end, combinando semântica correta com acessibilidade e boas práticas."
+      data-desc-en="Web page structure. Foundation of all front-end projects, combining correct semantics with accessibility and best practices.">
       <div class="skill-icon">🌐</div>
       <div class="skill-name">HTML</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.82"></div></div>
     </div>
-    <div class="skill-item" data-skill="Python" data-desc="Linguagem versátil usada em projetos com interface gráfica (tkinter) e POO. Certificações pela Fundação Bradesco em interface gráfica e desenvolvimento orientado a objetos.">
+
+    <div class="skill-item"
+      data-skill="Python"
+      data-desc-pt="Linguagem versátil usada em projetos com interface gráfica (tkinter) e POO. Certificações pela Fundação Bradesco em interface gráfica e desenvolvimento orientado a objetos."
+      data-desc-en="Versatile language used in GUI (tkinter) and OOP projects. Certifications from Fundação Bradesco in GUI development and object-oriented programming.">
       <div class="skill-icon">🐍</div>
       <div class="skill-name">Python</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.76"></div></div>
     </div>
-    <div class="skill-item" data-skill="GitHub" data-desc="Plataforma de hospedagem de código. Todo o portfólio de projetos está disponível no GitHub, com histórico de commits, READMEs e documentação.">
+
+    <div class="skill-item"
+      data-skill="GitHub"
+      data-desc-pt="Plataforma de hospedagem de código. Todo o portfólio de projetos está disponível no GitHub, com histórico de commits, READMEs e documentação."
+      data-desc-en="Code hosting platform. The entire project portfolio is available on GitHub, with commit history, READMEs and documentation.">
       <div class="skill-icon">🐙</div>
       <div class="skill-name">GitHub</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.82"></div></div>
     </div>
-    <div class="skill-item" data-skill="Spring Boot" data-desc="Framework Java para criação de APIs e microsserviços. Usado em projeto com Eureka Server, API Gateway e serviços independentes — arquitetura completa de microsserviços.">
+
+    <div class="skill-item"
+      data-skill="Spring Boot"
+      data-desc-pt="Framework Java para criação de APIs e microsserviços. Usado em projeto com Eureka Server, API Gateway e serviços independentes — arquitetura completa de microsserviços."
+      data-desc-en="Java framework for building APIs and microservices. Used in a project with Eureka Server, API Gateway and independent services — complete microservices architecture.">
       <div class="skill-icon">🍃</div>
       <div class="skill-name">Spring Boot</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.78"></div></div>
     </div>
-    <div class="skill-item" data-skill="Postman" data-desc="Ferramenta para teste e documentação de APIs REST. Usado para validar endpoints, testar autenticação e simular requisições nos projetos Spring Boot.">
+
+    <div class="skill-item"
+      data-skill="Postman"
+      data-desc-pt="Ferramenta para teste e documentação de APIs REST. Usado para validar endpoints, testar autenticação e simular requisições nos projetos Spring Boot."
+      data-desc-en="Tool for testing and documenting REST APIs. Used to validate endpoints, test authentication and simulate requests in Spring Boot projects.">
       <div class="skill-icon">📬</div>
       <div class="skill-name">Postman</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.70"></div></div>
@@ -888,151 +916,153 @@
   <div class="skill-popup-desc" id="popup-desc"></div>
 </div>
 
-<!-- EDUCATION -->
+<!-- ═══════════════════════════════ EDUCATION ═══════════════════════════════ -->
 <section id="education">
-  <h2 class="section-title reveal">Formação</h2>
+  <h2 class="section-title reveal" data-pt="Formação" data-en="Education">Formação</h2>
 
   <div class="edu-card reveal">
-    <div class="edu-year">2025 — PRESENTE</div>
-    <div class="edu-degree">Bacharelado em Ciência da Computação</div>
+    <div class="edu-year" data-pt="2025 — PRESENTE" data-en="2025 — PRESENT">2025 — PRESENTE</div>
+    <div class="edu-degree" data-pt="Bacharelado em Ciência da Computação" data-en="Bachelor's in Computer Science">Bacharelado em Ciência da Computação</div>
     <div class="edu-inst">Instituto Federal Catarinense (IFC)</div>
   </div>
 
   <div class="edu-card reveal" style="border-left-color: var(--accent2)">
     <div class="edu-year" style="color:var(--accent2)">2024 · 220H</div>
-    <div class="edu-degree">Desenvolvedor Web — Back End (Java)</div>
-    <div class="edu-inst">Programa Entra21 · Fundação Softville / Blusoft</div>
+    <div class="edu-degree" data-pt="Desenvolvedor Web — Back End (Java)" data-en="Web Developer — Back End (Java)">Desenvolvedor Web — Back End (Java)</div>
+    <div class="edu-inst" data-pt="Programa Entra21 · Fundação Softville / Blusoft" data-en="Entra21 Program · Softville / Blusoft Foundation">Programa Entra21 · Fundação Softville / Blusoft</div>
   </div>
 
   <div class="edu-card reveal" style="border-left-color: var(--accent3)">
     <div class="edu-year" style="color:var(--accent3)">2025 · 48H</div>
-    <div class="edu-degree">Bootcamp NTT DATA: Java e IA para Iniciantes</div>
-    <div class="edu-inst">Patrocinado pela Microsoft</div>
+    <div class="edu-degree" data-pt="Bootcamp NTT DATA: Java e IA para Iniciantes" data-en="NTT DATA Bootcamp: Java and AI for Beginners">Bootcamp NTT DATA: Java e IA para Iniciantes</div>
+    <div class="edu-inst" data-pt="Patrocinado pela Microsoft" data-en="Sponsored by Microsoft">Patrocinado pela Microsoft</div>
   </div>
 </section>
 
-<!-- CERTIFICATES -->
+<!-- ═══════════════════════════════ CERTIFICATES ═══════════════════════════════ -->
 <section id="certs">
-  <h2 class="section-title reveal">Certificados</h2>
+  <h2 class="section-title reveal" data-pt="Certificados" data-en="Certificates">Certificados</h2>
 
-  <!-- Principais -->
   <div class="certs-grid">
-    <div class="cert-card reveal" onclick="openModal('certificado-prompt-engineering.png')">
+    <div class="cert-card reveal" onclick="openModal('Certificados/certificado-prompt-engineering.png')">
       <div class="cert-provider">AWS Training</div>
-      <div class="cert-name">Foundations of Prompt Engineering</div>
-      <div class="cert-meta">Concluído: 27/06/2025</div>
-      <img src="certificado-prompt-engineering.png" class="cert-img-preview" alt="">
+      <div class="cert-name" data-pt="Foundations of Prompt Engineering" data-en="Foundations of Prompt Engineering">Foundations of Prompt Engineering</div>
+      <div class="cert-meta" data-pt="Concluído: 27/06/2025" data-en="Completed: 06/27/2025">Concluído: 27/06/2025</div>
+      <img src="Certificados/certificado-prompt-engineering.png" class="cert-img-preview" alt="">
     </div>
-    <div class="cert-card reveal" onclick="openModal('certificado-data-engineering-aws.png')">
+    <div class="cert-card reveal" onclick="openModal('Certificados/certificado-data-engineering-aws.png')">
       <div class="cert-provider">AWS Training</div>
       <div class="cert-name">Data Engineering on AWS — Foundations</div>
-      <div class="cert-meta">Concluído: 02/07/2025</div>
-      <img src="certificado-data-engineering-aws.png" class="cert-img-preview" alt="">
+      <div class="cert-meta" data-pt="Concluído: 02/07/2025" data-en="Completed: 07/02/2025">Concluído: 02/07/2025</div>
+      <img src="Certificados/certificado-data-engineering-aws.png" class="cert-img-preview" alt="">
     </div>
-    <div class="cert-card reveal" onclick="openModal('certificado-css.png')">
+    <div class="cert-card reveal" onclick="openModal('Certificados/certificado-css.png')">
       <div class="cert-provider">Fundação Bradesco</div>
-      <div class="cert-name">Inovando com CSS</div>
+      <div class="cert-name" data-pt="Inovando com CSS" data-en="Innovating with CSS">Inovando com CSS</div>
       <div class="cert-meta">2024 · 26h</div>
-      <img src="certificado-css.png" class="cert-img-preview" alt="">
+      <img src="Certificados/certificado-css.png" class="cert-img-preview" alt="">
     </div>
-    <div class="cert-card reveal" onclick="openModal('certificado-ntt-data.png')">
+    <div class="cert-card reveal" onclick="openModal('Certificados/certificado-ntt-data.png')">
       <div class="cert-provider">NTT DATA · Microsoft</div>
-      <div class="cert-name">Bootcamp Java e IA para Iniciantes</div>
+      <div class="cert-name" data-pt="Bootcamp Java e IA para Iniciantes" data-en="Java and AI for Beginners Bootcamp">Bootcamp Java e IA para Iniciantes</div>
       <div class="cert-meta">2025 · 48h</div>
-      <img src="certificado-ntt-data.png" class="cert-img-preview" alt="">
+      <img src="Certificados/certificado-ntt-data.png" class="cert-img-preview" alt="">
     </div>
-    <div class="cert-card reveal" onclick="openModal('certificado-entra21.png')">
+    <div class="cert-card reveal" onclick="openModal('Certificados/certificado-entra21.png')">
       <div class="cert-provider">Entra21 · Softville / Blusoft</div>
-      <div class="cert-name">Desenvolvedor Web Back End (Java)</div>
+      <div class="cert-name" data-pt="Desenvolvedor Web Back End (Java)" data-en="Web Back End Developer (Java)">Desenvolvedor Web Back End (Java)</div>
       <div class="cert-meta">2024 · 220h</div>
-      <img src="certificado-entra21.png" class="cert-img-preview" alt="">
+      <img src="Certificados/certificado-entra21.png" class="cert-img-preview" alt="">
     </div>
   </div>
 
-  <!-- Toggleable extras -->
   <button class="certs-toggle-btn reveal" id="certs-toggle-btn" onclick="toggleCerts()">
-    <span>Ver mais cursos complementares (7)</span>
+    <span id="certs-toggle-label" data-pt="Ver mais cursos complementares (7)" data-en="Show more complementary courses (7)">Ver mais cursos complementares (7)</span>
     <span class="certs-toggle-icon">▼</span>
   </button>
 
   <div class="certs-extra" id="certs-extra">
     <div class="certs-extra-inner">
-      <div class="cert-card" onclick="openModal('certificado-android.png')">
+      <div class="cert-card" onclick="openModal('Certificados/certificado-android.png')">
         <div class="cert-provider">Fundação Bradesco</div>
-        <div class="cert-name">Aplicações Mobile com Android Studio</div>
+        <div class="cert-name" data-pt="Aplicações Mobile com Android Studio" data-en="Mobile Applications with Android Studio">Aplicações Mobile com Android Studio</div>
         <div class="cert-meta">2024 · 15h</div>
-        <img src="certificado-android.png" class="cert-img-preview" alt="">
+        <img src="Certificados/certificado-android.png" class="cert-img-preview" alt="">
       </div>
-      <div class="cert-card" onclick="openModal('certificado-logica.png')">
+      <div class="cert-card" onclick="openModal('Certificados/certificado-logica.png')">
         <div class="cert-provider">Fundação Bradesco</div>
-        <div class="cert-name">Fundamentos de Lógica de Programação</div>
+        <div class="cert-name" data-pt="Fundamentos de Lógica de Programação" data-en="Fundamentals of Programming Logic">Fundamentos de Lógica de Programação</div>
         <div class="cert-meta">2024 · 15h</div>
-        <img src="certificado-logica.png" class="cert-img-preview" alt="">
+        <img src="Certificados/certificado-logica.png" class="cert-img-preview" alt="">
       </div>
-      <div class="cert-card" onclick="openModal('certificado-seguranca.png')">
+      <div class="cert-card" onclick="openModal('Certificados/certificado-seguranca.png')">
         <div class="cert-provider">Fundação Bradesco</div>
-        <div class="cert-name">Segurança em Tecnologia da Informação</div>
+        <div class="cert-name" data-pt="Segurança em Tecnologia da Informação" data-en="Information Technology Security">Segurança em Tecnologia da Informação</div>
         <div class="cert-meta">2024 · 12h</div>
-        <img src="certificado-seguranca.png" class="cert-img-preview" alt="">
+        <img src="Certificados/certificado-seguranca.png" class="cert-img-preview" alt="">
       </div>
-      <div class="cert-card" onclick="openModal('certificado-administracao.png')">
+      <div class="cert-card" onclick="openModal('Certificados/certificado-administracao.png')">
         <div class="cert-provider">Fundação Bradesco</div>
-        <div class="cert-name">Introdução à Administração</div>
+        <div class="cert-name" data-pt="Introdução à Administração" data-en="Introduction to Business Administration">Introdução à Administração</div>
         <div class="cert-meta">2024 · 12h</div>
-        <img src="certificado-administracao.png" class="cert-img-preview" alt="">
+        <img src="Certificados/certificado-administracao.png" class="cert-img-preview" alt="">
       </div>
-      <div class="cert-card" onclick="openModal('certificado-python-interface.png')">
+      <div class="cert-card" onclick="openModal('Certificados/certificado-python-interface.png')">
         <div class="cert-provider">Fundação Bradesco</div>
-        <div class="cert-name">Interface Gráfica com Python</div>
+        <div class="cert-name" data-pt="Interface Gráfica com Python" data-en="GUI with Python">Interface Gráfica com Python</div>
         <div class="cert-meta">2024 · 10h</div>
-        <img src="certificado-python-interface.png" class="cert-img-preview" alt="">
+        <img src="Certificados/certificado-python-interface.png" class="cert-img-preview" alt="">
       </div>
-      <div class="cert-card" onclick="openModal('certificado-python-oo.png')">
+      <div class="cert-card" onclick="openModal('Certificados/certificado-python-oo.png')">
         <div class="cert-provider">Fundação Bradesco</div>
-        <div class="cert-name">Desenvolvimento Orientado a Objetos com Python</div>
+        <div class="cert-name" data-pt="Desenvolvimento Orientado a Objetos com Python" data-en="Object-Oriented Development with Python">Desenvolvimento Orientado a Objetos com Python</div>
         <div class="cert-meta">2024 · 10h</div>
-        <img src="certificado-python-oo.png" class="cert-img-preview" alt="">
+        <img src="Certificados/certificado-python-oo.png" class="cert-img-preview" alt="">
       </div>
-      <div class="cert-card" onclick="openModal('certificado-power-bi.png')">
+      <div class="cert-card" onclick="openModal('Certificados/certificado-power-bi.png')">
         <div class="cert-provider">Fundação Bradesco</div>
-        <div class="cert-name">Introdução à Análise de Dados — Power BI</div>
+        <div class="cert-name" data-pt="Introdução à Análise de Dados — Power BI" data-en="Introduction to Data Analysis — Power BI">Introdução à Análise de Dados — Power BI</div>
         <div class="cert-meta">2024 · 5h</div>
-        <img src="certificado-power-bi.png" class="cert-img-preview" alt="">
+        <img src="Certificados/certificado-power-bi.png" class="cert-img-preview" alt="">
       </div>
     </div>
   </div>
 </section>
 
-<!-- IDIOMAS -->
+<!-- ═══════════════════════════════ LANGUAGES ═══════════════════════════════ -->
 <section>
-  <h2 class="section-title reveal">Idiomas</h2>
+  <h2 class="section-title reveal" data-pt="Idiomas" data-en="Languages">Idiomas</h2>
   <div class="lang-items">
     <div class="lang-card reveal">
-      <div class="lang-name">Português</div>
-      <div class="lang-level">Nativo</div>
+      <div class="lang-name" data-pt="Português" data-en="Portuguese">Português</div>
+      <div class="lang-level" data-pt="Nativo" data-en="Native">Nativo</div>
     </div>
     <div class="lang-card reveal">
-      <div class="lang-name">Inglês</div>
+      <div class="lang-name" data-pt="Inglês" data-en="English">Inglês</div>
       <div class="lang-level">C1 Advanced</div>
     </div>
   </div>
 </section>
 
-<!-- AI CHAT -->
+<!-- ═══════════════════════════════ AI CHAT ═══════════════════════════════ -->
 <div class="ai-section" id="ai-chat">
-  <h2 class="section-title reveal">Pergunte sobre o Kelvin</h2>
+  <h2 class="section-title reveal" data-pt="Pergunte sobre o Kelvin" data-en="Ask about Kelvin">Pergunte sobre o Kelvin</h2>
 
   <div class="ai-card reveal">
     <div class="ai-header">
-      <div class="ai-badge"><div class="ai-badge-dot"></div>Claude AI</div>
-      <div class="ai-title">Assistente do Portfólio</div>
-      <div class="ai-subtitle">Powered by Anthropic</div>
+      <div class="ai-badge"><div class="ai-badge-dot"></div>Gemini AI</div>
+      <div class="ai-title" data-pt="Assistente do Portfólio" data-en="Portfolio Assistant">Assistente do Portfólio</div>
+      <div class="ai-subtitle" data-pt="Powered by Google" data-en="Powered by Google">Powered by Google</div>
     </div>
 
     <div class="ai-messages" id="ai-messages">
       <div class="msg">
         <div class="msg-avatar ai">KK</div>
-        <div class="msg-bubble">Olá! Sou a IA do portfólio do Kelvin. Posso responder sobre sua formação, projetos e habilidades técnicas. O que você quer saber? 🚀</div>
+        <div class="msg-bubble" id="ai-welcome-msg"
+          data-pt="Olá! Sou a IA do portfólio do Kelvin. Posso responder sobre sua formação, projetos e habilidades técnicas. O que você quer saber? 🚀"
+          data-en="Hi! I'm Kelvin's portfolio AI. I can answer questions about his education, projects and technical skills. What would you like to know? 🚀">
+          Olá! Sou a IA do portfólio do Kelvin. Posso responder sobre sua formação, projetos e habilidades técnicas. O que você quer saber? 🚀
+        </div>
       </div>
     </div>
 
@@ -1041,20 +1071,26 @@
       <div class="typing-indicator" id="typing"><span></span><span></span><span></span></div>
     </div>
 
-    <div class="ai-suggestions">
-      <button class="suggestion-btn" onclick="sendSuggestion(this)">Quais são os projetos?</button>
-      <button class="suggestion-btn" onclick="sendSuggestion(this)">Quais tecnologias domina?</button>
-      <button class="suggestion-btn" onclick="sendSuggestion(this)">Por que contratar o Kelvin?</button>
-      <button class="suggestion-btn" onclick="sendSuggestion(this)">Fale sobre microsserviços</button>
+    <div class="ai-suggestions" id="ai-suggestions">
+      <button class="suggestion-btn" data-pt="Quais são os projetos?" data-en="What are the projects?" onclick="sendSuggestion(this)">Quais são os projetos?</button>
+      <button class="suggestion-btn" data-pt="Quais tecnologias domina?" data-en="What technologies does he master?" onclick="sendSuggestion(this)">Quais tecnologias domina?</button>
+      <button class="suggestion-btn" data-pt="Por que contratar o Kelvin?" data-en="Why hire Kelvin?" onclick="sendSuggestion(this)">Por que contratar o Kelvin?</button>
+      <button class="suggestion-btn" data-pt="Fale sobre microsserviços" data-en="Tell me about microservices" onclick="sendSuggestion(this)">Fale sobre microsserviços</button>
     </div>
 
     <div class="ai-input-area">
-      <input class="ai-input" id="ai-input" type="text" placeholder="Digite sua pergunta..." onkeydown="if(event.key==='Enter') sendMessage()">
-      <button class="ai-send" id="ai-send-btn" onclick="sendMessage()">ENVIAR →</button>
+      <input class="ai-input" id="ai-input" type="text"
+        data-placeholder-pt="Digite sua pergunta..."
+        data-placeholder-en="Type your question..."
+        placeholder="Digite sua pergunta..."
+        onkeydown="if(event.key==='Enter') sendMessage()">
+      <button class="ai-send" id="ai-send-btn" onclick="sendMessage()"
+        data-pt="ENVIAR →" data-en="SEND →">ENVIAR →</button>
     </div>
   </div>
 </div>
 
+<!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
 <footer>
   <div class="footer-name">© 2025 Kelvin Krauss</div>
   <div class="footer-links">
@@ -1064,45 +1100,108 @@
   </div>
 </footer>
 
+<!-- ═══════════════════════════════ MODAL ═══════════════════════════════ -->
 <div class="modal" id="modal" onclick="closeModal()">
   <img id="modal-img" src="" alt="Certificado">
 </div>
 
+<!-- ═══════════════════════════════ SCRIPTS ═══════════════════════════════ -->
 <script>
-  /* MODAL */
+  /* ─────────────── LANGUAGE SYSTEM ─────────────── */
+  let currentLang = 'pt';
+
+  const SYSTEM_PT = `Você é o assistente de portfólio de Kelvin Krauss, desenvolvedor brasileiro, estudante de Ciência da Computação no Instituto Federal Catarinense (IFC), entrada 2025.
+
+PERFIL:
+- Bacharelando em CC no IFC (desde 2025)
+- Stack: Java, Python, JavaScript, HTML, CSS, SQL, H2 Database, Spring Boot, Git, GitHub, Maven, Postman
+- Certificações: Entra21 Back End Java (220h), Bootcamp NTT DATA Java+IA (48h, Microsoft), AWS Prompt Engineering, AWS Data Engineering, cursos Fundação Bradesco (CSS, Android Studio, Lógica, Segurança TI, Administração, Python OO, Python Interface, Power BI)
+- Projetos GitHub: controle de transações financeiras (Java OO), catálogo+pedidos com H2 Database, microsserviços Spring Boot (Eureka Server, API Gateway, serviços independentes, testados no Postman), jogo da forca console Java com ASCII art
+- Idiomas: Português nativo, Inglês C1 Advanced
+- Email: kelvin.krauss.br@gmail.com | Tel: (47) 99910-4771
+- GitHub: https://github.com/KelvinKrauss
+- LinkedIn: https://br.linkedin.com/in/kelvin-krauss-04b7622b8
+
+Responda SEMPRE em português, de forma concisa, direta e entusiasta. Destaque os pontos fortes do Kelvin. Seja como um representante pessoal dele.`;
+
+  const SYSTEM_EN = `You are the portfolio assistant for Kelvin Krauss, a Brazilian developer studying Computer Science at Instituto Federal Catarinense (IFC), enrolled in 2025.
+
+PROFILE:
+- CS undergraduate at IFC (since 2025)
+- Stack: Java, Python, JavaScript, HTML, CSS, SQL, H2 Database, Spring Boot, Git, GitHub, Maven, Postman
+- Certifications: Entra21 Back End Java (220h), NTT DATA Java+AI Bootcamp (48h, Microsoft), AWS Prompt Engineering, AWS Data Engineering, Fundação Bradesco courses (CSS, Android Studio, Logic, IT Security, Administration, Python OO, Python GUI, Power BI)
+- GitHub projects: financial transaction control (Java OOP), catalog+orders with H2 Database, Spring Boot microservices (Eureka Server, API Gateway, independent services, tested in Postman), Java console hangman game with ASCII art
+- Languages: Native Portuguese, C1 Advanced English
+- Email: kelvin.krauss.br@gmail.com | Phone: +55 47 99910-4771
+- GitHub: https://github.com/KelvinKrauss
+- LinkedIn: https://br.linkedin.com/in/kelvin-krauss-04b7622b8
+
+Always respond in English, concisely, directly and enthusiastically. Highlight Kelvin's strengths. Act as his personal representative.`;
+
+  function toggleLang() {
+    currentLang = currentLang === 'pt' ? 'en' : 'pt';
+    const btn = document.getElementById('lang-btn');
+    btn.textContent = currentLang === 'pt' ? 'EN →' : 'PT →';
+
+    // Update all data-pt / data-en elements
+    document.querySelectorAll('[data-pt]').forEach(el => {
+      const val = el.getAttribute('data-' + currentLang);
+      if (val) el.textContent = val;
+    });
+
+    // Update input placeholder
+    const inp = document.getElementById('ai-input');
+    inp.placeholder = inp.getAttribute('data-placeholder-' + currentLang);
+
+    // Update page lang
+    document.documentElement.lang = currentLang === 'pt' ? 'pt-BR' : 'en';
+
+    // Update toggle button label
+    const toggleLabel = document.getElementById('certs-toggle-label');
+    const certToggle = document.getElementById('certs-toggle-btn');
+    const isOpen = certToggle.classList.contains('open');
+    if (isOpen) {
+      toggleLabel.textContent = currentLang === 'pt' ? 'Ocultar cursos complementares' : 'Hide complementary courses';
+    }
+
+    // Reset chat with new welcome message
+    resetChat();
+  }
+
+  function resetChat() {
+    const container = document.getElementById('ai-messages');
+    const welcomeText = currentLang === 'pt'
+      ? 'Olá! Sou a IA do portfólio do Kelvin. Posso responder sobre sua formação, projetos e habilidades técnicas. O que você quer saber? 🚀'
+      : "Hi! I'm Kelvin's portfolio AI. I can answer questions about his education, projects and technical skills. What would you like to know? 🚀";
+
+    container.innerHTML = `
+      <div class="msg">
+        <div class="msg-avatar ai">KK</div>
+        <div class="msg-bubble">${welcomeText}</div>
+      </div>`;
+
+    chatHistory = [];
+  }
+
+  /* ─────────────── MODAL ─────────────── */
   function openModal(src) {
     document.getElementById('modal-img').src = src;
     document.getElementById('modal').classList.add('active');
   }
-  function closeModal() { document.getElementById('modal').classList.remove('active'); }
-  document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-  /* SCROLL REVEAL */
+  /* ─────────────── SCROLL REVEAL ─────────────── */
   const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        e.target.querySelectorAll('.skill-bar-fill').forEach(b => b.classList.add('go'));
-      }
-    });
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08 });
 
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-  /* Set bar widths from data attr */
-  document.querySelectorAll('.skill-bar-fill').forEach(b => {
-    b.style.transform = `scaleX(${b.dataset.w})`;
-    b.style.transform = 'scaleX(0)'; // reset, let animation handle it
-  });
-
-  document.querySelectorAll('.skill-bar-fill').forEach(b => {
-    b.addEventListener('transitionend', () => {});
-    // Override: set final value via CSS var after class added
-    b.style.setProperty('--target', b.dataset.w);
-  });
-
-  // Patch: animate bars when visible
-  const skillObs = new IntersectionObserver(entries => {
+  /* ─────────────── SKILL BARS ─────────────── */
+  const skillBarObs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
         e.target.querySelectorAll('.skill-bar-fill').forEach(b => {
@@ -1112,13 +1211,13 @@
     });
   }, { threshold: 0.1 });
 
-  document.querySelectorAll('.skills-grid').forEach(g => skillObs.observe(g));
+  document.querySelectorAll('.skills-grid').forEach(g => skillBarObs.observe(g));
 
-  /* SKILL POPUP */
-  const popup = document.getElementById('skill-popup');
+  /* ─────────────── SKILL POPUP ─────────────── */
+  const popup     = document.getElementById('skill-popup');
   const popupName = document.getElementById('popup-name');
   const popupDesc = document.getElementById('popup-desc');
-  let activeSkill = null;
+  let   activeSkill = null;
 
   document.querySelectorAll('.skill-item').forEach(item => {
     item.addEventListener('click', function(e) {
@@ -1134,18 +1233,18 @@
       this.classList.add('active');
 
       popupName.textContent = this.dataset.skill;
-      popupDesc.textContent = this.dataset.desc;
+      popupDesc.textContent = this.getAttribute('data-desc-' + currentLang) || this.dataset.descPt;
 
       const rect = this.getBoundingClientRect();
-      const pw = 280, ph = 120;
+      const pw = 280;
       let left = rect.right + 12;
-      let top = rect.top + window.scrollY;
+      let top  = rect.top + window.scrollY;
 
       if (left + pw > window.innerWidth - 16) left = rect.left - pw - 12;
-      if (top + ph > window.scrollY + window.innerHeight - 16) top = window.scrollY + window.innerHeight - ph - 16;
+      if (left < 8) left = 8;
 
       popup.style.left = left + 'px';
-      popup.style.top = top + 'px';
+      popup.style.top  = top  + 'px';
       popup.classList.add('visible');
     });
   });
@@ -1155,90 +1254,112 @@
     if (activeSkill) { activeSkill.classList.remove('active'); activeSkill = null; }
   });
 
-  /* TOGGLE CERTS */
+  /* ─────────────── TOGGLE CERTS ─────────────── */
   function toggleCerts() {
-    const btn = document.getElementById('certs-toggle-btn');
+    const btn   = document.getElementById('certs-toggle-btn');
     const extra = document.getElementById('certs-extra');
+    const label = document.getElementById('certs-toggle-label');
     btn.classList.toggle('open');
     extra.classList.toggle('open');
-    btn.querySelector('span').textContent = btn.classList.contains('open')
-      ? 'Ocultar cursos complementares'
-      : 'Ver mais cursos complementares (7)';
+
+    if (btn.classList.contains('open')) {
+      label.textContent = currentLang === 'pt' ? 'Ocultar cursos complementares' : 'Hide complementary courses';
+    } else {
+      label.textContent = currentLang === 'pt' ? 'Ver mais cursos complementares (7)' : 'Show more complementary courses (7)';
+    }
   }
 
-  /* AI CHAT */
-  const SYSTEM = `Você é o assistente de portfólio de Kelvin Krauss, desenvolvedor brasileiro, estudante de Ciência da Computação no Instituto Federal Catarinense (IFC), entrada 2025.
+  /* ─────────────── GEMINI CHAT ─────────────── */
+  const GEMINI_KEY = 'AIzaSyAQ.Ab8RN6Jzk-im6IM3HMMbZvugk7jRVq0kqIYcm6vpRm46qjSXQQ';
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
 
-PERFIL:
-- Bacharelando em CC no IFC (desde 2025)
-- Stack: Java, Python, JavaScript, HTML, CSS, SQL, H2 Database, Spring Boot, Git, GitHub, Maven, Postman
-- Certificações: Entra21 Back End Java (220h), Bootcamp NTT DATA Java+IA (48h, Microsoft), AWS Prompt Engineering, AWS Data Engineering, cursos Fundação Bradesco (CSS, Android Studio, Lógica, Segurança TI, Administração, Python OO, Python Interface, Power BI)
-- Projetos GitHub: controle de transações financeiras (Java OO), catálogo+pedidos com H2 Database, microsserviços Spring Boot (Eureka Server, API Gateway, serviços independentes, testados no Postman), jogo da forca console Java com ASCII
-- Idiomas: Português nativo, Inglês C1 Advanced
-- Email: kelvin.krauss.br@gmail.com | Tel: (47) 99910-4771
-- GitHub: https://github.com/KelvinKrauss
-- LinkedIn: https://br.linkedin.com/in/kelvin-krauss-04b7622b8
-
-Responda SEMPRE em português, de forma concisa e direta. Destaque pontos fortes.`;
-
-  const msgs = [];
+  let chatHistory = [];
 
   async function sendMessage() {
     const input = document.getElementById('ai-input');
-    const text = input.value.trim();
+    const text  = input.value.trim();
     if (!text) return;
+
     appendMsg(text, 'user');
     input.value = '';
     setLoading(true);
-    msgs.push({ role: 'user', content: text });
+
+    chatHistory.push({ role: 'user', parts: [{ text }] });
+
+    const systemPrompt = currentLang === 'pt' ? SYSTEM_PT : SYSTEM_EN;
+
+    const body = {
+      system_instruction: { parts: [{ text: systemPrompt }] },
+      contents: chatHistory,
+      generationConfig: { maxOutputTokens: 600, temperature: 0.7 }
+    };
 
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const res  = await fetch(GEMINI_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: SYSTEM, messages: msgs })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
       });
       const data = await res.json();
-      const reply = data.content?.[0]?.text || 'Erro ao responder. Tente novamente.';
-      msgs.push({ role: 'assistant', content: reply });
+
+      if (data.error) throw new Error(data.error.message);
+
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text
+        || (currentLang === 'pt' ? 'Erro ao obter resposta. Tente novamente.' : 'Error getting response. Please try again.');
+
+      chatHistory.push({ role: 'model', parts: [{ text: reply }] });
       setLoading(false);
       appendMsg(reply, 'ai');
-    } catch {
+    } catch (err) {
       setLoading(false);
-      appendMsg('Erro de conexão. Tente novamente.', 'ai');
+      const errMsg = currentLang === 'pt'
+        ? 'Erro de conexão. Verifique sua conexão e tente novamente.'
+        : 'Connection error. Check your connection and try again.';
+      appendMsg(errMsg, 'ai');
+      console.error('Gemini error:', err);
     }
   }
 
   function sendSuggestion(btn) {
-    document.getElementById('ai-input').value = btn.textContent;
+    const text = btn.getAttribute('data-' + currentLang) || btn.textContent;
+    document.getElementById('ai-input').value = text;
     sendMessage();
   }
 
   function appendMsg(text, role) {
-    const c = document.getElementById('ai-messages');
-    const d = document.createElement('div');
-    d.className = 'msg' + (role === 'user' ? ' user' : '');
+    const container = document.getElementById('ai-messages');
+    const wrapper   = document.createElement('div');
+    wrapper.className = 'msg' + (role === 'user' ? ' user' : '');
+
     const av = document.createElement('div');
     av.className = 'msg-avatar ' + (role === 'ai' ? 'ai' : 'user-av');
-    av.textContent = role === 'ai' ? 'KK' : 'EU';
-    const b = document.createElement('div');
-    b.className = 'msg-bubble';
-    b.textContent = text;
-    d.appendChild(av); d.appendChild(b);
-    c.appendChild(d);
-    c.scrollTop = c.scrollHeight;
+    av.textContent = role === 'ai' ? 'KK' : (currentLang === 'pt' ? 'EU' : 'ME');
+
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+
+    // Render simple markdown-like formatting from Gemini
+    bubble.innerHTML = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\n/g, '<br>');
+
+    wrapper.appendChild(av);
+    wrapper.appendChild(bubble);
+    container.appendChild(wrapper);
+    container.scrollTop = container.scrollHeight;
   }
 
   function setLoading(on) {
-    const t = document.getElementById('typing');
-    const w = document.getElementById('typing-wrap');
-    t.style.display = on ? 'flex' : 'none';
-    w.style.padding = on ? '12px 28px' : '0 28px 0';
-    document.getElementById('ai-send-btn').disabled = on;
-    if (on) document.getElementById('ai-messages').scrollTop = 9999;
+    const typingWrap = document.getElementById('typing-wrap');
+    const typing     = document.getElementById('typing');
+    const sendBtn    = document.getElementById('ai-send-btn');
+
+    typing.classList.toggle('show', on);
+    typingWrap.classList.toggle('active', on);
+    sendBtn.disabled = on;
+
+    if (on) document.getElementById('ai-messages').scrollTop = 99999;
   }
 </script>
 </body>
