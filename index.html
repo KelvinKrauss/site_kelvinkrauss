@@ -20,10 +20,10 @@
       --mono: 'IBM Plex Mono', monospace;
       --sans: 'DM Sans', sans-serif;
     }
-
+ 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-
+ 
     body {
       background: var(--bg);
       color: var(--text);
@@ -31,7 +31,7 @@
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
-
+ 
     body::before {
       content: '';
       position: fixed;
@@ -41,696 +41,196 @@
       z-index: 0;
       opacity: 0.5;
     }
-
+ 
     /* ── NAV ── */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
+      position: fixed; top: 0; left: 0; right: 0;
       z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
       padding: 16px 48px;
       background: rgba(9,12,16,0.88);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
     }
-
-    .nav-logo {
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--accent);
-      letter-spacing: 0.06em;
-    }
-
+    .nav-logo { font-family: var(--mono); font-size: 0.82rem; color: var(--accent); letter-spacing: 0.06em; }
     .nav-links { display: flex; gap: 32px; list-style: none; }
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.82rem;
-      font-family: var(--mono);
-      transition: color 0.2s;
-    }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.82rem; font-family: var(--mono); transition: color 0.2s; }
     .nav-links a:hover { color: var(--accent); }
-
     .lang-btn {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      background: transparent;
-      padding: 6px 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      user-select: none;
+      font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
+      border: 1px solid var(--border); background: transparent;
+      padding: 6px 14px; cursor: pointer; transition: all 0.2s; user-select: none;
     }
     .lang-btn:hover { color: var(--accent); border-color: var(--accent); }
-
+ 
     /* ── HERO ── */
     .hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      padding: 120px 48px 80px;
-      overflow: hidden;
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 48px 80px; overflow: hidden;
     }
-
     .hero-grid {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 60px 60px;
-      opacity: 0.3;
+      position: absolute; inset: 0;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px; opacity: 0.3;
       mask-image: radial-gradient(ellipse at 60% 50%, black 30%, transparent 80%);
     }
-
     .hero-glow {
-      position: absolute;
-      width: 600px; height: 600px;
-      border-radius: 50%;
+      position: absolute; width: 600px; height: 600px; border-radius: 50%;
       background: radial-gradient(circle, rgba(0,229,160,0.12) 0%, transparent 70%);
-      right: -100px; top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
+      right: -100px; top: 50%; transform: translateY(-50%); pointer-events: none;
     }
-
     .hero-glow2 {
-      position: absolute;
-      width: 400px; height: 400px;
-      border-radius: 50%;
+      position: absolute; width: 400px; height: 400px; border-radius: 50%;
       background: radial-gradient(circle, rgba(0,145,255,0.08) 0%, transparent 70%);
-      left: 200px; bottom: -100px;
-      pointer-events: none;
+      left: 200px; bottom: -100px; pointer-events: none;
     }
-
     .hero-content { position: relative; z-index: 1; max-width: 720px; }
-
     .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--accent);
-      border: 1px solid rgba(0,229,160,0.3);
-      padding: 6px 14px;
-      border-radius: 100px;
-      margin-bottom: 32px;
-      opacity: 0;
-      animation: fadeUp 0.6s 0.1s forwards;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 0.72rem; color: var(--accent);
+      border: 1px solid rgba(0,229,160,0.3); padding: 6px 14px; border-radius: 100px;
+      margin-bottom: 32px; opacity: 0; animation: fadeUp 0.6s 0.1s forwards;
     }
-
     .hero-tag::before {
-      content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
-      animation: pulse 2s infinite;
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2s infinite;
     }
-
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
     .hero h1 {
-      font-family: var(--sans);
-      font-size: clamp(2.8rem, 6vw, 5.5rem);
-      font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-      opacity: 0;
-      animation: fadeUp 0.6s 0.2s forwards;
+      font-family: var(--sans); font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.02em;
+      margin-bottom: 24px; opacity: 0; animation: fadeUp 0.6s 0.2s forwards;
     }
-
     .hero h1 span {
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-
-    .hero-bio {
-      font-size: 1rem;
-      color: var(--muted);
-      line-height: 1.75;
-      max-width: 520px;
-      margin-bottom: 12px;
-      opacity: 0;
-      animation: fadeUp 0.6s 0.3s forwards;
-    }
-
-    .hero-contact {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-bottom: 40px;
-      opacity: 0;
-      animation: fadeUp 0.6s 0.35s forwards;
-    }
+    .hero-bio { font-size: 1rem; color: var(--muted); line-height: 1.75; max-width: 520px; margin-bottom: 12px; opacity: 0; animation: fadeUp 0.6s 0.3s forwards; }
+    .hero-contact { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); margin-bottom: 40px; opacity: 0; animation: fadeUp 0.6s 0.35s forwards; }
     .hero-contact a { color: var(--accent2); text-decoration: none; }
-
-    .hero-ctas {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      opacity: 0;
-      animation: fadeUp 0.6s 0.4s forwards;
-    }
-
+    .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.6s 0.4s forwards; }
     .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--accent);
-      color: #000;
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 13px 26px;
-      text-decoration: none;
-      transition: all 0.2s;
-      border: none;
-      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #000;
+      font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 13px 26px;
+      text-decoration: none; transition: all 0.2s; border: none; cursor: pointer;
     }
     .btn-primary:hover { background: #00ffb3; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,160,0.3); }
-
     .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: transparent;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      padding: 13px 26px;
-      text-decoration: none;
-      border: 1px solid var(--border);
-      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--text);
+      font-family: var(--mono); font-size: 0.8rem; padding: 13px 26px; text-decoration: none;
+      border: 1px solid var(--border); transition: all 0.2s;
     }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
-
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(24px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-
-    .hero-avatar {
-      position: absolute;
-      right: 80px; top: 50%;
-      transform: translateY(-50%);
-      z-index: 1;
-      opacity: 0;
-      animation: fadeUp 0.8s 0.5s forwards;
-    }
-
-    .avatar-ring {
-      width: 260px; height: 260px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      padding: 4px;
-      position: relative;
-    }
-
-    .avatar-ring::before {
-      content: '';
-      position: absolute;
-      inset: -8px;
-      border-radius: 50%;
-      border: 1px solid rgba(0,229,160,0.2);
-    }
-
-    .avatar-img {
-      width: 100%; height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .avatar-placeholder {
-      width: 100%; height: 100%;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--surface2), var(--surface));
-      display: none;
-      align-items: center;
-      justify-content: center;
-      font-size: 5rem;
-    }
-
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    .hero-avatar { position: absolute; right: 80px; top: 50%; transform: translateY(-50%); z-index: 1; opacity: 0; animation: fadeUp 0.8s 0.5s forwards; }
+    .avatar-ring { width: 260px; height: 260px; border-radius: 50%; border: 2px solid var(--accent); padding: 4px; position: relative; }
+    .avatar-ring::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 1px solid rgba(0,229,160,0.2); }
+    .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .avatar-placeholder { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, var(--surface2), var(--surface)); display: none; align-items: center; justify-content: center; font-size: 5rem; }
+ 
     /* ── SECTIONS ── */
-    section {
-      position: relative;
-      z-index: 1;
-      padding: 90px 48px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .section-title {
-      font-size: clamp(1.6rem, 3.5vw, 2.5rem);
-      font-weight: 700;
-      margin-bottom: 48px;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      color: var(--text);
-    }
-
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
+    section { position: relative; z-index: 1; padding: 90px 48px; max-width: 1100px; margin: 0 auto; }
+    .section-title { font-size: clamp(1.6rem, 3.5vw, 2.5rem); font-weight: 700; margin-bottom: 48px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 16px; color: var(--text); }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+ 
     /* ── SKILLS ── */
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 8px;
-    }
-
-    .skill-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 20px 16px;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-      user-select: none;
-    }
-    .skill-item:hover, .skill-item.active {
-      border-color: var(--accent);
-      background: var(--surface2);
-    }
-
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+    .skill-item { background: var(--surface); border: 1px solid var(--border); padding: 20px 16px; cursor: pointer; transition: all 0.2s; position: relative; user-select: none; }
+    .skill-item:hover, .skill-item.active { border-color: var(--accent); background: var(--surface2); }
     .skill-icon { font-size: 1.4rem; margin-bottom: 8px; }
-
-    .skill-name {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .skill-bar {
-      height: 2px;
-      background: var(--border);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .skill-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 1.2s cubic-bezier(0.16,1,0.3,1);
-    }
-
-    .skill-popup {
-      display: none;
-      position: fixed;
-      z-index: 200;
-      background: var(--surface2);
-      border: 1px solid var(--accent);
-      padding: 16px 20px;
-      max-width: 280px;
-      pointer-events: none;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
-    }
+    .skill-name { font-family: var(--mono); font-size: 0.78rem; color: var(--text); margin-bottom: 8px; }
+    .skill-bar { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .skill-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transform: scaleX(0); transform-origin: left; transition: transform 1.2s cubic-bezier(0.16,1,0.3,1); }
+    .skill-popup { display: none; position: fixed; z-index: 200; background: var(--surface2); border: 1px solid var(--accent); padding: 16px 20px; max-width: 280px; pointer-events: none; box-shadow: 0 16px 40px rgba(0,0,0,0.6); }
     .skill-popup.visible { display: block; }
-
-    .skill-popup-name {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--accent);
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-
-    .skill-popup-desc {
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
+    .skill-popup-name { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; font-weight: 700; }
+    .skill-popup-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+ 
     /* ── EDUCATION ── */
-    .edu-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      padding: 28px 32px;
-      margin-bottom: 12px;
-    }
-
-    .edu-year {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--accent);
-      margin-bottom: 8px;
-      letter-spacing: 0.1em;
-    }
-
-    .edu-degree {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .edu-inst {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
+    .edu-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 28px 32px; margin-bottom: 12px; }
+    .edu-year { font-family: var(--mono); font-size: 0.68rem; color: var(--accent); margin-bottom: 8px; letter-spacing: 0.1em; }
+    .edu-degree { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .edu-inst { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+ 
     /* ── CERTS ── */
-    .certs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 10px;
-    }
-
-    .cert-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-    }
+    .certs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+    .cert-card { background: var(--surface); border: 1px solid var(--border); padding: 20px; cursor: pointer; transition: all 0.2s; position: relative; }
     .cert-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-    .cert-card::after {
-      content: '↗';
-      position: absolute;
-      top: 14px; right: 14px;
-      font-size: 0.8rem;
-      color: var(--muted);
-      transition: color 0.2s;
-    }
+    .cert-card::after { content: '↗'; position: absolute; top: 14px; right: 14px; font-size: 0.8rem; color: var(--muted); transition: color 0.2s; }
     .cert-card:hover::after { color: var(--accent); }
-
-    .cert-provider {
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      color: var(--accent2);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .cert-name {
-      font-size: 0.92rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      padding-right: 20px;
-      line-height: 1.4;
-    }
-
-    .cert-meta {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--muted);
-    }
-
-    .cert-img-preview {
-      width: 100%;
-      height: 72px;
-      object-fit: cover;
-      margin-top: 10px;
-      border: 1px solid var(--border);
-      opacity: 0.65;
-      transition: opacity 0.2s;
-    }
+    .cert-provider { font-family: var(--mono); font-size: 0.62rem; color: var(--accent2); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+    .cert-name { font-size: 0.92rem; font-weight: 600; margin-bottom: 6px; padding-right: 20px; line-height: 1.4; }
+    .cert-meta { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+    .cert-img-preview { width: 100%; height: 72px; object-fit: cover; margin-top: 10px; border: 1px solid var(--border); opacity: 0.65; transition: opacity 0.2s; }
     .cert-card:hover .cert-img-preview { opacity: 1; }
-
-    .certs-toggle-btn {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: none;
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--muted);
-      transition: all 0.2s;
-      margin-top: 10px;
-    }
+    .certs-toggle-btn { width: 100%; background: var(--surface); border: 1px solid var(--border); border-top: none; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-family: var(--mono); font-size: 0.78rem; color: var(--muted); transition: all 0.2s; margin-top: 10px; }
     .certs-toggle-btn:hover { color: var(--accent); border-color: var(--accent); }
-
     .certs-toggle-icon { transition: transform 0.3s ease; }
     .certs-toggle-btn.open .certs-toggle-icon { transform: rotate(180deg); }
-
     .certs-extra { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
     .certs-extra.open { max-height: 2000px; }
-
-    .certs-extra-inner {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 10px;
-      padding-top: 10px;
-    }
-
+    .certs-extra-inner { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; padding-top: 10px; }
+ 
     /* ── LANGUAGES ── */
-    .lang-items {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 12px;
-    }
-
-    .lang-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 24px;
-    }
-
+    .lang-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .lang-card { background: var(--surface); border: 1px solid var(--border); padding: 24px; }
     .lang-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
     .lang-level { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); }
-
+ 
     /* ── AI CHAT ── */
-    .ai-section {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 90px 48px;
-    }
-
-    .ai-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      position: relative;
-    }
-
-    .ai-card::before {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
-      z-index: -1;
-      opacity: 0.4;
-    }
-
-    .ai-header {
-      padding: 20px 28px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .ai-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0,229,160,0.1);
-      border: 1px solid rgba(0,229,160,0.3);
-      color: var(--accent);
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      padding: 4px 10px;
-      border-radius: 100px;
-    }
-
-    .ai-badge-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s infinite;
-    }
-
+    .ai-section { max-width: 1100px; margin: 0 auto; padding: 90px 48px; }
+    .ai-card { background: var(--surface); border: 1px solid var(--border); position: relative; }
+    .ai-card::before { content: ''; position: absolute; inset: -1px; background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3)); z-index: -1; opacity: 0.4; }
+    .ai-header { padding: 20px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .ai-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.3); color: var(--accent); font-family: var(--mono); font-size: 0.68rem; padding: 4px 10px; border-radius: 100px; }
+    .ai-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
     .ai-title { font-weight: 700; font-size: 1rem; }
     .ai-subtitle { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-left: auto; }
-
-    .ai-messages {
-      height: 340px;
-      overflow-y: auto;
-      padding: 20px 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      scroll-behavior: smooth;
-    }
+    .ai-messages { height: 340px; overflow-y: auto; padding: 20px 28px; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; }
     .ai-messages::-webkit-scrollbar { width: 3px; }
     .ai-messages::-webkit-scrollbar-thumb { background: var(--border); }
-
     .msg { display: flex; gap: 10px; max-width: 85%; }
     .msg.user { align-self: flex-end; flex-direction: row-reverse; }
-
-    .msg-avatar {
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.65rem;
-      font-weight: 700;
-      flex-shrink: 0;
-      font-family: var(--mono);
-    }
-
+    .msg-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; flex-shrink: 0; font-family: var(--mono); }
     .msg-avatar.ai { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; }
     .msg-avatar.user-av { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
-
-    .msg-bubble {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      padding: 10px 14px;
-      font-size: 0.88rem;
-      line-height: 1.6;
-    }
+    .msg-bubble { background: var(--surface2); border: 1px solid var(--border); padding: 10px 14px; font-size: 0.88rem; line-height: 1.6; }
     .msg.user .msg-bubble { background: rgba(0,229,160,0.07); border-color: rgba(0,229,160,0.2); }
-
-    .typing-wrap {
-      padding: 0 28px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 0;
-      overflow: hidden;
-      transition: min-height 0.2s, padding 0.2s;
-    }
+    .typing-wrap { padding: 0 28px; display: flex; align-items: center; gap: 10px; min-height: 0; overflow: hidden; transition: min-height 0.2s, padding 0.2s; }
     .typing-wrap.active { min-height: 56px; padding: 12px 28px; }
-
-    .typing-indicator {
-      display: none;
-      align-items: center;
-      gap: 4px;
-      padding: 10px 14px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-    }
+    .typing-indicator { display: none; align-items: center; gap: 4px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); }
     .typing-indicator.show { display: flex; }
-
-    .typing-indicator span {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: bounce 1.2s infinite;
-    }
+    .typing-indicator span { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: bounce 1.2s infinite; }
     .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
     .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
     @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
-
     .ai-input-area { display: flex; border-top: 1px solid var(--border); }
-
-    .ai-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      padding: 18px 28px;
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--text);
-      caret-color: var(--accent);
-    }
+    .ai-input { flex: 1; background: transparent; border: none; outline: none; padding: 18px 28px; font-family: var(--mono); font-size: 0.82rem; color: var(--text); caret-color: var(--accent); }
     .ai-input::placeholder { color: var(--muted); }
-
-    .ai-send {
-      background: var(--accent);
-      border: none;
-      padding: 18px 28px;
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #000;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
-    }
+    .ai-send { background: var(--accent); border: none; padding: 18px 28px; font-family: var(--mono); font-size: 0.78rem; font-weight: 700; color: #000; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
     .ai-send:hover { background: #00ffb3; }
     .ai-send:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
-
-    .ai-suggestions {
-      display: flex;
-      gap: 8px;
-      padding: 14px 28px;
-      border-top: 1px solid var(--border);
-      flex-wrap: wrap;
-    }
-
-    .suggestion-btn {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      background: transparent;
-      padding: 5px 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
+    .ai-suggestions { display: flex; gap: 8px; padding: 14px 28px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+    .suggestion-btn { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); border: 1px solid var(--border); background: transparent; padding: 5px 12px; cursor: pointer; transition: all 0.2s; }
     .suggestion-btn:hover { color: var(--accent); border-color: var(--accent); }
-
+ 
     /* ── MODAL ── */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.92);
-      z-index: 1000;
-      cursor: zoom-out;
-      place-items: center;
-    }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1000; cursor: zoom-out; place-items: center; }
     .modal.active { display: grid; }
     .modal img { max-width: 90vw; max-height: 90vh; object-fit: contain; border: 1px solid var(--border); }
-
+ 
     /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 48px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
+    footer { border-top: 1px solid var(--border); padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; }
     .footer-name { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
     .footer-links { display: flex; gap: 24px; }
-    .footer-links a {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
+    .footer-links a { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
     .footer-links a:hover { color: var(--accent); }
-
+ 
     /* ── REVEAL ── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.55s ease, transform 0.55s ease;
-    }
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.55s ease, transform 0.55s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
-
+ 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       nav { padding: 14px 20px; }
@@ -750,25 +250,24 @@
   </style>
 </head>
 <body>
-
-<!-- ═══════════════════════════════ NAV ═══════════════════════════════ -->
+ 
+<!-- ═══════════════ NAV ═══════════════ -->
 <nav>
   <div class="nav-logo">kelvin_krauss.dev</div>
   <ul class="nav-links">
-    <li><a href="#skills"    data-pt="Stack"        data-en="Stack">Stack</a></li>
-    <li><a href="#education" data-pt="Formação"      data-en="Education">Formação</a></li>
-    <li><a href="#certs"     data-pt="Certificados"  data-en="Certificates">Certificados</a></li>
-    <li><a href="#ai-chat"   data-pt="IA"            data-en="AI">IA</a></li>
+    <li><a href="#skills"    data-pt="Stack"       data-en="Stack">Stack</a></li>
+    <li><a href="#education" data-pt="Formação"     data-en="Education">Formação</a></li>
+    <li><a href="#certs"     data-pt="Certificados" data-en="Certificates">Certificados</a></li>
+    <li><a href="#ai-chat"   data-pt="IA"           data-en="AI">IA</a></li>
   </ul>
   <button class="lang-btn" id="lang-btn" onclick="toggleLang()">EN →</button>
 </nav>
-
-<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+ 
+<!-- ═══════════════ HERO ═══════════════ -->
 <div class="hero">
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
   <div class="hero-glow2"></div>
-
   <div class="hero-content">
     <div class="hero-tag" data-pt="Disponível para oportunidades" data-en="Open to opportunities">Disponível para oportunidades</div>
     <h1>Kelvin<br><span>Krauss</span></h1>
@@ -777,15 +276,12 @@
        data-en="Computer Science undergraduate at IFC. Building systems with Java, Python and JavaScript — from microservices to AI-powered interfaces.">
       Bacharelando em Ciência da Computação no IFC. Construindo sistemas com Java, Python e JavaScript — de microsserviços a interfaces inteligentes com IA.
     </p>
-    <p class="hero-contact">
-      kelvin.krauss.br@gmail.com &nbsp;·&nbsp; (47) 99910-4771
-    </p>
+    <p class="hero-contact">kelvin.krauss.br@gmail.com &nbsp;·&nbsp; (47) 99910-4771</p>
     <div class="hero-ctas">
       <a href="https://github.com/KelvinKrauss" target="_blank" class="btn-primary">GitHub ↗</a>
       <a href="https://br.linkedin.com/in/kelvin-krauss-04b7622b8" target="_blank" class="btn-secondary">LinkedIn ↗</a>
     </div>
   </div>
-
   <div class="hero-avatar">
     <div class="avatar-ring">
       <img src="foto-perfil.png" alt="Kelvin Krauss" class="avatar-img"
@@ -794,159 +290,94 @@
     </div>
   </div>
 </div>
-
-<!-- ═══════════════════════════════ SKILLS ═══════════════════════════════ -->
+ 
+<!-- ═══════════════ SKILLS ═══════════════ -->
 <section id="skills">
   <h2 class="section-title reveal" data-pt="Stack & Ferramentas" data-en="Stack & Tools">Stack & Ferramentas</h2>
-  <div class="skills-grid reveal" id="skills-grid">
-
-    <div class="skill-item"
-      data-skill="Java"
-      data-desc-pt="Linguagem principal. Usado em POO, sistemas de controle financeiro, jogos em console e no Bootcamp NTT DATA. Base sólida em orientação a objetos, coleções e tratamento de exceções."
-      data-desc-en="Primary language. Used in OOP, financial control systems, console games and the NTT DATA Bootcamp. Solid foundation in object-orientation, collections and exception handling.">
-      <div class="skill-icon">☕</div>
-      <div class="skill-name">Java</div>
+  <div class="skills-grid reveal">
+    <div class="skill-item" data-skill="Java" data-desc-pt="Linguagem principal. Usado em POO, sistemas de controle financeiro, jogos em console e no Bootcamp NTT DATA. Base sólida em orientação a objetos, coleções e tratamento de exceções." data-desc-en="Primary language. Used in OOP, financial control systems, console games and the NTT DATA Bootcamp. Solid foundation in object-orientation, collections and exception handling.">
+      <div class="skill-icon">☕</div><div class="skill-name">Java</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.88"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="SQL"
-      data-desc-pt="Linguagem de consulta para bancos de dados relacionais. Utilizado para manipulação de dados em projetos com persistência, queries complexas e integração com aplicações Java."
-      data-desc-en="Query language for relational databases. Used for data manipulation in persistence projects, complex queries and Java application integration.">
-      <div class="skill-icon">🗄️</div>
-      <div class="skill-name">SQL</div>
+    <div class="skill-item" data-skill="SQL" data-desc-pt="Utilizado para manipulação de dados em projetos com persistência, queries complexas e integração com aplicações Java." data-desc-en="Used for data manipulation in persistence projects, complex queries and Java application integration.">
+      <div class="skill-icon">🗄️</div><div class="skill-name">SQL</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.75"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="H2 Database"
-      data-desc-pt="Banco de dados relacional em memória, usado em projetos Spring Boot para persistência durante desenvolvimento e testes, sem necessidade de configurar banco externo."
-      data-desc-en="In-memory relational database used in Spring Boot projects for persistence during development and testing, without needing an external database.">
-      <div class="skill-icon">💾</div>
-      <div class="skill-name">H2 Database</div>
+    <div class="skill-item" data-skill="H2 Database" data-desc-pt="Banco de dados relacional em memória, usado em projetos Spring Boot para persistência durante desenvolvimento e testes." data-desc-en="In-memory relational database used in Spring Boot projects for persistence during development and testing.">
+      <div class="skill-icon">💾</div><div class="skill-name">H2 Database</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.70"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="CSS"
-      data-desc-pt="Estilização de interfaces web. Certificado pela Fundação Bradesco em 'Inovando com CSS' (26h). Domina layout, animações, responsividade e design moderno."
-      data-desc-en="Web interface styling. Certified by Fundação Bradesco in 'Innovating with CSS' (26h). Masters layout, animations, responsiveness and modern design.">
-      <div class="skill-icon">🎨</div>
-      <div class="skill-name">CSS</div>
+    <div class="skill-item" data-skill="CSS" data-desc-pt="Certificado pela Fundação Bradesco em 'Inovando com CSS' (26h). Domina layout, animações, responsividade e design moderno." data-desc-en="Certified by Fundação Bradesco in 'Innovating with CSS' (26h). Masters layout, animations, responsiveness and modern design.">
+      <div class="skill-icon">🎨</div><div class="skill-name">CSS</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.78"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="JavaScript"
-      data-desc-pt="Linguagem web para front e back-end. Utilizada em projetos interativos e interfaces dinâmicas, complementando o stack Java."
-      data-desc-en="Web language for front and back-end. Used in interactive projects and dynamic interfaces, complementing the Java stack.">
-      <div class="skill-icon">⚡</div>
-      <div class="skill-name">JavaScript</div>
+    <div class="skill-item" data-skill="JavaScript" data-desc-pt="Utilizada em projetos interativos e interfaces dinâmicas, complementando o stack Java." data-desc-en="Used in interactive projects and dynamic interfaces, complementing the Java stack.">
+      <div class="skill-icon">⚡</div><div class="skill-name">JavaScript</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.74"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="Git"
-      data-desc-pt="Controle de versão distribuído. Usado no dia a dia para versionamento de código, branches, merges e colaboração em todos os projetos do portfólio."
-      data-desc-en="Distributed version control. Used daily for code versioning, branches, merges and collaboration across all portfolio projects.">
-      <div class="skill-icon">🔀</div>
-      <div class="skill-name">Git</div>
+    <div class="skill-item" data-skill="Git" data-desc-pt="Usado no dia a dia para versionamento de código, branches, merges e colaboração em todos os projetos do portfólio." data-desc-en="Used daily for code versioning, branches, merges and collaboration across all portfolio projects.">
+      <div class="skill-icon">🔀</div><div class="skill-name">Git</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.80"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="Maven"
-      data-desc-pt="Ferramenta de automação e gerenciamento de dependências para projetos Java. Usada em todos os projetos Spring Boot para build, testes e empacotamento."
-      data-desc-en="Automation and dependency management tool for Java projects. Used in all Spring Boot projects for build, testing and packaging.">
-      <div class="skill-icon">📦</div>
-      <div class="skill-name">Maven</div>
+    <div class="skill-item" data-skill="Maven" data-desc-pt="Ferramenta de automação e gerenciamento de dependências para projetos Java. Usada para build, testes e empacotamento." data-desc-en="Automation and dependency management tool for Java projects. Used for build, testing and packaging.">
+      <div class="skill-icon">📦</div><div class="skill-name">Maven</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.72"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="HTML"
-      data-desc-pt="Estrutura de páginas web. Base de todos os projetos front-end, combinando semântica correta com acessibilidade e boas práticas."
-      data-desc-en="Web page structure. Foundation of all front-end projects, combining correct semantics with accessibility and best practices.">
-      <div class="skill-icon">🌐</div>
-      <div class="skill-name">HTML</div>
+    <div class="skill-item" data-skill="HTML" data-desc-pt="Base de todos os projetos front-end, combinando semântica correta com acessibilidade e boas práticas." data-desc-en="Foundation of all front-end projects, combining correct semantics with accessibility and best practices.">
+      <div class="skill-icon">🌐</div><div class="skill-name">HTML</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.82"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="Python"
-      data-desc-pt="Linguagem versátil usada em projetos com interface gráfica (tkinter) e POO. Certificações pela Fundação Bradesco em interface gráfica e desenvolvimento orientado a objetos."
-      data-desc-en="Versatile language used in GUI (tkinter) and OOP projects. Certifications from Fundação Bradesco in GUI development and object-oriented programming.">
-      <div class="skill-icon">🐍</div>
-      <div class="skill-name">Python</div>
+    <div class="skill-item" data-skill="Python" data-desc-pt="Usado em projetos com interface gráfica (tkinter) e POO. Certificações pela Fundação Bradesco." data-desc-en="Used in GUI (tkinter) and OOP projects. Certifications from Fundação Bradesco.">
+      <div class="skill-icon">🐍</div><div class="skill-name">Python</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.76"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="GitHub"
-      data-desc-pt="Plataforma de hospedagem de código. Todo o portfólio de projetos está disponível no GitHub, com histórico de commits, READMEs e documentação."
-      data-desc-en="Code hosting platform. The entire project portfolio is available on GitHub, with commit history, READMEs and documentation.">
-      <div class="skill-icon">🐙</div>
-      <div class="skill-name">GitHub</div>
+    <div class="skill-item" data-skill="GitHub" data-desc-pt="Todo o portfólio de projetos está disponível no GitHub, com histórico de commits, READMEs e documentação." data-desc-en="The entire project portfolio is available on GitHub, with commit history, READMEs and documentation.">
+      <div class="skill-icon">🐙</div><div class="skill-name">GitHub</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.82"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="Spring Boot"
-      data-desc-pt="Framework Java para criação de APIs e microsserviços. Usado em projeto com Eureka Server, API Gateway e serviços independentes — arquitetura completa de microsserviços."
-      data-desc-en="Java framework for building APIs and microservices. Used in a project with Eureka Server, API Gateway and independent services — complete microservices architecture.">
-      <div class="skill-icon">🍃</div>
-      <div class="skill-name">Spring Boot</div>
+    <div class="skill-item" data-skill="Spring Boot" data-desc-pt="Usado em projeto com Eureka Server, API Gateway e serviços independentes — arquitetura completa de microsserviços." data-desc-en="Used in a project with Eureka Server, API Gateway and independent services — complete microservices architecture.">
+      <div class="skill-icon">🍃</div><div class="skill-name">Spring Boot</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.78"></div></div>
     </div>
-
-    <div class="skill-item"
-      data-skill="Postman"
-      data-desc-pt="Ferramenta para teste e documentação de APIs REST. Usado para validar endpoints, testar autenticação e simular requisições nos projetos Spring Boot."
-      data-desc-en="Tool for testing and documenting REST APIs. Used to validate endpoints, test authentication and simulate requests in Spring Boot projects.">
-      <div class="skill-icon">📬</div>
-      <div class="skill-name">Postman</div>
+    <div class="skill-item" data-skill="Postman" data-desc-pt="Usado para validar endpoints, testar autenticação e simular requisições nos projetos Spring Boot." data-desc-en="Used to validate endpoints, test authentication and simulate requests in Spring Boot projects.">
+      <div class="skill-icon">📬</div><div class="skill-name">Postman</div>
       <div class="skill-bar"><div class="skill-bar-fill" data-w="0.70"></div></div>
     </div>
   </div>
 </section>
-
-<!-- Skill popup -->
+ 
 <div class="skill-popup" id="skill-popup">
   <div class="skill-popup-name" id="popup-name"></div>
   <div class="skill-popup-desc" id="popup-desc"></div>
 </div>
-
-<!-- ═══════════════════════════════ EDUCATION ═══════════════════════════════ -->
+ 
+<!-- ═══════════════ EDUCATION ═══════════════ -->
 <section id="education">
   <h2 class="section-title reveal" data-pt="Formação" data-en="Education">Formação</h2>
-
   <div class="edu-card reveal">
     <div class="edu-year" data-pt="2025 — PRESENTE" data-en="2025 — PRESENT">2025 — PRESENTE</div>
     <div class="edu-degree" data-pt="Bacharelado em Ciência da Computação" data-en="Bachelor's in Computer Science">Bacharelado em Ciência da Computação</div>
     <div class="edu-inst">Instituto Federal Catarinense (IFC)</div>
   </div>
-
-  <div class="edu-card reveal" style="border-left-color: var(--accent2)">
+  <div class="edu-card reveal" style="border-left-color:var(--accent2)">
     <div class="edu-year" style="color:var(--accent2)">2024 · 220H</div>
     <div class="edu-degree" data-pt="Desenvolvedor Web — Back End (Java)" data-en="Web Developer — Back End (Java)">Desenvolvedor Web — Back End (Java)</div>
     <div class="edu-inst" data-pt="Programa Entra21 · Fundação Softville / Blusoft" data-en="Entra21 Program · Softville / Blusoft Foundation">Programa Entra21 · Fundação Softville / Blusoft</div>
   </div>
-
-  <div class="edu-card reveal" style="border-left-color: var(--accent3)">
+  <div class="edu-card reveal" style="border-left-color:var(--accent3)">
     <div class="edu-year" style="color:var(--accent3)">2025 · 48H</div>
     <div class="edu-degree" data-pt="Bootcamp NTT DATA: Java e IA para Iniciantes" data-en="NTT DATA Bootcamp: Java and AI for Beginners">Bootcamp NTT DATA: Java e IA para Iniciantes</div>
     <div class="edu-inst" data-pt="Patrocinado pela Microsoft" data-en="Sponsored by Microsoft">Patrocinado pela Microsoft</div>
   </div>
 </section>
-
-<!-- ═══════════════════════════════ CERTIFICATES ═══════════════════════════════ -->
+ 
+<!-- ═══════════════ CERTIFICATES ═══════════════ -->
 <section id="certs">
   <h2 class="section-title reveal" data-pt="Certificados" data-en="Certificates">Certificados</h2>
-
   <div class="certs-grid">
     <div class="cert-card reveal" onclick="openModal('Certificados/certificado-prompt-engineering.png')">
       <div class="cert-provider">AWS Training</div>
-      <div class="cert-name" data-pt="Foundations of Prompt Engineering" data-en="Foundations of Prompt Engineering">Foundations of Prompt Engineering</div>
+      <div class="cert-name">Foundations of Prompt Engineering</div>
       <div class="cert-meta" data-pt="Concluído: 27/06/2025" data-en="Completed: 06/27/2025">Concluído: 27/06/2025</div>
       <img src="Certificados/certificado-prompt-engineering.png" class="cert-img-preview" alt="">
     </div>
@@ -975,17 +406,16 @@
       <img src="Certificados/certificado-entra21.png" class="cert-img-preview" alt="">
     </div>
   </div>
-
+ 
   <button class="certs-toggle-btn reveal" id="certs-toggle-btn" onclick="toggleCerts()">
     <span id="certs-toggle-label" data-pt="Ver mais cursos complementares (7)" data-en="Show more complementary courses (7)">Ver mais cursos complementares (7)</span>
     <span class="certs-toggle-icon">▼</span>
   </button>
-
   <div class="certs-extra" id="certs-extra">
     <div class="certs-extra-inner">
       <div class="cert-card" onclick="openModal('Certificados/certificado-android.png')">
         <div class="cert-provider">Fundação Bradesco</div>
-        <div class="cert-name" data-pt="Aplicações Mobile com Android Studio" data-en="Mobile Applications with Android Studio">Aplicações Mobile com Android Studio</div>
+        <div class="cert-name" data-pt="Aplicações Mobile com Android Studio" data-en="Mobile Apps with Android Studio">Aplicações Mobile com Android Studio</div>
         <div class="cert-meta">2024 · 15h</div>
         <img src="Certificados/certificado-android.png" class="cert-img-preview" alt="">
       </div>
@@ -1028,8 +458,8 @@
     </div>
   </div>
 </section>
-
-<!-- ═══════════════════════════════ LANGUAGES ═══════════════════════════════ -->
+ 
+<!-- ═══════════════ LANGUAGES ═══════════════ -->
 <section>
   <h2 class="section-title reveal" data-pt="Idiomas" data-en="Languages">Idiomas</h2>
   <div class="lang-items">
@@ -1043,54 +473,49 @@
     </div>
   </div>
 </section>
-
-<!-- ═══════════════════════════════ AI CHAT ═══════════════════════════════ -->
+ 
+<!-- ═══════════════ AI CHAT ═══════════════ -->
 <div class="ai-section" id="ai-chat">
   <h2 class="section-title reveal" data-pt="Pergunte sobre o Kelvin" data-en="Ask about Kelvin">Pergunte sobre o Kelvin</h2>
-
   <div class="ai-card reveal">
     <div class="ai-header">
       <div class="ai-badge"><div class="ai-badge-dot"></div>Gemini AI</div>
       <div class="ai-title" data-pt="Assistente do Portfólio" data-en="Portfolio Assistant">Assistente do Portfólio</div>
       <div class="ai-subtitle" data-pt="Powered by Google" data-en="Powered by Google">Powered by Google</div>
     </div>
-
     <div class="ai-messages" id="ai-messages">
       <div class="msg">
         <div class="msg-avatar ai">KK</div>
-        <div class="msg-bubble" id="ai-welcome-msg"
+        <div class="msg-bubble"
           data-pt="Olá! Sou a IA do portfólio do Kelvin. Posso responder sobre sua formação, projetos e habilidades técnicas. O que você quer saber? 🚀"
           data-en="Hi! I'm Kelvin's portfolio AI. I can answer questions about his education, projects and technical skills. What would you like to know? 🚀">
           Olá! Sou a IA do portfólio do Kelvin. Posso responder sobre sua formação, projetos e habilidades técnicas. O que você quer saber? 🚀
         </div>
       </div>
     </div>
-
     <div class="typing-wrap" id="typing-wrap">
       <div class="msg-avatar ai" style="flex-shrink:0">KK</div>
       <div class="typing-indicator" id="typing"><span></span><span></span><span></span></div>
     </div>
-
-    <div class="ai-suggestions" id="ai-suggestions">
+    <div class="ai-suggestions">
       <button class="suggestion-btn" data-pt="Quais são os projetos?" data-en="What are the projects?" onclick="sendSuggestion(this)">Quais são os projetos?</button>
       <button class="suggestion-btn" data-pt="Quais tecnologias domina?" data-en="What technologies does he master?" onclick="sendSuggestion(this)">Quais tecnologias domina?</button>
       <button class="suggestion-btn" data-pt="Por que contratar o Kelvin?" data-en="Why hire Kelvin?" onclick="sendSuggestion(this)">Por que contratar o Kelvin?</button>
       <button class="suggestion-btn" data-pt="Fale sobre microsserviços" data-en="Tell me about microservices" onclick="sendSuggestion(this)">Fale sobre microsserviços</button>
     </div>
-
     <div class="ai-input-area">
       <input class="ai-input" id="ai-input" type="text"
         data-placeholder-pt="Digite sua pergunta..."
         data-placeholder-en="Type your question..."
         placeholder="Digite sua pergunta..."
-        onkeydown="if(event.key==='Enter') sendMessage()">
+        onkeydown="if(event.key==='Enter')sendMessage()">
       <button class="ai-send" id="ai-send-btn" onclick="sendMessage()"
         data-pt="ENVIAR →" data-en="SEND →">ENVIAR →</button>
     </div>
   </div>
 </div>
-
-<!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
+ 
+<!-- ═══════════════ FOOTER ═══════════════ -->
 <footer>
   <div class="footer-name">© 2025 Kelvin Krauss</div>
   <div class="footer-links">
@@ -1099,108 +524,84 @@
     <a href="https://br.linkedin.com/in/kelvin-krauss-04b7622b8" target="_blank">LinkedIn</a>
   </div>
 </footer>
-
-<!-- ═══════════════════════════════ MODAL ═══════════════════════════════ -->
+ 
 <div class="modal" id="modal" onclick="closeModal()">
   <img id="modal-img" src="" alt="Certificado">
 </div>
-
-<!-- ═══════════════════════════════ SCRIPTS ═══════════════════════════════ -->
+ 
 <script>
-  /* ─────────────── LANGUAGE SYSTEM ─────────────── */
+  /* ──────────── LANGUAGE ──────────── */
   let currentLang = 'pt';
-
+ 
   const SYSTEM_PT = `Você é o assistente de portfólio de Kelvin Krauss, desenvolvedor brasileiro, estudante de Ciência da Computação no Instituto Federal Catarinense (IFC), entrada 2025.
-
+ 
 PERFIL:
 - Bacharelando em CC no IFC (desde 2025)
 - Stack: Java, Python, JavaScript, HTML, CSS, SQL, H2 Database, Spring Boot, Git, GitHub, Maven, Postman
-- Certificações: Entra21 Back End Java (220h), Bootcamp NTT DATA Java+IA (48h, Microsoft), AWS Prompt Engineering, AWS Data Engineering, cursos Fundação Bradesco (CSS, Android Studio, Lógica, Segurança TI, Administração, Python OO, Python Interface, Power BI)
+- Certificações: Entra21 Back End Java (220h), Bootcamp NTT DATA Java+IA (48h, Microsoft), AWS Prompt Engineering, AWS Data Engineering, Fundação Bradesco (CSS 26h, Android Studio 15h, Lógica 15h, Segurança TI 12h, Administração 12h, Python OO 10h, Python Interface 10h, Power BI 5h)
 - Projetos GitHub: controle de transações financeiras (Java OO), catálogo+pedidos com H2 Database, microsserviços Spring Boot (Eureka Server, API Gateway, serviços independentes, testados no Postman), jogo da forca console Java com ASCII art
 - Idiomas: Português nativo, Inglês C1 Advanced
-- Email: kelvin.krauss.br@gmail.com | Tel: (47) 99910-4771
-- GitHub: https://github.com/KelvinKrauss
-- LinkedIn: https://br.linkedin.com/in/kelvin-krauss-04b7622b8
-
+- Contato: kelvin.krauss.br@gmail.com | (47) 99910-4771
+- GitHub: https://github.com/KelvinKrauss | LinkedIn: https://br.linkedin.com/in/kelvin-krauss-04b7622b8
+ 
 Responda SEMPRE em português, de forma concisa, direta e entusiasta. Destaque os pontos fortes do Kelvin. Seja como um representante pessoal dele.`;
-
+ 
   const SYSTEM_EN = `You are the portfolio assistant for Kelvin Krauss, a Brazilian developer studying Computer Science at Instituto Federal Catarinense (IFC), enrolled in 2025.
-
+ 
 PROFILE:
 - CS undergraduate at IFC (since 2025)
 - Stack: Java, Python, JavaScript, HTML, CSS, SQL, H2 Database, Spring Boot, Git, GitHub, Maven, Postman
-- Certifications: Entra21 Back End Java (220h), NTT DATA Java+AI Bootcamp (48h, Microsoft), AWS Prompt Engineering, AWS Data Engineering, Fundação Bradesco courses (CSS, Android Studio, Logic, IT Security, Administration, Python OO, Python GUI, Power BI)
+- Certifications: Entra21 Back End Java (220h), NTT DATA Java+AI Bootcamp (48h, Microsoft), AWS Prompt Engineering, AWS Data Engineering, Fundação Bradesco (CSS 26h, Android Studio 15h, Logic 15h, IT Security 12h, Administration 12h, Python OO 10h, Python GUI 10h, Power BI 5h)
 - GitHub projects: financial transaction control (Java OOP), catalog+orders with H2 Database, Spring Boot microservices (Eureka Server, API Gateway, independent services, tested in Postman), Java console hangman game with ASCII art
 - Languages: Native Portuguese, C1 Advanced English
-- Email: kelvin.krauss.br@gmail.com | Phone: +55 47 99910-4771
-- GitHub: https://github.com/KelvinKrauss
-- LinkedIn: https://br.linkedin.com/in/kelvin-krauss-04b7622b8
-
+- Contact: kelvin.krauss.br@gmail.com | +55 47 99910-4771
+- GitHub: https://github.com/KelvinKrauss | LinkedIn: https://br.linkedin.com/in/kelvin-krauss-04b7622b8
+ 
 Always respond in English, concisely, directly and enthusiastically. Highlight Kelvin's strengths. Act as his personal representative.`;
-
+ 
   function toggleLang() {
     currentLang = currentLang === 'pt' ? 'en' : 'pt';
-    const btn = document.getElementById('lang-btn');
-    btn.textContent = currentLang === 'pt' ? 'EN →' : 'PT →';
-
-    // Update all data-pt / data-en elements
+    document.getElementById('lang-btn').textContent = currentLang === 'pt' ? 'EN →' : 'PT →';
+    document.documentElement.lang = currentLang === 'pt' ? 'pt-BR' : 'en';
+ 
     document.querySelectorAll('[data-pt]').forEach(el => {
       const val = el.getAttribute('data-' + currentLang);
       if (val) el.textContent = val;
     });
-
-    // Update input placeholder
+ 
     const inp = document.getElementById('ai-input');
     inp.placeholder = inp.getAttribute('data-placeholder-' + currentLang);
-
-    // Update page lang
-    document.documentElement.lang = currentLang === 'pt' ? 'pt-BR' : 'en';
-
-    // Update toggle button label
-    const toggleLabel = document.getElementById('certs-toggle-label');
-    const certToggle = document.getElementById('certs-toggle-btn');
-    const isOpen = certToggle.classList.contains('open');
+ 
+    const isOpen = document.getElementById('certs-toggle-btn').classList.contains('open');
     if (isOpen) {
-      toggleLabel.textContent = currentLang === 'pt' ? 'Ocultar cursos complementares' : 'Hide complementary courses';
+      document.getElementById('certs-toggle-label').textContent =
+        currentLang === 'pt' ? 'Ocultar cursos complementares' : 'Hide complementary courses';
     }
-
-    // Reset chat with new welcome message
+ 
     resetChat();
   }
-
+ 
   function resetChat() {
     const container = document.getElementById('ai-messages');
-    const welcomeText = currentLang === 'pt'
+    const welcome = currentLang === 'pt'
       ? 'Olá! Sou a IA do portfólio do Kelvin. Posso responder sobre sua formação, projetos e habilidades técnicas. O que você quer saber? 🚀'
       : "Hi! I'm Kelvin's portfolio AI. I can answer questions about his education, projects and technical skills. What would you like to know? 🚀";
-
-    container.innerHTML = `
-      <div class="msg">
-        <div class="msg-avatar ai">KK</div>
-        <div class="msg-bubble">${welcomeText}</div>
-      </div>`;
-
+    container.innerHTML = `<div class="msg"><div class="msg-avatar ai">KK</div><div class="msg-bubble">${welcome}</div></div>`;
     chatHistory = [];
   }
-
-  /* ─────────────── MODAL ─────────────── */
-  function openModal(src) {
-    document.getElementById('modal-img').src = src;
-    document.getElementById('modal').classList.add('active');
-  }
-  function closeModal() {
-    document.getElementById('modal').classList.remove('active');
-  }
+ 
+  /* ──────────── MODAL ──────────── */
+  function openModal(src) { document.getElementById('modal-img').src = src; document.getElementById('modal').classList.add('active'); }
+  function closeModal() { document.getElementById('modal').classList.remove('active'); }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  /* ─────────────── SCROLL REVEAL ─────────────── */
+ 
+  /* ──────────── SCROLL REVEAL ──────────── */
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08 });
-
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-  /* ─────────────── SKILL BARS ─────────────── */
+ 
+  /* ──────────── SKILL BARS ──────────── */
   const skillBarObs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -1210,155 +611,126 @@ Always respond in English, concisely, directly and enthusiastically. Highlight K
       }
     });
   }, { threshold: 0.1 });
-
   document.querySelectorAll('.skills-grid').forEach(g => skillBarObs.observe(g));
-
-  /* ─────────────── SKILL POPUP ─────────────── */
-  const popup     = document.getElementById('skill-popup');
+ 
+  /* ──────────── SKILL POPUP ──────────── */
+  const popup = document.getElementById('skill-popup');
   const popupName = document.getElementById('popup-name');
   const popupDesc = document.getElementById('popup-desc');
-  let   activeSkill = null;
-
+  let activeSkill = null;
+ 
   document.querySelectorAll('.skill-item').forEach(item => {
     item.addEventListener('click', function(e) {
       e.stopPropagation();
-      if (activeSkill === this) {
-        popup.classList.remove('visible');
-        this.classList.remove('active');
-        activeSkill = null;
-        return;
-      }
+      if (activeSkill === this) { popup.classList.remove('visible'); this.classList.remove('active'); activeSkill = null; return; }
       if (activeSkill) activeSkill.classList.remove('active');
       activeSkill = this;
       this.classList.add('active');
-
       popupName.textContent = this.dataset.skill;
-      popupDesc.textContent = this.getAttribute('data-desc-' + currentLang) || this.dataset.descPt;
-
+      popupDesc.textContent = this.getAttribute('data-desc-' + currentLang);
+ 
       const rect = this.getBoundingClientRect();
-      const pw = 280;
       let left = rect.right + 12;
       let top  = rect.top + window.scrollY;
-
-      if (left + pw > window.innerWidth - 16) left = rect.left - pw - 12;
+      if (left + 280 > window.innerWidth - 16) left = rect.left - 280 - 12;
       if (left < 8) left = 8;
-
       popup.style.left = left + 'px';
       popup.style.top  = top  + 'px';
       popup.classList.add('visible');
     });
   });
-
   document.addEventListener('click', () => {
     popup.classList.remove('visible');
     if (activeSkill) { activeSkill.classList.remove('active'); activeSkill = null; }
   });
-
-  /* ─────────────── TOGGLE CERTS ─────────────── */
+ 
+  /* ──────────── TOGGLE CERTS ──────────── */
   function toggleCerts() {
     const btn   = document.getElementById('certs-toggle-btn');
     const extra = document.getElementById('certs-extra');
     const label = document.getElementById('certs-toggle-label');
     btn.classList.toggle('open');
     extra.classList.toggle('open');
-
-    if (btn.classList.contains('open')) {
-      label.textContent = currentLang === 'pt' ? 'Ocultar cursos complementares' : 'Hide complementary courses';
-    } else {
-      label.textContent = currentLang === 'pt' ? 'Ver mais cursos complementares (7)' : 'Show more complementary courses (7)';
-    }
+    label.textContent = btn.classList.contains('open')
+      ? (currentLang === 'pt' ? 'Ocultar cursos complementares' : 'Hide complementary courses')
+      : (currentLang === 'pt' ? 'Ver mais cursos complementares (7)' : 'Show more complementary courses (7)');
   }
-
-  /* ─────────────── GEMINI CHAT ─────────────── */
-  const GEMINI_KEY = 'AIzaSyAQ.Ab8RN6Jzk-im6IM3HMMbZvugk7jRVq0kqIYcm6vpRm46qjSXQQ';
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
-
+ 
+  /* ──────────── GEMINI CHAT via /api/chat ──────────── */
   let chatHistory = [];
-
+ 
   async function sendMessage() {
     const input = document.getElementById('ai-input');
     const text  = input.value.trim();
     if (!text) return;
-
+ 
     appendMsg(text, 'user');
     input.value = '';
     setLoading(true);
-
+ 
     chatHistory.push({ role: 'user', parts: [{ text }] });
-
-    const systemPrompt = currentLang === 'pt' ? SYSTEM_PT : SYSTEM_EN;
-
-    const body = {
-      system_instruction: { parts: [{ text: systemPrompt }] },
-      contents: chatHistory,
-      generationConfig: { maxOutputTokens: 600, temperature: 0.7 }
-    };
-
+ 
     try {
-      const res  = await fetch(GEMINI_URL, {
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify({
+          history: chatHistory,
+          systemPrompt: currentLang === 'pt' ? SYSTEM_PT : SYSTEM_EN
+        })
       });
+ 
       const data = await res.json();
-
-      if (data.error) throw new Error(data.error.message);
-
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text
-        || (currentLang === 'pt' ? 'Erro ao obter resposta. Tente novamente.' : 'Error getting response. Please try again.');
-
-      chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+ 
+      if (data.error) throw new Error(data.error);
+ 
+      chatHistory.push({ role: 'model', parts: [{ text: data.reply }] });
       setLoading(false);
-      appendMsg(reply, 'ai');
+      appendMsg(data.reply, 'ai');
+ 
     } catch (err) {
       setLoading(false);
-      const errMsg = currentLang === 'pt'
-        ? 'Erro de conexão. Verifique sua conexão e tente novamente.'
-        : 'Connection error. Check your connection and try again.';
-      appendMsg(errMsg, 'ai');
-      console.error('Gemini error:', err);
+      appendMsg(
+        currentLang === 'pt'
+          ? 'Erro de conexão. Verifique sua conexão e tente novamente.'
+          : 'Connection error. Check your connection and try again.',
+        'ai'
+      );
+      console.error('Chat error:', err);
     }
   }
-
+ 
   function sendSuggestion(btn) {
-    const text = btn.getAttribute('data-' + currentLang) || btn.textContent;
-    document.getElementById('ai-input').value = text;
+    document.getElementById('ai-input').value = btn.getAttribute('data-' + currentLang) || btn.textContent;
     sendMessage();
   }
-
+ 
   function appendMsg(text, role) {
     const container = document.getElementById('ai-messages');
     const wrapper   = document.createElement('div');
     wrapper.className = 'msg' + (role === 'user' ? ' user' : '');
-
     const av = document.createElement('div');
     av.className = 'msg-avatar ' + (role === 'ai' ? 'ai' : 'user-av');
     av.textContent = role === 'ai' ? 'KK' : (currentLang === 'pt' ? 'EU' : 'ME');
-
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble';
-
-    // Render simple markdown-like formatting from Gemini
     bubble.innerHTML = text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/\n/g, '<br>');
-
     wrapper.appendChild(av);
     wrapper.appendChild(bubble);
     container.appendChild(wrapper);
     container.scrollTop = container.scrollHeight;
   }
-
+ 
   function setLoading(on) {
-    const typingWrap = document.getElementById('typing-wrap');
-    const typing     = document.getElementById('typing');
-    const sendBtn    = document.getElementById('ai-send-btn');
-
-    typing.classList.toggle('show', on);
-    typingWrap.classList.toggle('active', on);
-    sendBtn.disabled = on;
-
+    const tw  = document.getElementById('typing-wrap');
+    const t   = document.getElementById('typing');
+    const btn = document.getElementById('ai-send-btn');
+    t.classList.toggle('show', on);
+    tw.classList.toggle('active', on);
+    btn.disabled = on;
     if (on) document.getElementById('ai-messages').scrollTop = 99999;
   }
 </script>
