@@ -16,6 +16,9 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'API key not configured on server' });
   }
 
+  // ==========================================
+  // CORREÇÃO: Mudança para o gemini-1.5-flash (gratuito)
+  // ==========================================
   const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
 
   try {
