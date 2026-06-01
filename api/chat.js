@@ -1,45 +1,40 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-
-module.exports = async (req, res) => {
-  // Bloqueia qualquer requisição que não seja POST
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
   try {
     const { history, systemPrompt } = req.body;
+    const apiKey = process.env.GEMINI_API_KEY;
 
-    // Valida se a chave existe no painel da Vercel
-    if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ error: 'A variável GEMINI_API_KEY não foi encontrada no painel da Vercel.' });
+    if (!apiKey) {
+      return res.status(500).json({ error: 'Chave de API não configurada no servidor.' });
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    
-    // Configura o modelo estável com a cota de 500 requisições diárias disponível na sua conta
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-3.1-flash-lite',
-      systemInstruction: systemPrompt 
+    // Usando o gemini-2.5-flash: Modelo atual, existente e com cota gratuita nativa.
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    const geminiRes = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        // O Google exige system_instruction com underline nesta versão da API
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents: history,
+        generationConfig: { maxOutputTokens: 600, temperature: 0.5 }
+      })
     });
 
-    if (!history || history.length === 0) {
-      return res.status(400).json({ error: 'O histórico enviado está vazio.' });
+    const data = await geminiRes.json();
+
+    if (data.error) {
+      return res.status(500).json({ error: data.error.message });
     }
 
-    // Método direto e universal para chat: envia todo o histórico de forma limpa e sem fatiamento
-    const result = await model.generateContent({
-      contents: history
-    });
-    
-    const response = await result.response;
-    const reply = response.text();
-
-    // Devolve a resposta com sucesso para o seu index.html
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Erro ao processar a resposta.';
     return res.status(200).json({ reply });
 
-  } catch (error) {
-    // Registra qualquer problema no console sem derrubar a execução da função
-    console.error("ERRO DETALHADO NO BACKEND:", error);
-    return res.status(500).json({ error: error.message || 'Erro interno no servidor' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Falha na comunicação com o Google.' });
   }
-};
+}
