@@ -1,40 +1,45 @@
-export default async function handler(req, res) {
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
   try {
     const { history, systemPrompt } = req.body;
-    const apiKey = process.env.GEMINI_API_KEY;
 
-    if (!apiKey) {
-      return res.status(500).json({ error: 'Chave de API não configurada no servidor.' });
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'A variável GEMINI_API_KEY não foi encontrada no painel da Vercel.' });
     }
 
-    // Usando o gemini-2.5-flash: Modelo atual, existente e com cota gratuita nativa.
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-
-    const geminiRes = await fetch(GEMINI_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        // O Google exige system_instruction com underline nesta versão da API
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: history,
-        generationConfig: { maxOutputTokens: 600, temperature: 0.5 }
-      })
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    
+    // Configurado com o Gemini 3.1 Flash Lite para liberar as 500 perguntas diárias da sua cota
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-3.1-flash-lite',
+      systemInstruction: systemPrompt 
     });
 
-    const data = await geminiRes.json();
-
-    if (data.error) {
-      return res.status(500).json({ error: data.error.message });
+    const incomingHistory = history || [];
+    if (incomingHistory.length === 0) {
+      return res.status(400).json({ error: 'O histórico enviado está vazio.' });
     }
 
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Erro ao processar a resposta.';
+    const lastUserMessage = incomingHistory[incomingHistory.length - 1].parts[0].text;
+    const pastHistory = incomingHistory.slice(0, -1);
+
+    const chat = model.startChat({
+      history: pastHistory
+    });
+
+    const result = await chat.sendMessage(lastUserMessage);
+    const response = await result.response;
+    const reply = response.text();
+
     return res.status(200).json({ reply });
 
-  } catch (err) {
-    return res.status(500).json({ error: 'Falha na comunicação com o Google.' });
+  } catch (error) {
+    console.error("ERRO DETALHADO NO BACKEND:", error);
+    return res.status(500).json({ error: error.message || 'Erro interno no servidor' });
   }
-}
+};
