@@ -1,0 +1,13 @@
+{
+  "name": "site-kelvinkrauss",
+  "version": "1.0.0",
+  "description": "Kelvin Krauss Portfolio Site",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build step required'"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.4.1"
+  }
+}
