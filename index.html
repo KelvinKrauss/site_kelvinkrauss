@@ -270,6 +270,17 @@
     #chat-wrap .chat-head { position: relative; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; padding-top: 18px; }
     #chat-wrap .chat-head::before { content: ""; position: absolute; top: 7px; left: 50%; width: 38px; height: 4px; margin-left: -19px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 22%, transparent); }
     #chat-wrap.dragging .chat-head { cursor: grabbing; }
+    #chat-wrap .chat-head .x + .x { margin-left: -4px; }
+    /* Minimized chat: a draggable bubble */
+    #chat-bubble { position: fixed; left: 0; top: 0; z-index: 61; width: 62px; height: 62px; padding: 0; border-radius: 50%; display: grid; place-items: center; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 -1px 0 var(--rim-lo), 0 14px 34px rgba(0, 0, 0, .35); }
+    #chat-bubble[hidden] { display: none; }
+    #chat-bubble.dragging { cursor: grabbing; }
+    #chat-bubble img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; pointer-events: none; }
+    #chat-bubble .bubble-ai { position: absolute; right: -3px; bottom: -3px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); box-shadow: 0 0 0 2px var(--bg); pointer-events: none; }
+    #chat-bubble .bubble-ai svg { width: 12px; height: 12px; }
+    #chat-bubble .bubble-new { position: absolute; top: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 0 2px var(--bg); pointer-events: none; display: none; }
+    #chat-bubble.unread .bubble-new { display: block; animation: bubble-ping 1.4s ease-out infinite; }
+    @keyframes bubble-ping { 0% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 0 rgba(239, 68, 68, .6); } 100% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 12px rgba(239, 68, 68, 0); } }
     #chat-wrap .rz { position: absolute; z-index: 3; touch-action: none; }
     #chat-wrap .rz[data-rz="r"] { top: 60px; right: 0; bottom: 26px; width: 9px; cursor: ew-resize; }
     #chat-wrap .rz[data-rz="l"] { top: 60px; left: 0; bottom: 26px; width: 9px; cursor: ew-resize; }
@@ -581,6 +592,13 @@
   </div>
 </div>
 
+<!-- ── Chat minimizado ── -->
+<button class="glass" id="chat-bubble" type="button" hidden aria-label="Abrir o assistente" data-en-aria="Open the assistant" title="Assistente do Kelvin" data-en-title="Kelvin's assistant">
+  <img src="images/foto.jpg" alt="" width="50" height="50">
+  <span class="bubble-ai" aria-hidden="true"><svg><use href="#i-spark"/></svg></span>
+  <span class="bubble-new" aria-hidden="true"></span>
+</button>
+
 <!-- ── Chat ── -->
 <div class="chat-wrap" id="chat-wrap" hidden>
   <div class="chat" role="dialog" aria-modal="false" aria-labelledby="chat-title">
@@ -588,6 +606,7 @@
     <div class="chat-head">
       <img src="images/foto.jpg" alt="" width="36" height="36">
       <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume · drag the top or the edges">IA que conhece meu currículo · arraste o topo ou as bordas</small></div>
+      <button class="x" type="button" id="chat-min" aria-label="Minimizar" data-en-aria="Minimize" title="Minimizar" data-en-title="Minimize"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 12h12"/></svg></button>
       <button class="x" type="button" id="chat-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
     </div>
     <div class="msgs" id="msgs" aria-live="polite"></div>
@@ -1335,6 +1354,7 @@
       history.push({ role: 'model', parts: [{ text: data.reply }] });
       wait.remove();
       bubble(data.reply, 'ai');
+      if (!chatBubble.hidden) chatBubble.classList.add('unread');
     } catch (err) {
       wait.remove();
       history.pop();
@@ -1476,6 +1496,7 @@
   addEventListener('resize', () => { if (!wrap.hidden) { applySize(); placeChat(); } });
 
   function openChat(question) {
+    if (!chatBubble.hidden) { restoreChat(question); return; }
     if (!wrap.hidden) { // já aberto: só pergunta
       if (question) ask(question);
       $('#chat-input').focus({ preventScroll: true });
@@ -1523,6 +1544,75 @@
     ask(q);
   });
   $('#chat-close').addEventListener('click', closeChat);
+
+  /* ── Minimizar: a janela vira um balão que dá para arrastar; clicar nele reabre ── */
+  const chatBubble = $('#chat-bubble');
+  const BUBBLE = 62;
+  let bubblePos = { x: 0, y: 0 };
+  function placeBubble() {
+    bubblePos.x = clamp(bubblePos.x, 8, innerWidth - BUBBLE - 8);
+    bubblePos.y = clamp(bubblePos.y, 8, innerHeight - BUBBLE - 8);
+    chatBubble.style.left = Math.round(bubblePos.x) + 'px';
+    chatBubble.style.top = Math.round(bubblePos.y) + 'px';
+  }
+  const bubbleRect = () => ({ left: bubblePos.x, top: bubblePos.y, right: bubblePos.x + BUBBLE, bottom: bubblePos.y + BUBBLE, width: BUBBLE, height: BUBBLE });
+  function minimizeChat() {
+    if (wrap.hidden) return;
+    stopAnims();
+    const r = panel.getBoundingClientRect();
+    bubblePos = { x: r.right - BUBBLE, y: r.bottom - BUBBLE };
+    placeBubble();
+    const show = () => {
+      wrap.hidden = true; stopAnims();
+      chatBubble.hidden = false;
+      if (!calm.matches && chatBubble.animate) chatBubble.animate([{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1.12)', opacity: 1, offset: .7 }, { transform: 'scale(1)' }], { duration: 380, easing: 'ease-out' });
+      heroAsk.style.visibility = '';
+      moveInk(heroAsk);
+    };
+    if (calm.matches || !panel.animate) return show();
+    const s = shrinkTo(wrap, panel, bubbleRect());
+    running.push(...s.list);
+    s.done.then(show, () => {});
+  }
+  function restoreChat(question) {
+    const b = bubbleRect();
+    chatBubble.hidden = true;
+    chatBubble.classList.remove('unread');
+    wrap.hidden = false;
+    applySize();
+    chatPos = { x: b.right - panel.offsetWidth, y: b.bottom - panel.offsetHeight }; // reabre a partir do balão
+    placeChat();
+    moveInk(panel);
+    heroAsk.style.visibility = 'hidden';
+    stopAnims();
+    if (!calm.matches && panel.animate) running.push(...grow(wrap, panel, b));
+    if (question) ask(question);
+    $('#chat-input').focus({ preventScroll: true });
+  }
+  $('#chat-min').addEventListener('click', minimizeChat);
+  chatBubble.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const sx = e.clientX, sy = e.clientY, dx = sx - bubblePos.x, dy = sy - bubblePos.y;
+    let moved = false;
+    chatBubble.setPointerCapture(e.pointerId);
+    const move = ev => {
+      if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 5) { moved = true; chatBubble.classList.add('dragging'); }
+      if (moved) { bubblePos.x = ev.clientX - dx; bubblePos.y = ev.clientY - dy; placeBubble(); }
+    };
+    const up = () => {
+      chatBubble.classList.remove('dragging');
+      chatBubble.removeEventListener('pointermove', move);
+      chatBubble.removeEventListener('pointerup', up);
+      chatBubble.removeEventListener('pointercancel', up);
+      if (!moved) restoreChat();
+    };
+    chatBubble.addEventListener('pointermove', move);
+    chatBubble.addEventListener('pointerup', up);
+    chatBubble.addEventListener('pointercancel', up);
+  });
+  chatBubble.addEventListener('click', e => { if (e.detail === 0) restoreChat(); }); // teclado (Enter/Espaço)
+  addEventListener('resize', () => { if (!chatBubble.hidden) placeBubble(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !wrap.hidden) closeChat(); });
 
   /* ── Projeto: abre e fecha os detalhes ── */
