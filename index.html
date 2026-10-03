@@ -290,9 +290,18 @@
     #chat-bubble { position: fixed; left: 0; top: 0; z-index: 61; width: 62px; height: 62px; padding: 0; border-radius: 50%; display: grid; place-items: center; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 -1px 0 var(--rim-lo), 0 14px 34px rgba(0, 0, 0, .35); }
     #chat-bubble[hidden] { display: none; }
     #chat-bubble.dragging { cursor: grabbing; }
-    #chat-bubble img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; pointer-events: none; }
-    #chat-bubble .bubble-ai { position: absolute; right: -3px; bottom: -3px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); box-shadow: 0 0 0 2px var(--bg); pointer-events: none; }
-    #chat-bubble .bubble-ai svg { width: 12px; height: 12px; }
+    /* Liquid orb: same colors as the ink in the question box */
+    .orb { position: absolute; inset: 5px; border-radius: 50%; overflow: hidden; pointer-events: none; }
+    .orb::before { content: ""; position: absolute; inset: -30%; background: conic-gradient(from 0deg, #5b9bff, #a855f7, #ec4899, #f59e0b, #14b8a6, #5b9bff); filter: blur(9px) saturate(1.25); animation: orb-spin 7s linear infinite; }
+    .orb::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 38%), radial-gradient(circle at 50% 60%, rgba(8, 10, 18, 0) 30%, rgba(8, 10, 18, .45) 100%); }
+    @keyframes orb-spin { to { transform: rotate(1turn); } }
+    #chat-bubble .orb-icon { position: relative; z-index: 1; width: 24px; height: 24px; color: #fff; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .45)); pointer-events: none; }
+    #chat-bubble:hover .orb::before { animation-duration: 2.5s; }
+    /* The question box flying to the bubble corner (and back) */
+    .fly { position: fixed; z-index: 61; pointer-events: none; overflow: hidden; box-shadow: 0 14px 34px rgba(0, 0, 0, .35); }
+    .fly .fly-box { position: absolute; inset: 0; background: color-mix(in srgb, var(--card-solid) 78%, transparent); box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 0 0 1px var(--line); border-radius: inherit; }
+    .fly .orb { inset: 0; }
+    @media (prefers-reduced-motion: reduce) { .orb::before { animation: none; } }
     #chat-bubble .bubble-new { position: absolute; top: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 0 2px var(--bg); pointer-events: none; display: none; }
     #chat-bubble.unread .bubble-new { display: block; animation: bubble-ping 1.4s ease-out infinite; }
     @keyframes bubble-ping { 0% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 0 rgba(239, 68, 68, .6); } 100% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 12px rgba(239, 68, 68, 0); } }
@@ -609,8 +618,8 @@
 
 <!-- ── Chat minimizado ── -->
 <button class="glass" id="chat-bubble" type="button" hidden aria-label="Abrir o assistente" data-en-aria="Open the assistant" title="Assistente do Kelvin" data-en-title="Kelvin's assistant">
-  <img src="images/foto.jpg" alt="" width="50" height="50">
-  <span class="bubble-ai" aria-hidden="true"><svg><use href="#i-spark"/></svg></span>
+  <span class="orb" aria-hidden="true"></span>
+  <svg class="orb-icon" aria-hidden="true"><use href="#i-spark"/></svg>
   <span class="bubble-new" aria-hidden="true"></span>
 </button>
 
@@ -1637,28 +1646,54 @@
   let bubbleMode = null;   // 'min' = minimizado pela pessoa, 'auto' = só porque a caixa saiu da tela
   let autoPos = null;      // onde a pessoa deixou o balão automático
   let heroOnScreen = true;
+  // A caixa voa até o canto e vira o balão (e o contrário). Um "fantasma" fixo faz o voo; a caixa e o
+  // balão de verdade ficam escondidos durante a viagem.
+  let ghost = null;
+  const FLY_MS = 620;
+  function fly(from, to, toBubble) {
+    if (ghost) ghost.remove();
+    const g = document.createElement('div');
+    g.className = 'fly';
+    g.innerHTML = '<span class="orb"></span><span class="fly-box"></span>';
+    document.body.appendChild(g);
+    ghost = g;
+    const kf = r => ({ left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: r.height / 2 + 'px' });
+    g.animate([kf(from), kf(to)], { duration: FLY_MS, easing: 'cubic-bezier(.65, 0, .25, 1)', fill: 'forwards' });
+    g.lastChild.animate([{ opacity: toBubble ? 1 : 0 }, { opacity: toBubble ? 0 : 1 }], { duration: FLY_MS, easing: 'ease-in-out', fill: 'forwards' });
+    return new Promise(res => setTimeout(() => { if (ghost === g) { g.remove(); ghost = null; } res(); }, FLY_MS));
+  }
+  const onScreen = r => r.bottom > 0 && r.top < innerHeight;
+  function popBubble() {
+    chatBubble.hidden = false;
+    if (!calm.matches && chatBubble.animate) chatBubble.animate([{ transform: 'scale(.85)' }, { transform: 'scale(1.1)', offset: .6 }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' });
+  }
   function showAutoBubble() {
-    if (!wrap.hidden || !chatBubble.hidden) return;
+    if (!wrap.hidden || !chatBubble.hidden || bubbleMode) return;
     bubblePos = autoPos ? { x: autoPos.x, y: autoPos.y } : { x: innerWidth - BUBBLE - 24, y: innerHeight - BUBBLE - 110 };
     placeBubble();
-    chatBubble.hidden = false;
     bubbleMode = 'auto';
-    if (!calm.matches && chatBubble.animate) chatBubble.animate([{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1.12)', opacity: 1, offset: .7 }, { transform: 'scale(1)' }], { duration: 380, easing: 'ease-out' });
+    const from = heroAsk.getBoundingClientRect();
+    heroAsk.style.visibility = 'hidden';
+    if (calm.matches || !onScreen(from)) return popBubble();
+    fly(from, bubbleRect(), true).then(() => { if (bubbleMode === 'auto') popBubble(); });
   }
   function hideAutoBubble() {
-    if (bubbleMode !== 'auto' || chatBubble.hidden) return;
+    if (bubbleMode !== 'auto') return;
     autoPos = { x: bubblePos.x, y: bubblePos.y };
     bubbleMode = null;
-    const hide = () => { if (bubbleMode === null) chatBubble.hidden = true; };
-    if (calm.matches || !chatBubble.animate) return hide();
-    chatBubble.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(.4)', opacity: 0 }], { duration: 220, easing: 'ease-in', fill: 'forwards' });
-    setTimeout(() => { hide(); chatBubble.getAnimations().forEach(a => a.cancel()); }, 240); // não depende da animação terminar
+    const from = bubbleRect();
+    chatBubble.hidden = true;
+    const to = heroAsk.getBoundingClientRect();
+    const done = () => { if (bubbleMode === null && wrap.hidden) heroAsk.style.visibility = ''; };
+    if (calm.matches || !onScreen(to)) return done();
+    fly(from, to, false).then(done);
   }
   if ('IntersectionObserver' in window) {
+    // a caixa vira balão quando metade dela já saiu da tela
     new IntersectionObserver(([en]) => {
-      heroOnScreen = en.isIntersecting;
+      heroOnScreen = en.isIntersecting && en.intersectionRatio >= 0.5;
       if (heroOnScreen) hideAutoBubble(); else showAutoBubble();
-    }).observe(heroAsk);
+    }, { threshold: [0, 0.5, 1] }).observe(heroAsk);
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !wrap.hidden) closeChat(); });
 
