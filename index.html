@@ -1259,17 +1259,6 @@
     document.querySelectorAll('.hero, .sec').forEach(sec => secIO.observe(sec));
   }
 
-  /* ── Fluido mais suave enquanto se lê ── */
-  const canvas = $('#fluid');
-  let ticking = false;
-  function fade() {
-    ticking = false;
-    const k = Math.min(1, scrollY / (innerHeight * 0.9));
-    canvas.style.opacity = String(1 - k * 0.55);
-  }
-  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(fade); } }, { passive: true });
-  fade();
-
   /* ── Liquid glass: refração real no Chromium ──
      Para cada .glass[data-glass], gera um mapa de deslocamento do tamanho do elemento e usa como filtro SVG
      no backdrop-filter. Nos outros navegadores fica o vidro fosco do CSS. */
