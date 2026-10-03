@@ -103,9 +103,10 @@
     /* ── Hero ── */
     .hero { padding-block: clamp(48px, 9vh, 110px) clamp(72px, 11vh, 120px); }
     .hero .pill { margin-bottom: 28px; }
-    h1 { font-size: clamp(2.1rem, 4.3vw, 3.4rem); font-weight: 600; line-height: 1.1; letter-spacing: -.033em; max-width: 22ch; }
+    h1 { font-size: clamp(2rem, 3.8vw, 3rem); font-weight: 600; line-height: 1.12; letter-spacing: -.03em; max-width: 22ch; }
     h1 .soft { color: var(--muted); }
-    .lead { font-size: clamp(1.1rem, 1.6vw, 1.28rem); line-height: 1.65; max-width: 58ch; margin-top: 26px; }
+    .lead { font-size: clamp(1.05rem, 1.4vw, 1.16rem); line-height: 1.7; max-width: 64ch; margin-top: 22px; }
+    .lead-2 { margin-top: 12px; color: var(--muted); }
     .ask { margin-top: 36px; width: 100%; max-width: 560px; display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 22px; border-radius: 999px; }
     .ask:focus-within { box-shadow: inset 0 1px 0 var(--rim-hi), 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent), var(--glass-shadow); }
     .ask input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: 400 1rem var(--font); color: var(--ink); padding: 10px 0; }
@@ -272,8 +273,9 @@
     <!-- ── Hero ── -->
     <header class="hero">
       <a class="pill glass" data-glass="34" href="#contato"><span class="dot" aria-hidden="true"></span><span data-en="Open to internships and junior roles">Disponível para estágio e vaga júnior</span></a>
-      <h1 data-en="Hi, I'm Kelvin. <span class='soft'>I study systems development and I launched the website of the trucking company where I work.</span>">Oi, eu sou o Kelvin. <span class="soft">Estudo desenvolvimento de sistemas e coloquei no ar o site da transportadora onde trabalho.</span></h1>
-      <p class="lead" data-en="I'm an apprentice at <strong>Ociani Transportadora</strong>, in Blumenau, and a Systems Analysis and Development student at <strong>IFSC</strong>. In September 2026 I built the new <a href='https://www.ociani.com.br/' target='_blank' rel='noopener'>ociani.com.br</a>, with freight quotes, pickups and tracking connected to the company's logistics system. Now I'm looking for a team where I can keep learning.">Sou jovem aprendiz na <strong>Ociani Transportadora</strong>, em Blumenau, e estudante de Análise e Desenvolvimento de Sistemas no <strong>IFSC</strong>. Em setembro de 2026 construí o novo <a href="https://www.ociani.com.br/" target="_blank" rel="noopener">ociani.com.br</a>, com cotação de frete, coleta e rastreamento ligados ao sistema da empresa. Agora procuro um time onde eu possa continuar aprendendo.</p>
+      <h1 data-en="<span class='soft'>Hi, I'm</span> Kelvin Krauss"><span class="soft">Olá, eu sou o</span> Kelvin Krauss</h1>
+      <p class="lead" data-en="I am a Systems Analysis and Development student at the Federal Institute of Santa Catarina, and a huge technology enthusiast, with a strong interest in AI, web development, and back-end. My main technical focus is the AWS Ecosystem, Java, SQL databases, and Python, creating efficient solutions and robust architectures, such as APIs and microservices.">Sou graduando em Análise e Desenvolvimento de Sistemas no Instituto Federal de Santa Catarina, e um grande entusiasta da tecnologia, com forte interesse em I.A., desenvolvimento web e back-end. Meu foco técnico principal está no Ecossistema AWS, Java, bancos de dados SQL e Python, criando soluções eficientes e arquiteturas robustas, como APIs e microsserviços.</p>
+      <p class="lead lead-2" data-en="Open to internships, collaborations, and continuous learning opportunities in tech, including remote work for international companies.">Aberto a oportunidades de estágio, colaborações e aprendizado contínuo na área de tecnologia, incluindo atuação remota para empresas internacionais.</p>
 
       <form class="ask glass" data-glass="44" id="hero-ask" role="search">
         <input id="hero-input" type="text" autocomplete="off" maxlength="400" aria-label="Pergunte ao assistente" placeholder="Pergunte qualquer coisa ao meu assistente de IA..." data-en-ph="Ask my AI assistant anything..." data-en-aria="Ask the assistant">
@@ -459,8 +461,8 @@
   const config = {
     SIM_RESOLUTION: small ? 96 : 128,
     DYE_RESOLUTION: small ? 768 : 1440,
-    DENSITY_DISSIPATION: 3.2,
-    VELOCITY_DISSIPATION: 2,
+    DENSITY_DISSIPATION: 1,
+    VELOCITY_DISSIPATION: 1.2,
     PRESSURE: 0.1,
     PRESSURE_ITERATIONS: 20,
     CURL: 3,
@@ -922,7 +924,7 @@
     const now = performance.now();
     const dt = Math.min((now - last) / 1000, 0.016666);
     last = now;
-    if (now - lastInput > 5000 && introT > 1.4) { requestAnimationFrame(frame); return; }
+    if (now - lastInput > 10000 && introT > 1.4) { requestAnimationFrame(frame); return; }
     if (resizeCanvas()) initFramebuffers();
     colorTimer += dt * config.COLOR_UPDATE_SPEED;
     if (colorTimer >= 1) { colorTimer = 0; pointer.color = generateColor(); }
