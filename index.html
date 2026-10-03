@@ -62,7 +62,7 @@
     :focus-visible { outline: 2.5px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
     button { font: inherit; color: inherit; }
 
-    #fluid { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; transition: opacity .4s; }
+    #fluid { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; border-radius: inherit; opacity: .75; }
     .page { position: relative; z-index: 1; }
     .wrap { max-width: 1000px; margin-inline: auto; padding-inline: clamp(18px, 5vw, 40px); }
 
@@ -101,20 +101,7 @@
     .top-right { display: flex; align-items: center; gap: 8px; }
 
     /* ── Hero ── */
-    .hero { padding-block: clamp(48px, 9vh, 110px) clamp(72px, 11vh, 120px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: center; }
-    .hero-main { min-width: 0; }
-    @media (min-width: 1180px) { .hero { grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; } }
-
-    /* "Quero um site" card */
-    .hire { display: flex; flex-direction: column; gap: 12px; max-width: 440px; padding: 24px; border-radius: 24px; }
-    .hire-tag { font: 500 .72rem/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-    .hire h2 { font-size: 1.45rem; line-height: 1.2; font-weight: 600; letter-spacing: -.02em; }
-    .hire p { color: var(--text); font-size: .97rem; line-height: 1.6; }
-    .hire-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-top: 4px; padding: 13px 18px; border-radius: 14px; background: #25d366; color: #05210f; font-weight: 600; text-decoration: none; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 8px 24px rgba(37, 211, 102, .22); transition: transform .2s, box-shadow .2s; }
-    .hire-btn:hover { color: #05210f; transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 12px 30px rgba(37, 211, 102, .35); }
-    .hire-btn svg { width: 20px; height: 20px; flex: none; }
-    .hire-link { align-self: center; color: var(--muted); font-size: .92rem; text-decoration: none; }
-    .hire-link:hover { color: var(--ink); }
+    .hero { padding-block: clamp(48px, 9vh, 110px) clamp(72px, 11vh, 120px); }
     h1 { font-size: clamp(2rem, 3.8vw, 3rem); font-weight: 600; line-height: 1.12; letter-spacing: -.03em; max-width: 22ch; }
     h1 .soft { color: var(--muted); }
     .lead { font-size: clamp(1.05rem, 1.4vw, 1.16rem); line-height: 1.7; max-width: 64ch; margin-top: 22px; }
@@ -210,11 +197,7 @@
     .rv { transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .2, 1); }
     .rv.pre { opacity: 0; transform: translateY(18px); }
 
-    /* Phones: text over the ink stays readable */
-    @media (max-width: 699px) {
-      #fluid { opacity: .55; }
-      .hero h1, .hero .lead { text-shadow: 0 0 2px var(--bg), 0 1px 14px var(--bg), 0 0 28px var(--bg); }
-    }
+
 
     /* Skills */
     .skills { margin: 0; display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px 24px; align-items: start; }
@@ -321,7 +304,6 @@
 </svg>
 
 <svg id="lg-svg" width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="lg-defs"></defs></svg>
-<canvas id="fluid" aria-hidden="true"></canvas>
 
 <div class="page">
   <div class="wrap">
@@ -338,32 +320,23 @@
 
     <!-- ── Hero ── -->
     <header class="hero">
-      <div class="hero-main">
-      <h1 data-barrier data-en="<span class='soft'>Hi, I'm</span> Kelvin Krauss"><span class="soft">Olá, eu sou o</span> Kelvin Krauss</h1>
-      <p class="lead" data-barrier data-en="I am a Systems Analysis and Development student at the Federal Institute of Santa Catarina, and a huge technology enthusiast, with a strong interest in AI, web development, and back-end. My main technical focus is the AWS Ecosystem, Java, SQL databases, and Python, creating efficient solutions and robust architectures, such as APIs and microservices.">Sou graduando em Análise e Desenvolvimento de Sistemas no Instituto Federal de Santa Catarina, e um grande entusiasta da tecnologia, com forte interesse em I.A., desenvolvimento web e back-end. Meu foco técnico principal está no Ecossistema AWS, Java, bancos de dados SQL e Python, criando soluções eficientes e arquiteturas robustas, como APIs e microsserviços.</p>
-      <p class="lead lead-2" data-barrier data-en="Open to internships, collaborations, and continuous learning opportunities in tech, including remote work for international companies.">Aberto a oportunidades de estágio, colaborações e aprendizado contínuo na área de tecnologia, incluindo atuação remota para empresas internacionais.</p>
+      <h1 data-en="<span class='soft'>Hi, I'm</span> Kelvin Krauss"><span class="soft">Olá, eu sou o</span> Kelvin Krauss</h1>
+      <p class="lead" data-en="I am a Systems Analysis and Development student at the Federal Institute of Santa Catarina, and a huge technology enthusiast, with a strong interest in AI, web development, and back-end. My main technical focus is the AWS Ecosystem, Java, SQL databases, and Python, creating efficient solutions and robust architectures, such as APIs and microservices.">Sou graduando em Análise e Desenvolvimento de Sistemas no Instituto Federal de Santa Catarina, e um grande entusiasta da tecnologia, com forte interesse em I.A., desenvolvimento web e back-end. Meu foco técnico principal está no Ecossistema AWS, Java, bancos de dados SQL e Python, criando soluções eficientes e arquiteturas robustas, como APIs e microsserviços.</p>
+      <p class="lead lead-2" data-en="Open to internships, collaborations, and continuous learning opportunities in tech, including remote work for international companies.">Aberto a oportunidades de estágio, colaborações e aprendizado contínuo na área de tecnologia, incluindo atuação remota para empresas internacionais.</p>
 
-      <form class="ask glass" data-glass="44" data-barrier id="hero-ask" role="search">
+      <form class="ask glass" data-glass="44" id="hero-ask" role="search">
+        <canvas id="fluid" aria-hidden="true"></canvas>
         <input id="hero-input" type="text" autocomplete="off" maxlength="400" aria-label="Pergunte ao assistente" placeholder="Pergunte qualquer coisa ao meu assistente de IA..." data-en-ph="Ask my AI assistant anything..." data-en-aria="Ask the assistant">
         <button class="send" type="submit" aria-label="Enviar pergunta" data-en-aria="Send question"><svg><use href="#i-arrow"/></svg></button>
       </form>
-      <div class="ask-hints" data-barrier id="ask-hints"></div>
-      </div>
-
-      <aside class="hire glass" data-glass="36" data-barrier aria-labelledby="hire-title">
-        <span class="hire-tag">Freelance</span>
-        <h2 id="hire-title" data-en="Need a website?">Precisa de um site?</h2>
-        <p data-en="I build websites for companies and professionals, like the one I made for Ociani Transportadora.">Faço sites para empresas e profissionais, como o que criei para a Ociani Transportadora.</p>
-        <a class="hire-btn" data-wa="site" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-wa"/></svg><span data-en="I want a website">Quero um site</span></a>
-        <a class="hire-link" data-wa="vaga" href="https://wa.me/5547999104771" target="_blank" rel="noopener" data-en="I have a job opening for you →">Tenho uma vaga para você →</a>
-      </aside>
+      <div class="ask-hints" id="ask-hints"></div>
     </header>
 
     <main>
       <!-- ── Sobre ── -->
       <section class="sec" id="sobre">
-        <header data-barrier><h2 data-en="About">Sobre</h2></header>
-        <div class="prose" data-barrier>
+        <header><h2 data-en="About">Sobre</h2></header>
+        <div class="prose">
           <p data-en="I'm from Blumenau, in southern Brazil. I started Computer Science at the Instituto Federal Catarinense in 2025 and, in 2026, transferred to <strong>Systems Analysis and Development at IFSC</strong>, where I'll graduate in 2028.">Sou de Blumenau/SC. Comecei Ciência da Computação no Instituto Federal Catarinense em 2025 e, em 2026, fiz transferência para <strong>Análise e Desenvolvimento de Sistemas no IFSC</strong>, onde me formo em 2028.</p>
           <p data-en="Since January 2026 I've been an apprentice at Ociani, a trucking company founded in 1981. The job started in the office and in IT support, and it led me to my first real project: rebuilding the company's website from scratch.">Desde janeiro de 2026 sou jovem aprendiz na Ociani, uma transportadora fundada em 1981. O trabalho começou no administrativo e no suporte de TI, e me levou ao meu primeiro projeto de verdade: refazer o site da empresa do zero.</p>
           <p data-en="In the project I gathered what the company needed, integrated the site with the logistics system, checked every piece of information with the team, tested everything and took care of the launch. I learned a lot about the web, APIs and DNS doing this.">No projeto, levantei o que a empresa precisava, integrei o site ao sistema de logística, conferi cada informação com a equipe, testei tudo e cuidei do lançamento. Aprendi muito sobre web, APIs e DNS fazendo isso.</p>
@@ -373,8 +346,8 @@
 
       <!-- ── Projetos ── -->
       <section class="sec" id="projetos">
-        <header data-barrier><h2 data-en="Projects">Projetos</h2><p data-en="The main one first">O principal primeiro</p></header>
-        <div class="prose" data-barrier>
+        <header><h2 data-en="Projects">Projetos</h2><p data-en="The main one first">O principal primeiro</p></header>
+        <div class="prose">
           <article class="card featured">
           <div class="case-head">
             <span class="badge" data-en="Live · since Oct 2, 2026">No ar · desde 02/10/2026</span>
@@ -435,8 +408,8 @@
 
       <!-- ── Trajetória ── -->
       <section class="sec" id="trajetoria">
-        <header data-barrier><h2 data-en="Journey">Trajetória</h2><p data-en="Work and education">Trabalho e estudo</p></header>
-        <div class="prose" data-barrier>
+        <header><h2 data-en="Journey">Trajetória</h2><p data-en="Work and education">Trabalho e estudo</p></header>
+        <div class="prose">
           <div class="timeline">
             <article class="entry now">
               <div class="entry-top"><h4 data-en="Apprentice · Ociani Transportadora">Jovem Aprendiz · Ociani Transportadora</h4><span class="meta" data-en="Jan 2026 – now">jan 2026 – hoje</span></div>
@@ -460,8 +433,8 @@
 
       <!-- ── Habilidades ── -->
       <section class="sec" id="habilidades">
-        <header data-barrier><h2 data-en="Skills">Habilidades</h2><p data-en="Split by how much I've used them">Separadas pelo quanto já usei</p></header>
-        <div class="prose" data-barrier>
+        <header><h2 data-en="Skills">Habilidades</h2><p data-en="Split by how much I've used them">Separadas pelo quanto já usei</p></header>
+        <div class="prose">
           <dl class="skills">
             <dt data-en="Used in production">Usei em produção</dt><dd><ul class="chips hot"><li>TypeScript</li><li>JavaScript</li><li>Astro</li><li>HTML</li><li>CSS</li><li>Cloudflare Workers</li><li>DNS</li><li data-en="SOAP APIs">APIs SOAP</li><li>Sanity</li><li>Git</li></ul></dd>
             <dt data-en="Studied and practiced">Estudei e pratiquei</dt><dd><ul class="chips"><li>Java</li><li>Spring Boot</li><li>SQL</li><li>Python</li><li>Maven</li><li>Postman</li></ul></dd>
@@ -474,8 +447,8 @@
 
       <!-- ── Agora ── -->
       <section class="sec" id="agora">
-        <header data-barrier><h2 data-en="Now">Agora</h2><p data-en="October 2026">Outubro de 2026</p></header>
-        <div class="prose" data-barrier>
+        <header><h2 data-en="Now">Agora</h2><p data-en="October 2026">Outubro de 2026</p></header>
+        <div class="prose">
           <ul>
             <li data-en="First semester of Systems Analysis and Development at IFSC.">Primeiro semestre de Análise e Desenvolvimento de Sistemas no IFSC.</li>
             <li data-en="The Ociani website has just gone live, on October 2.">O site da Ociani acabou de ir ao ar, em 2 de outubro.</li>
@@ -487,8 +460,8 @@
 
       <!-- ── Contato ── -->
       <section class="sec" id="contato">
-        <header data-barrier><h2 data-en="Contact">Contato</h2></header>
-        <div class="prose" data-barrier>
+        <header><h2 data-en="Contact">Contato</h2></header>
+        <div class="prose">
           <h3 data-en="Let's talk?">Vamos conversar?</h3>
           <p data-en="If you have an internship or junior role, or just want to talk about a project, send me a message. I also work remotely for companies outside Brazil.">Se você tem uma vaga de estágio ou júnior, ou só quer conversar sobre um projeto, me chama. Também trabalho remoto para empresas de fora do Brasil.</p>
           <dl class="contact-list">
@@ -553,17 +526,18 @@
 (function fluid() {
   const canvas = document.getElementById('fluid');
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const small = matchMedia('(max-width: 700px)').matches;
+  // Sized for a small, wide canvas (the question box), not the whole screen.
   const config = {
-    SIM_RESOLUTION: small ? 96 : 128,
-    DYE_RESOLUTION: small ? 768 : 1440,
-    DENSITY_DISSIPATION: 1,
-    VELOCITY_DISSIPATION: 1.2,
+    SIM_RESOLUTION: 48,
+    DYE_RESOLUTION: 192,
+    DENSITY_DISSIPATION: 0.9,
+    VELOCITY_DISSIPATION: 1,
     PRESSURE: 0.1,
     PRESSURE_ITERATIONS: 20,
-    CURL: 3,
+    CURL: 6,
     SPLAT_RADIUS: 0.2,
-    SPLAT_FORCE: 6000,
+    SPLAT_SIZE: 0.1,
+    SPLAT_FORCE: 2500,
     COLOR_UPDATE_SPEED: 10,
   };
 
@@ -931,10 +905,8 @@
 
   const pointer = { x: 0, y: 0, prevX: 0, prevY: 0, dx: 0, dy: 0, moved: false, down: false, color: generateColor(), started: false };
 
-  function correctRadius(radius) {
-    const aspect = canvas.width / canvas.height;
-    return aspect > 1 ? radius * aspect : radius;
-  }
+  // Fixed blob size relative to the box height (the default scales with the aspect ratio, which is huge here).
+  function correctRadius() { return config.SPLAT_SIZE; }
   function splat(x, y, dx, dy, color) {
     splatProgram.bind();
     gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read.attach(0));
@@ -1054,9 +1026,14 @@
     blit(null);
   }
 
-  // ── Input ──
+  // ── Input (only near the box) ──
+  let box = canvas.getBoundingClientRect(), inside = false;
+  const refreshBox = () => { box = canvas.getBoundingClientRect(); };
+  addEventListener('scroll', refreshBox, { passive: true });
+  addEventListener('resize', refreshBox);
+  const near = (x, y) => x > box.left - 24 && x < box.right + 24 && y > box.top - 24 && y < box.bottom + 24;
   function updatePointer(clientX, clientY) {
-    const x = clientX * dpr, y = clientY * dpr;
+    const x = (clientX - box.left) * dpr, y = (clientY - box.top) * dpr;
     const tx = x / canvas.width, ty = 1 - y / canvas.height;
     if (!pointer.started) { pointer.x = tx; pointer.y = ty; pointer.started = true; }
     pointer.prevX = pointer.x; pointer.prevY = pointer.y;
@@ -1068,39 +1045,40 @@
     pointer.dx = dx; pointer.dy = dy;
     pointer.moved = Math.abs(dx) > 0 || Math.abs(dy) > 0;
   }
-  function burst(clientX, clientY) {
-    const c = generateColor();
-    c.r *= 10; c.g *= 10; c.b *= 10;
-    splat(clientX * dpr / canvas.width, 1 - clientY * dpr / canvas.height, 10 * (Math.random() - 0.5), 30 * (Math.random() - 0.5), c);
+  let lastInput = performance.now();
+  function track(clientX, clientY) {
+    if (!near(clientX, clientY)) { inside = false; return; }
+    if (!inside) { inside = true; pointer.started = false; }
+    updatePointer(clientX, clientY);
+    lastInput = performance.now();
   }
-  window.addEventListener('mousemove', e => updatePointer(e.clientX, e.clientY), { passive: true });
-  window.addEventListener('mousedown', e => { if (!e.target.closest('a, button, input, .chat')) burst(e.clientX, e.clientY); });
-  window.addEventListener('touchstart', e => { const t = e.touches[0]; pointer.started = false; updatePointer(t.clientX, t.clientY); }, { passive: true });
-  window.addEventListener('touchmove', e => { const t = e.touches[0]; updatePointer(t.clientX, t.clientY); }, { passive: true });
+  window.addEventListener('mousemove', e => track(e.clientX, e.clientY), { passive: true });
+  window.addEventListener('touchstart', e => { inside = false; const t = e.touches[0]; track(t.clientX, t.clientY); }, { passive: true });
+  window.addEventListener('touchmove', e => { const t = e.touches[0]; track(t.clientX, t.clientY); }, { passive: true });
 
-  // Opening flourish: a short scripted sweep so the effect is visible before anyone moves the mouse.
+  // Opening flourish: one sweep along the box so it is visible before anyone moves the mouse.
   let introT = 0;
   const intro = (dt) => {
     if (introT > 1.4) return;
     introT += dt;
-    const w = canvas.clientWidth, h = canvas.clientHeight;
+    refreshBox();
     const k = Math.min(introT / 1.4, 1);
-    // With text barriers on screen, sweep up the free column to the right of the text instead of across it.
-    const n = barrierRects();
-    let free = 0;
-    for (let i = 0; i < n; i++) free = Math.max(free, wallData[i * 4 + 2]);
-    const left = free * w, room = w - left;
-    if (n && room > 140) {
-      updatePointer(left + room * (0.5 + 0.28 * Math.sin(k * Math.PI * 2.4)), h * (0.92 - 0.75 * k));
-    } else {
-      updatePointer(w * (0.1 + 0.8 * k), h * (0.45 + 0.16 * Math.sin(k * Math.PI * 2.2)));
-    }
+    updatePointer(box.left + box.width * (0.04 + 0.92 * k), box.top + box.height * (0.5 + 0.32 * Math.sin(k * Math.PI * 3)));
   };
+
+  // A soft stir every few seconds while the box is on screen, so the glass looks alive.
+  let visible = true;
+  if ('IntersectionObserver' in window) new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(canvas);
+  setInterval(() => {
+    if (!visible || document.hidden || introT <= 1.4 || performance.now() - lastInput < 2500) return;
+    const dir = Math.random() < 0.5 ? -1 : 1;
+    splat(0.15 + Math.random() * 0.7, 0.5, dir * (250 + Math.random() * 250), (Math.random() - 0.5) * 150, generateColor());
+    lastInput = performance.now();
+  }, 3200);
 
   resizeCanvas();
   initFramebuffers();
-  let last = performance.now(), colorTimer = 0, lastInput = performance.now();
-  ['mousemove', 'touchmove', 'mousedown', 'touchstart'].forEach(t => window.addEventListener(t, () => { lastInput = performance.now(); }, { passive: true }));
+  let last = performance.now(), colorTimer = 0;
   function frame() {
     const now = performance.now();
     const dt = Math.min((now - last) / 1000, 0.016666);
@@ -1156,11 +1134,6 @@
 
   /* ── Idioma ── */
   let lang = store.get('kk-lang') === 'en' ? 'en' : 'pt';
-  // Mensagens prontas do WhatsApp (card "Quero um site")
-  const WA = {
-    pt: { site: 'Olá, Kelvin! Vi seu portfólio e quero um site.', vaga: 'Olá, Kelvin! Vi seu portfólio e tenho uma vaga para você.' },
-    en: { site: "Hi Kelvin! I saw your portfolio and I'd like a website.", vaga: 'Hi Kelvin! I saw your portfolio and I have a job opening for you.' },
-  };
   function applyLang(next) {
     lang = next;
     root.lang = lang === 'en' ? 'en' : 'pt-BR';
@@ -1179,9 +1152,6 @@
     const btn = $('#lang-btn');
     btn.textContent = lang === 'en' ? 'PT' : 'EN';
     btn.setAttribute('aria-label', lang === 'en' ? 'Ler em português' : 'Read in English');
-    document.querySelectorAll('[data-wa]').forEach(a => {
-      a.href = 'https://wa.me/5547999104771?text=' + encodeURIComponent(WA[lang][a.dataset.wa]);
-    });
     renderHints();
     resetChat();
   }
