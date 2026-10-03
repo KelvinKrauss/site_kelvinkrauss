@@ -106,6 +106,14 @@
     .me strong { display: block; font-size: 1rem; }
     .me small { display: block; color: var(--muted); font-size: .82rem; }
     .top-right { display: flex; align-items: center; gap: 8px; }
+    .shade { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 13px; border-radius: 999px; color: var(--ink); cursor: pointer; }
+    .shade svg { width: 15px; height: 15px; flex: none; opacity: .75; }
+    .shade input { -webkit-appearance: none; appearance: none; width: 104px; height: 6px; margin: 0; border-radius: 999px; cursor: pointer; background: linear-gradient(90deg, #0b0c10, #eceef2); box-shadow: inset 0 0 0 1px var(--line); }
+    .shade input::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 2px solid var(--card-solid); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
+    .shade input::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--card-solid); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
+    .shade input:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 6px; }
+    :root.shading *, :root.shading { transition: none !important; }
+    @media (max-width: 480px) { .shade { gap: 6px; padding: 0 10px; } .shade input { width: 64px; } .me strong { font-size: .92rem; } }
 
     /* ── Hero ── */
     .hero { padding-block: clamp(48px, 9vh, 110px) clamp(72px, 11vh, 120px); }
@@ -172,9 +180,9 @@
     .entry h4 { margin: 0; font-size: 1.15rem; }
     .entry .where { color: var(--muted); font-size: .98rem; }
     /* Cards (projects) */
-    .card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 22px 24px; border-radius: 20px; background: rgba(255, 255, 255, .025); box-shadow: inset 0 0 0 1px var(--line), inset 0 1px 0 rgba(255, 255, 255, .06); transition: transform .25s cubic-bezier(.2, .8, .2, 1), background-color .25s, box-shadow .25s; }
-    .card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .045); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14), inset 0 1px 0 rgba(255, 255, 255, .1), 0 18px 40px rgba(0, 0, 0, .35); }
-    .card.featured { gap: 16px; padding: 26px 28px; background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 9%, transparent), rgba(255, 255, 255, .02) 45%); }
+    .card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 22px 24px; border-radius: 20px; background: color-mix(in srgb, var(--ink) 3%, transparent); box-shadow: inset 0 0 0 1px var(--line), inset 0 1px 0 var(--rim-lo); transition: transform .25s cubic-bezier(.2, .8, .2, 1), background-color .25s, box-shadow .25s; }
+    .card:hover { transform: translateY(-2px); background: color-mix(in srgb, var(--ink) 5%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 16%, transparent), inset 0 1px 0 var(--rim-lo), var(--shadow-lg); }
+    .card.featured { gap: 16px; padding: 26px 28px; background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 9%, transparent), color-mix(in srgb, var(--ink) 2%, transparent) 45%); }
     .card.featured:hover { transform: none; }
     .card h3 a, .card h4 a { text-decoration: none; }
     .card h3 a:hover, .card h4 a:hover { color: var(--accent); }
@@ -192,7 +200,7 @@
 
     /* Skill chips */
     .prose .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-flow: row wrap; gap: 8px; }
-    .chips li { padding: 5px 12px; border-radius: 999px; font-size: .9rem; line-height: 1.4; color: var(--ink); background: rgba(255, 255, 255, .05); box-shadow: inset 0 0 0 1px var(--line); }
+    .chips li { padding: 5px 12px; border-radius: 999px; font-size: .9rem; line-height: 1.4; color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent); box-shadow: inset 0 0 0 1px var(--line); }
     .chips.hot li { background: color-mix(in srgb, var(--accent) 14%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent); }
     .chips.soon li { background: none; box-shadow: none; outline: 1px dashed color-mix(in srgb, var(--muted) 70%, transparent); outline-offset: -1px; color: var(--muted); }
 
@@ -212,7 +220,7 @@
     /* Contact */
     .contact-list { margin: 6px 0 0; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
     .contact-list div { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 4px 16px; padding: 14px 12px; margin-inline: -12px; border-bottom: 1px solid var(--line); border-radius: 12px; transition: background-color .2s; }
-    .contact-list div:hover { background: rgba(255, 255, 255, .04); }
+    .contact-list div:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); }
     .contact-list dt { color: var(--muted); font-size: .95rem; }
     .contact-list dd { margin: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 12px; font-weight: 500; color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
     .contact-list dd a { text-decoration: none; }
@@ -280,6 +288,48 @@
   </style>
 </head>
 <body>
+<script>
+  /* Tema contínuo: 0 = escuro, 100 = claro. O fundo muda suavemente; o texto troca de claro
+     para escuro no ponto em que os dois dão o mesmo contraste (luminância ~0,18), então ele
+     fica sempre legível, inclusive nos cinzas do meio. */
+  (function () {
+    const D = { bg: [11, 12, 16], card: [22, 24, 30] }, L = { bg: [236, 238, 242], card: [247, 248, 250] };
+    const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
+    const lerp = (a, b, k) => +(a + (b - a) * k).toFixed(3);
+    const rgb = c => 'rgb(' + c.join(',') + ')';
+    const lin = v => { v /= 255; return v <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
+    const lum = c => .2126 * lin(c[0]) + .7152 * lin(c[1]) + .0722 * lin(c[2]);
+    window.applyShade = function (value) {
+      const k = Math.max(0, Math.min(100, +value || 0)) / 100;
+      const bg = mix(D.bg, L.bg, k), y = lum(bg), light = y > .179;
+      const ink = light ? [20, 22, 28] : [241, 242, 246];
+      // secondary text gets closer to the main text near the crossover, where contrast is tightest
+      const far = Math.min(1, Math.abs(Math.log(y / .179)) / 1.6);
+      const s = document.documentElement.style, set = (n, v) => s.setProperty(n, v);
+      set('--bg', rgb(bg));
+      set('--card-solid', rgb(mix(D.card, L.card, k)));
+      set('--ink', rgb(ink));
+      set('--text', rgb(mix(ink, bg, .13 * far)));
+      set('--muted', rgb(mix(ink, bg, .06 + .34 * far)));
+      set('--line', light ? 'rgba(20, 22, 28, .11)' : 'rgba(255, 255, 255, .1)');
+      // the blue leans toward the text color near the crossover, so it never melts into a grey background
+      set('--accent', rgb(mix(light ? [47, 111, 228] : [106, 165, 255], ink, .6 * (1 - far))));
+      set('--ok', light ? '#15803d' : '#4ade80');
+      set('--glass-tint', 'rgba(255, 255, 255, ' + lerp(.06, .36, k) + ')');
+      set('--glass-tint-hover', 'rgba(255, 255, 255, ' + lerp(.11, .55, k) + ')');
+      set('--rim-hi', 'rgba(255, 255, 255, ' + lerp(.42, .95, k) + ')');
+      set('--rim-lo', 'rgba(255, 255, 255, ' + lerp(.06, .25, k) + ')');
+      set('--glass-shadow', '0 1px 1px rgba(0, 0, 0, ' + lerp(.3, .04, k) + '), 0 8px 26px rgba(0, 0, 0, ' + lerp(.35, .08, k) + ')');
+      set('--shadow-lg', '0 2px 4px rgba(0, 0, 0, ' + lerp(.4, .05, k) + '), 0 24px 60px rgba(0, 0, 0, ' + lerp(.5, .12, k) + ')');
+      s.colorScheme = light ? 'light' : 'dark';
+      const meta = document.querySelector('meta[name=theme-color]');
+      if (meta) meta.content = rgb(bg);
+    };
+    let saved = 0;
+    try { saved = localStorage.getItem('kk-shade') || 0; } catch (e) {}
+    window.applyShade(saved);
+  })();
+</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -317,6 +367,11 @@
         <span><strong>Kelvin Krauss</strong><small data-en="Developer · Blumenau, Brazil">Desenvolvedor · Blumenau/SC</small></span>
       </a>
       <div class="top-right">
+        <label class="shade glass" data-glass="30" title="Claro ou escuro" data-en-title="Light or dark">
+          <svg aria-hidden="true"><use href="#i-moon"/></svg>
+          <input id="shade" type="range" min="0" max="100" step="1" value="0" aria-label="Brilho do site: escuro a claro" data-en-aria="Site brightness: dark to light">
+          <svg aria-hidden="true"><use href="#i-sun"/></svg>
+        </label>
         <a class="pill glass" data-glass="32" href="images/curriculo.pdf" target="_blank" rel="noopener" data-resume><svg><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></a>
         <button class="pill glass" data-glass="30" id="lang-btn" type="button" aria-label="Read in English">EN</button>
       </div>
@@ -1153,6 +1208,10 @@
       if (el.dataset.ptPh === undefined) el.dataset.ptPh = el.placeholder;
       el.placeholder = lang === 'en' ? el.dataset.enPh : el.dataset.ptPh;
     });
+    document.querySelectorAll('[data-en-title]').forEach(el => {
+      if (el.dataset.ptTitle === undefined) el.dataset.ptTitle = el.title;
+      el.title = lang === 'en' ? el.dataset.enTitle : el.dataset.ptTitle;
+    });
     const btn = $('#lang-btn');
     btn.textContent = lang === 'en' ? 'PT' : 'EN';
     btn.setAttribute('aria-label', lang === 'en' ? 'Ler em português' : 'Read in English');
@@ -1160,6 +1219,13 @@
     resetChat();
   }
   $('#lang-btn').addEventListener('click', () => { applyLang(lang === 'en' ? 'pt' : 'en'); store.set('kk-lang', lang); });
+
+  /* ── Brilho: slider contínuo de escuro a claro ── */
+  const shade = $('#shade');
+  try { shade.value = store.get('kk-shade') || 0; } catch (e) {}
+  shade.addEventListener('input', () => { root.classList.add('shading'); window.applyShade(shade.value); });
+  shade.addEventListener('change', () => { root.classList.remove('shading'); store.set('kk-shade', shade.value); });
+  shade.addEventListener('pointerup', () => root.classList.remove('shading'));
 
   /* ── Copiar e-mail ── */
   $('#copy-email').addEventListener('click', e => {
