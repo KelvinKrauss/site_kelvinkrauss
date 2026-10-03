@@ -62,7 +62,14 @@
     :focus-visible { outline: 2.5px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
     button { font: inherit; color: inherit; }
 
-    #fluid { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; border-radius: inherit; opacity: .75; }
+    /* The ink is clipped to the pill shape (clip-path holds even when the GPU composites the canvas)
+       and fades out before the rounded ends. */
+    #fluid {
+      position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: .75;
+      border-radius: inherit; clip-path: inset(1px round 999px);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 26px, #000 calc(100% - 26px), transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 26px, #000 calc(100% - 26px), transparent 100%);
+    }
     .page { position: relative; z-index: 1; }
     .wrap { max-width: 1000px; margin-inline: auto; padding-inline: clamp(18px, 5vw, 40px); }
 
