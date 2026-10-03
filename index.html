@@ -1591,6 +1591,8 @@
       wrap.hidden = true; stopAnims();
       chatBubble.hidden = false;
       bubbleMode = 'min';
+      stopFlight();
+      autoState = 'box';
       if (!calm.matches && chatBubble.animate) chatBubble.animate([{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1.12)', opacity: 1, offset: .7 }, { transform: 'scale(1)' }], { duration: 380, easing: 'ease-out' });
       heroAsk.style.visibility = '';
       moveInk(heroAsk);
@@ -1601,6 +1603,8 @@
     s.done.then(show, () => {});
   }
   function restoreChat(question) {
+    stopFlight();
+    autoState = 'box';
     const b = bubbleRect();
     if (bubbleMode === 'auto') autoPos = { x: bubblePos.x, y: bubblePos.y };
     bubbleMode = null;
@@ -1646,21 +1650,54 @@
   let bubbleMode = null;   // 'min' = minimizado pela pessoa, 'auto' = só porque a caixa saiu da tela
   let autoPos = null;      // onde a pessoa deixou o balão automático
   let heroOnScreen = true;
-  // A caixa voa até o canto e vira o balão (e o contrário). Um "fantasma" fixo faz o voo; a caixa e o
-  // balão de verdade ficam escondidos durante a viagem.
-  let ghost = null;
+  // A caixa voa até o canto e vira o balão (e o contrário). Um "fantasma" fixo faz o voo, quadro a quadro,
+  // seguindo a posição atual da caixa (que continua andando enquanto a pessoa rola). Se a pessoa inverte a
+  // rolagem no meio do voo, ele faz a curva a partir de onde está. Estados: box, toBubble, bubble, toBox.
+  let autoState = 'box';
+  let ghost = null, flight = null;
   const FLY_MS = 620;
-  function fly(from, to, toBubble) {
-    if (ghost) ghost.remove();
-    const g = document.createElement('div');
-    g.className = 'fly';
-    g.innerHTML = '<span class="orb"></span><span class="fly-box"></span>';
-    document.body.appendChild(g);
-    ghost = g;
-    const kf = r => ({ left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: r.height / 2 + 'px' });
-    g.animate([kf(from), kf(to)], { duration: FLY_MS, easing: 'cubic-bezier(.65, 0, .25, 1)', fill: 'forwards' });
-    g.lastChild.animate([{ opacity: toBubble ? 1 : 0 }, { opacity: toBubble ? 0 : 1 }], { duration: FLY_MS, easing: 'ease-in-out', fill: 'forwards' });
-    return new Promise(res => setTimeout(() => { if (ghost === g) { g.remove(); ghost = null; } res(); }, FLY_MS));
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const easeInOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const boxRect = () => heroAsk.getBoundingClientRect();
+  function stopFlight() {
+    flight = null;
+    if (ghost) { ghost.remove(); ghost = null; }
+  }
+  function fly(fromFn, toFn, toBubble) {
+    return new Promise(res => {
+      if (!ghost) {
+        ghost = document.createElement('div');
+        ghost.className = 'fly';
+        ghost.innerHTML = '<span class="orb"></span><span class="fly-box"></span>';
+        document.body.appendChild(ghost);
+      }
+      const g = ghost, box = g.lastChild;
+      const turning = !!g._rect;                       // já estava voando: faz a curva de onde está
+      const fromSnap = g._rect, orbFrom = turning ? g._orb : (toBubble ? 0 : 1), orbTo = toBubble ? 1 : 0;
+      const token = {};
+      flight = token;
+      const t0 = performance.now();
+      const finish = () => {
+        if (flight !== token) return;
+        flight = null; g.remove(); if (ghost === g) ghost = null;
+        res();
+      };
+      const step = now => {
+        if (flight !== token) return;
+        const k = Math.min(1, (now - t0) / FLY_MS), e = easeInOut(k);
+        const a = turning ? fromSnap : fromFn(), b = toFn();
+        const r = { left: lerp(a.left, b.left, e), top: lerp(a.top, b.top, e), width: lerp(a.width, b.width, e), height: lerp(a.height, b.height, e) };
+        g.style.left = r.left + 'px'; g.style.top = r.top + 'px';
+        g.style.width = r.width + 'px'; g.style.height = r.height + 'px';
+        g.style.borderRadius = r.height / 2 + 'px';
+        g._rect = r;
+        g._orb = lerp(orbFrom, orbTo, e);
+        box.style.opacity = String(1 - g._orb);
+        if (k < 1) requestAnimationFrame(step); else finish();
+      };
+      step(t0);
+      setTimeout(finish, FLY_MS + 500); // garantia caso o navegador pare de desenhar quadros
+    });
   }
   const onScreen = r => r.bottom > 0 && r.top < innerHeight;
   function popBubble() {
@@ -1668,25 +1705,27 @@
     if (!calm.matches && chatBubble.animate) chatBubble.animate([{ transform: 'scale(.85)' }, { transform: 'scale(1.1)', offset: .6 }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' });
   }
   function showAutoBubble() {
-    if (!wrap.hidden || !chatBubble.hidden || bubbleMode) return;
-    bubblePos = autoPos ? { x: autoPos.x, y: autoPos.y } : { x: innerWidth - BUBBLE - 24, y: innerHeight - BUBBLE - 110 };
+    if (!wrap.hidden || bubbleMode === 'min') return;
+    if (autoState === 'bubble' || autoState === 'toBubble') return;
+    if (!ghost) bubblePos = autoPos ? { x: autoPos.x, y: autoPos.y } : { x: innerWidth - BUBBLE - 24, y: innerHeight - BUBBLE - 110 };
     placeBubble();
     bubbleMode = 'auto';
-    const from = heroAsk.getBoundingClientRect();
+    autoState = 'toBubble';
     heroAsk.style.visibility = 'hidden';
-    if (calm.matches || !onScreen(from)) return popBubble();
-    fly(from, bubbleRect(), true).then(() => { if (bubbleMode === 'auto') popBubble(); });
+    chatBubble.hidden = true;
+    if (calm.matches || (!ghost && !onScreen(boxRect()))) { autoState = 'bubble'; return popBubble(); }
+    fly(boxRect, bubbleRect, true).then(() => { if (autoState === 'toBubble') { autoState = 'bubble'; popBubble(); } });
   }
   function hideAutoBubble() {
     if (bubbleMode !== 'auto') return;
-    autoPos = { x: bubblePos.x, y: bubblePos.y };
+    if (autoState === 'box' || autoState === 'toBox') return;
+    if (!chatBubble.hidden) autoPos = { x: bubblePos.x, y: bubblePos.y };
     bubbleMode = null;
-    const from = bubbleRect();
+    autoState = 'toBox';
     chatBubble.hidden = true;
-    const to = heroAsk.getBoundingClientRect();
-    const done = () => { if (bubbleMode === null && wrap.hidden) heroAsk.style.visibility = ''; };
-    if (calm.matches || !onScreen(to)) return done();
-    fly(from, to, false).then(done);
+    const land = () => { if (autoState === 'toBox') { autoState = 'box'; if (wrap.hidden) heroAsk.style.visibility = ''; } };
+    if (calm.matches || (!ghost && !onScreen(boxRect()))) return land();
+    fly(bubbleRect, boxRect, false).then(land);
   }
   if ('IntersectionObserver' in window) {
     // a caixa vira balão quando metade dela já saiu da tela
