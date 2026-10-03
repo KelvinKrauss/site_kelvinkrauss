@@ -139,6 +139,15 @@
 
     /* Featured project */
     .case-head { display: flex; flex-direction: column; gap: 6px; }
+    .more-btn { align-self: flex-start; }
+    .more-btn svg { width: 16px; height: 16px; transition: transform .3s; }
+    .more-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+    .more-btn .when-open, .more-btn[aria-expanded="true"] .when-closed { display: none; }
+    .more-btn[aria-expanded="true"] .when-open { display: inline; }
+    .more-body { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .45s cubic-bezier(.2, .8, .2, 1), opacity .35s; margin-top: -18px; }
+    .more-body.open { grid-template-rows: 1fr; opacity: 1; margin-top: 0; }
+    .more-inner { overflow: hidden; display: flex; flex-direction: column; gap: 18px; min-height: 0; }
+    .more-inner > :first-child { margin-top: 6px; }
     .shot { margin: 8px 0 4px; border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 1px var(--line), var(--shadow-lg); }
     .shot-bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: var(--card-solid); border-bottom: 1px solid var(--line); }
     .shot-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
@@ -197,6 +206,9 @@
     /* ── Chat ── */
     .chat-wrap { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: color-mix(in srgb, var(--bg) 45%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
     .chat-wrap[hidden] { display: none; }
+    .chat.cv { width: min(920px, 100%); height: min(1100px, calc(100svh - 32px)); }
+    .cv .chat-head div { flex: 1; }
+    .cv iframe { flex: 1; width: 100%; border: 0; background: #fff; }
     .chat { width: min(560px, 100%); height: min(640px, calc(100svh - 32px)); display: flex; flex-direction: column; overflow: hidden; background: color-mix(in srgb, var(--card-solid) 85%, transparent); backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6); border-radius: 28px; box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 0 0 1px var(--line), var(--shadow-lg); }
     .chat-head { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 18px; border-bottom: 1px solid var(--line); line-height: 1.3; }
     .chat-head img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
@@ -264,7 +276,7 @@
         <span><strong>Kelvin Krauss</strong><small data-en="Developer · Blumenau, Brazil">Desenvolvedor · Blumenau/SC</small></span>
       </a>
       <div class="top-right">
-        <a class="pill glass" data-glass="32" href="images/curriculo.pdf" target="_blank" rel="noopener"><svg><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></a>
+        <a class="pill glass" data-glass="32" href="images/curriculo.pdf" target="_blank" rel="noopener" data-resume><svg><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></a>
         <button class="pill glass" data-glass="30" id="lang-btn" type="button" aria-label="Read in English">EN</button>
         <button class="glass theme-toggle" data-glass="30" type="button" aria-label="Mudar para tema escuro"><svg class="moon"><use href="#i-moon"/></svg><svg class="sun"><use href="#i-sun"/></svg></button>
       </div>
@@ -305,6 +317,13 @@
             <h3><a href="https://www.ociani.com.br/" target="_blank" rel="noopener" data-en="Ociani Transportadora website ↗">Site da Ociani Transportadora ↗</a></h3>
           </div>
           <div class="facts"><span><b>144</b> commits</span><span data-en="<b>15</b> days to launch"><b>15</b> dias até o lançamento</span><span>Astro · TypeScript · Cloudflare · Sanity</span></div>
+          <p data-en="The new website of the company where I work, with freight quotes, pickups and delivery tracking connected to the SSW logistics system.">Novo site institucional da empresa onde trabalho, com cotação de frete, coleta e rastreamento integrados ao sistema SSW.</p>
+          <button class="pill glass more-btn" data-glass="30" type="button" aria-expanded="false" aria-controls="ociani-more" id="ociani-toggle">
+            <span class="when-closed" data-en="See project details">Ver detalhes do projeto</span><span class="when-open" data-en="Hide details">Ocultar detalhes</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="more-body" id="ociani-more" inert>
+          <div class="more-inner">
           <figure class="shot" style="margin-inline:0">
             <div class="shot-bar"><i></i><i></i><i></i><span>ociani.com.br</span></div>
             <img src="images/ociani.jpg" alt="Página inicial do site da Ociani Transportadora" width="1440" height="900" loading="lazy">
@@ -327,6 +346,8 @@
             <li data-en="<strong>Security is not optional.</strong> The SSW password is stored as a secret on Cloudflare, forms have a submission limit, security headers are set, and a resume is only accepted if it's a real PDF, checked by the file's content."><strong>Segurança não é opcional.</strong> A senha do SSW fica guardada como segredo na Cloudflare, os formulários têm limite de envios, o site tem cabeçalhos de segurança e o currículo só é aceito se for um PDF de verdade, conferido pelo conteúdo do arquivo.</li>
             <li data-en="<strong>Launching is moving without breaking things.</strong> I moved the domain to Cloudflare without taking the company's email down and redirected the old addresses so visits from Google kept working. I also adjusted the layout for the old 4:3 monitors."><strong>Lançar é migrar sem quebrar nada.</strong> Levei o domínio para a Cloudflare sem derrubar o e-mail da empresa e redirecionei os endereços antigos para não perder as visitas do Google. Também ajustei o layout para monitores antigos 4:3.</li>
           </ul>
+          </div>
+          </div>
 
           <div class="divider"></div>
           <div class="entries">
@@ -410,13 +431,13 @@
             <div><dt>WhatsApp</dt><dd><a href="https://wa.me/5547999104771" target="_blank" rel="noopener">+55 47 99910-4771</a></dd></div>
             <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener">in/kelvin-krauss-04b7622b8</a></dd></div>
             <div><dt>GitHub</dt><dd><a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">github.com/KelvinKrauss</a></dd></div>
-            <div><dt data-en="Resume">Currículo</dt><dd><a href="images/curriculo.pdf" target="_blank" rel="noopener" data-en="PDF, in Portuguese">PDF</a></dd></div>
+            <div><dt data-en="Resume">Currículo</dt><dd><a href="images/curriculo.pdf" target="_blank" rel="noopener" data-resume data-en="PDF, in Portuguese">PDF</a></dd></div>
           </dl>
         </div>
       </section>
     </main>
 
-    <footer data-en="© 2026 Kelvin Krauss · Move your mouse: the background is a fluid simulation.">© 2026 Kelvin Krauss · Mexa o mouse: o fundo é uma simulação de fluido.</footer>
+    <footer>© 2026 Kelvin Krauss</footer>
   </div>
 </div>
 
@@ -431,6 +452,18 @@
   <span class="dock-sep" aria-hidden="true"></span>
   <button class="theme-toggle" type="button" aria-label="Mudar para tema escuro"><svg class="moon"><use href="#i-moon"/></svg><svg class="sun"><use href="#i-sun"/></svg></button>
 </nav>
+
+<!-- ── Currículo (computador) ── -->
+<div class="chat-wrap" id="cv-wrap" hidden>
+  <div class="chat cv" role="dialog" aria-modal="true" aria-labelledby="cv-title">
+    <div class="chat-head">
+      <div><strong id="cv-title" data-en="Resume">Currículo</strong><small data-en="Kelvin Krauss · PDF in Portuguese">Kelvin Krauss · PDF</small></div>
+      <a class="pill glass" href="images/curriculo.pdf" download="Curriculo-Kelvin-Krauss.pdf" data-en="Download">Baixar</a>
+      <button class="x" type="button" id="cv-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <iframe id="cv-frame" title="Currículo de Kelvin Krauss"></iframe>
+  </div>
+</div>
 
 <!-- ── Chat ── -->
 <div class="chat-wrap" id="chat-wrap" hidden>
@@ -1107,6 +1140,37 @@
   $('#chat-close').addEventListener('click', closeChat);
   wrap.addEventListener('click', e => { if (e.target === wrap) closeChat(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !wrap.hidden) closeChat(); });
+
+  /* ── Projeto: abre e fecha os detalhes ── */
+  const moreBtn = $('#ociani-toggle'), moreBody = $('#ociani-more');
+  moreBtn.addEventListener('click', () => {
+    const open = moreBtn.getAttribute('aria-expanded') !== 'true';
+    moreBtn.setAttribute('aria-expanded', String(open));
+    moreBody.classList.toggle('open', open);
+    if (open) {
+      moreBody.removeAttribute('inert');
+      moreBody.querySelectorAll('img[loading=lazy]').forEach(img => { img.loading = 'eager'; });
+    } else {
+      moreBody.setAttribute('inert', '');
+    }
+  });
+
+  /* ── Currículo: abre dentro do site no computador; no celular, nova aba (PDF em iframe não funciona bem) ── */
+  const cvWrap = $('#cv-wrap'), cvFrame = $('#cv-frame');
+  const bigScreen = matchMedia('(min-width: 760px) and (pointer: fine)');
+  let cvReturn = null;
+  function closeCv() { cvWrap.hidden = true; if (cvReturn) cvReturn.focus(); }
+  document.querySelectorAll('[data-resume]').forEach(a => a.addEventListener('click', e => {
+    if (!bigScreen.matches) return;
+    e.preventDefault();
+    cvReturn = a;
+    if (!cvFrame.getAttribute('src')) cvFrame.setAttribute('src', a.getAttribute('href') + '#view=FitH');
+    cvWrap.hidden = false;
+    $('#cv-close').focus();
+  }));
+  $('#cv-close').addEventListener('click', closeCv);
+  cvWrap.addEventListener('click', e => { if (e.target === cvWrap) closeCv(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !cvWrap.hidden) closeCv(); });
 
   /* ── Dock: marca a seção visível ── */
   const dock = $('#dock'), lens = $('#dock-lens');
