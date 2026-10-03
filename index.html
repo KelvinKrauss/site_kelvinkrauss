@@ -1399,9 +1399,12 @@
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   function placeChat() {
     const w = panel.offsetWidth, h = panel.offsetHeight;
-    if (!chatPos) chatPos = innerWidth < 700
-      ? { x: (innerWidth - w) / 2, y: innerHeight - h - 96 }
-      : { x: innerWidth - w - 40, y: (innerHeight - h) / 2 };
+    if (!chatPos) {
+      const b = heroAsk.getBoundingClientRect();
+      chatPos = b.bottom > 0 && b.top < innerHeight
+        ? { x: b.left, y: b.bottom - h }                         // em cima da caixa: o campo fica onde a caixa estava
+        : { x: (innerWidth - w) / 2, y: innerHeight - h - 96 };  // caixa fora da tela: perto da barra de baixo
+    }
     chatPos.x = clamp(chatPos.x, 8, Math.max(8, innerWidth - w - 8));
     chatPos.y = clamp(chatPos.y, 8, Math.max(8, innerHeight - h - 8));
     panel.style.left = Math.round(chatPos.x) + 'px';
@@ -1481,11 +1484,13 @@
     lastFocus = document.activeElement;
     stopAnims();
     const o = originRect();
+    chatPos = null; // sempre nasce de onde a caixa está
+    if (!chatSize && innerWidth >= 700) chatSize = { w: o.width, h: Math.min(580, Math.max(380, o.bottom - 70)) }; // abaixo da barra do topo
     wrap.hidden = false;
+    applySize();
     placeChat();
     moveInk(panel);
     heroAsk.style.visibility = 'hidden';
-    setTimeout(() => { if (!wrap.hidden) heroAsk.style.visibility = ''; }, 760);
     if (!calm.matches && panel.animate) running.push(...grow(wrap, panel, o));
     if (question) ask(question);
     $('#chat-input').focus({ preventScroll: true });
