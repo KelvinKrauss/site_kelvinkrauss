@@ -282,13 +282,23 @@
     .chat form .ask { margin: 0; max-width: none; }
     /* Question box inflates when someone clicks to type (transform, so the ink canvas is not resized) */
     #hero-ask { transform-origin: left center; transition: transform .55s cubic-bezier(.2, 1.5, .4, 1), box-shadow .3s; }
-    #hero-ask:focus-within { transform: scale(1.06); box-shadow: inset 0 1px 0 var(--rim-hi), 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent), 0 18px 50px color-mix(in srgb, var(--accent) 22%, transparent), var(--glass-shadow); }
+    #hero-ask:focus-within { box-shadow: inset 0 1px 0 var(--rim-hi), 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent), 0 18px 50px color-mix(in srgb, var(--accent) 22%, transparent), var(--glass-shadow); }
     #hero-ask #fluid { transition: opacity .4s; }
     #hero-ask:focus-within #fluid { opacity: 1; }
-    #hero-ask:focus-within + .ask-hints { opacity: .55; }
     .ask-hints { transition: opacity .3s; }
-    @media (max-width: 600px) { #hero-ask { transform-origin: center; } #hero-ask:focus-within { transform: scale(1.025); } }
-    @media (prefers-reduced-motion: reduce) { #hero-ask:focus-within { transform: none; } }
+    /* Inline chat: opens downward from the question box */
+    .ask-wrap { margin-top: 36px; max-width: 560px; border-radius: 30px; transition: background-color .35s, box-shadow .35s; }
+    .ask-wrap > .ask { margin-top: 0; max-width: none; }
+    .ask-wrap.open { background: color-mix(in srgb, var(--card-solid) 72%, transparent); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); box-shadow: inset 0 0 0 1px var(--line), inset 0 1px 0 var(--rim-lo), var(--shadow-lg); }
+    .ask-panel { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .5s cubic-bezier(.2, .8, .2, 1), opacity .3s; }
+    .ask-wrap.open .ask-panel { grid-template-rows: 1fr; opacity: 1; }
+    .ask-panel-in { overflow: hidden; min-height: 0; display: flex; flex-direction: column; }
+    .ask-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px 0 20px; font-size: .82rem; color: var(--muted); }
+    .ask-head .x { width: 30px; height: 30px; }
+    .ask-head .x svg { width: 15px; height: 15px; }
+    .ask-panel .msgs { flex: none; max-height: min(340px, 45vh); padding: 12px 16px 6px; }
+    .ask-panel .sugg { padding: 6px 16px 16px; }
+    .ask-wrap.open + .ask-hints { display: none; }
     /* Ink inside the chat window */
     .chat { isolation: isolate; }
     .chat #fluid { clip-path: inset(0 round 28px); -webkit-mask-image: none; mask-image: none; opacity: .5; }
@@ -398,11 +408,20 @@
       <p class="lead" data-en="I am a Systems Analysis and Development student at the Federal Institute of Santa Catarina, and a huge technology enthusiast, with a strong interest in AI, web development, and back-end. My main technical focus is the AWS Ecosystem, Java, SQL databases, and Python, creating efficient solutions and robust architectures, such as APIs and microservices.">Sou graduando em Análise e Desenvolvimento de Sistemas no Instituto Federal de Santa Catarina, e um grande entusiasta da tecnologia, com forte interesse em I.A., desenvolvimento web e back-end. Meu foco técnico principal está no Ecossistema AWS, Java, bancos de dados SQL e Python, criando soluções eficientes e arquiteturas robustas, como APIs e microsserviços.</p>
       <p class="lead lead-2" data-en="Open to internships, collaborations, and continuous learning opportunities in tech, including remote work for international companies.">Aberto a oportunidades de estágio, colaborações e aprendizado contínuo na área de tecnologia, incluindo atuação remota para empresas internacionais.</p>
 
+      <div class="ask-wrap" id="ask-wrap">
       <form class="ask glass" data-glass="44" id="hero-ask" role="search">
         <canvas id="fluid" aria-hidden="true"></canvas>
         <input id="hero-input" type="text" autocomplete="off" maxlength="400" aria-label="Pergunte ao assistente" placeholder="Pergunte qualquer coisa ao meu assistente de IA..." data-en-ph="Ask my AI assistant anything..." data-en-aria="Ask the assistant">
-        <button class="send" type="submit" aria-label="Enviar pergunta" data-en-aria="Send question"><svg><use href="#i-arrow"/></svg></button>
+        <button class="send" type="submit" id="chat-send" aria-label="Enviar pergunta" data-en-aria="Send question"><svg><use href="#i-arrow"/></svg></button>
       </form>
+      <div class="ask-panel" id="ask-panel" inert>
+        <div class="ask-panel-in">
+          <div class="ask-head"><span data-en="Kelvin's assistant · AI that knows my resume">Assistente do Kelvin · IA que conhece meu currículo</span><button class="x" type="button" id="chat-close" aria-label="Fechar conversa" data-en-aria="Close chat"><svg><use href="#i-x"/></svg></button></div>
+          <div class="msgs" id="msgs" aria-live="polite"></div>
+          <div class="sugg" id="sugg"></div>
+        </div>
+      </div>
+      </div>
       <div class="ask-hints" id="ask-hints"></div>
     </header>
 
@@ -572,25 +591,6 @@
       <button class="x" type="button" id="cv-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
     </div>
     <iframe id="cv-frame" title="Currículo de Kelvin Krauss"></iframe>
-  </div>
-</div>
-
-<!-- ── Chat ── -->
-<div class="chat-wrap" id="chat-wrap" hidden>
-  <div class="chat" role="dialog" aria-modal="true" aria-labelledby="chat-title">
-    <div class="chat-head">
-      <img src="images/foto.jpg" alt="" width="36" height="36">
-      <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume">IA que conhece meu currículo</small></div>
-      <button class="x" type="button" id="chat-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
-    </div>
-    <div class="msgs" id="msgs" aria-live="polite"></div>
-    <div class="sugg" id="sugg"></div>
-    <form id="chat-form">
-      <div class="ask glass">
-        <input id="chat-input" type="text" autocomplete="off" maxlength="400" aria-label="Sua pergunta" placeholder="Escreva sua pergunta..." data-en-ph="Type your question...">
-        <button class="send" type="submit" id="chat-send" aria-label="Enviar" data-en-aria="Send"><svg><use href="#i-arrow"/></svg></button>
-      </div>
-    </form>
   </div>
 </div>
 
@@ -1337,24 +1337,14 @@
       $('#chat-send').disabled = false;
     }
   }
-  /* Abre como uma bolha líquida: a janela cresce a partir da caixa de pergunta, balança como gelatina
-     no fim. Fecha voltando para dentro da caixa. */
-  const wrap = $('#chat-wrap'), panel = wrap.querySelector('.chat'), heroAsk = $('#hero-ask');
+  /* Usado pelo currículo: a janela nasce do botão clicado e balança no fim. */
+  const heroAsk = $('#hero-ask');
   const calm = matchMedia('(prefers-reduced-motion: reduce)');
-  let lastFocus = null, running = [];
   const FULL = 'inset(0px 0px 0px 0px round 28px)';
-  function stopAnims() { running.forEach(a => a.cancel()); running = []; }
-  function originRect() {
-    const r = heroAsk.getBoundingClientRect();
-    if (r.bottom > 0 && r.top < innerHeight) return r;
-    const s = 60, x = innerWidth / 2, y = innerHeight - 110; // fora da tela: nasce de uma bolha perto da barra
-    return { left: x - s / 2, right: x + s / 2, top: y - s / 2, bottom: y + s / 2, width: s, height: s };
-  }
   function clipFrom(o, r) {
     const c = v => Math.max(0, Math.round(v));
     return 'inset(' + c(o.top - r.top) + 'px ' + c(r.right - o.right) + 'px ' + c(r.bottom - o.bottom) + 'px ' + c(o.left - r.left) + 'px round ' + Math.round(o.height / 2) + 'px)';
   }
-  // Janela nasce do retângulo "o" (a caixa ou o botão clicado) e balança no fim.
   function grow(w, pnl, o) {
     const r = pnl.getBoundingClientRect();
     const list = [
@@ -1366,7 +1356,7 @@
         { clipPath: FULL, transform: 'scale(1)' },
       ], { duration: 720 }),
     ];
-    [...pnl.children].filter(el => el.id !== 'fluid').forEach((el, i) => list.push(el.animate(
+    [...pnl.children].forEach((el, i) => list.push(el.animate(
       [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
       { duration: 360, delay: 240 + i * 60, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' })));
     return list;
@@ -1381,56 +1371,52 @@
     const b = w.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, delay: 180, easing: 'ease-in', fill: 'forwards' });
     return { list: [a, b], done: Promise.all([a.finished, b.finished]) };
   }
-  // A tinta da caixa de pergunta vai junto para a janela do chat, e volta quando ela fecha.
-  const ink = $('#fluid');
-  function moveInk(target) {
-    if (!ink || ink.parentElement === target) return;
-    target.prepend(ink);
-    if (window.fluidRelayout) window.fluidRelayout();
-  }
+
+  /* Chat: abre para baixo, na própria caixa de pergunta. */
+  const askWrap = $('#ask-wrap'), askPanel = $('#ask-panel'), heroInput = $('#hero-input');
+  const isOpen = () => askWrap.classList.contains('open');
   function openChat(question) {
-    lastFocus = document.activeElement;
-    stopAnims();
-    const o = originRect();
-    wrap.hidden = false;
-    moveInk(panel);
-    heroAsk.style.visibility = 'hidden';
-    if (!calm.matches && panel.animate) running.push(...grow(wrap, panel, o));
+    if (!isOpen()) {
+      askWrap.classList.add('open');
+      askPanel.removeAttribute('inert');
+      if (!calm.matches && askPanel.animate) askPanel.animate([{ height: '0px', opacity: 0 }, { height: askPanel.scrollHeight + 'px', opacity: 1 }], { duration: 450, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+
+    }
     if (question) ask(question);
-    $('#chat-input').focus({ preventScroll: true });
   }
+  // Enquanto o chat está aberto, sempre que ele cresce a página rola o mínimo para ele caber acima da barra.
+  let revealTimer = 0;
+  new ResizeObserver(() => {
+    if (!isOpen()) return;
+    clearTimeout(revealTimer);
+    revealTimer = setTimeout(() => {
+      const limit = innerHeight - 100, r = askWrap.getBoundingClientRect();
+      if (r.bottom > limit) scrollBy({ top: Math.min(r.bottom - limit, r.top - 70), behavior: calm.matches ? 'auto' : 'smooth' });
+    }, 140);
+  }).observe(askWrap);
   function closeChat() {
-    if (wrap.hidden) return;
-    const done = () => {
-      wrap.hidden = true; stopAnims();
-      heroAsk.style.visibility = '';
-      moveInk(heroAsk);
-      if (lastFocus) lastFocus.focus({ preventScroll: true });
-    };
-    if (calm.matches || !panel.animate) return done();
-    stopAnims();
-    heroAsk.style.visibility = '';
-    const s = shrinkTo(wrap, panel, originRect());
-    running.push(...s.list);
-    s.done.then(done, () => {});
+    if (!isOpen()) return;
+    askPanel.setAttribute('inert', '');
+    if (calm.matches || !askPanel.animate) { askWrap.classList.remove('open'); return; }
+    askPanel.animate([{ height: askPanel.offsetHeight + 'px', opacity: 1 }, { height: '0px', opacity: 0 }], { duration: 320, easing: 'cubic-bezier(.4, 0, .6, 1)' }).finished.then(() => { if (askPanel.hasAttribute('inert')) askWrap.classList.remove('open'); });
   }
-  // Ao clicar para digitar, a tinta da caixa dá uma volta
-  $('#hero-input').addEventListener('focus', () => { if (window.fluidSweep && ink.parentElement === heroAsk) window.fluidSweep(); });
-  $('#hero-ask').addEventListener('submit', e => {
+  heroInput.addEventListener('focus', () => {
+    if (window.fluidSweep) window.fluidSweep();
+    openChat();
+  });
+  heroInput.addEventListener('click', () => openChat());
+  heroAsk.addEventListener('submit', e => {
     e.preventDefault();
-    const input = $('#hero-input');
-    const q = input.value; input.value = '';
+    const q = heroInput.value; heroInput.value = '';
     openChat(q);
+    heroInput.focus({ preventScroll: true });
   });
-  $('#chat-form').addEventListener('submit', e => {
-    e.preventDefault();
-    const input = $('#chat-input');
-    const q = input.value; input.value = '';
-    ask(q);
+  $('#chat-close').addEventListener('click', () => { closeChat(); heroInput.blur(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen()) { closeChat(); heroInput.blur(); } });
+  // Clicar fora fecha só se ainda não houve conversa
+  document.addEventListener('pointerdown', e => {
+    if (isOpen() && !askWrap.contains(e.target) && !e.target.closest('#ask-hints') && history.length === 0) closeChat();
   });
-  $('#chat-close').addEventListener('click', closeChat);
-  wrap.addEventListener('click', e => { if (e.target === wrap) closeChat(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !wrap.hidden) closeChat(); });
 
   /* ── Projeto: abre e fecha os detalhes ── */
   const moreBtn = $('#ociani-toggle'), moreBody = $('#ociani-more');
