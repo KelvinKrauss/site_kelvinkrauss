@@ -159,24 +159,69 @@
     .lessons strong { display: block; }
 
     /* Entries (projects, experience, education) */
-    .entries { display: flex; flex-direction: column; gap: 34px; margin-top: 10px; }
+    .entries { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
     .entry { display: flex; flex-direction: column; gap: 6px; }
     .entry-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 16px; }
     .entry h4 { margin: 0; font-size: 1.15rem; }
     .entry .where { color: var(--muted); font-size: .98rem; }
-    .divider { height: 1px; background: var(--line); margin: 14px 0 4px; }
+    /* Cards (projects) */
+    .card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 22px 24px; border-radius: 20px; background: rgba(255, 255, 255, .025); box-shadow: inset 0 0 0 1px var(--line), inset 0 1px 0 rgba(255, 255, 255, .06); transition: transform .25s cubic-bezier(.2, .8, .2, 1), background-color .25s, box-shadow .25s; }
+    .card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .045); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14), inset 0 1px 0 rgba(255, 255, 255, .1), 0 18px 40px rgba(0, 0, 0, .35); }
+    .card.featured { gap: 16px; padding: 26px 28px; background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 9%, transparent), rgba(255, 255, 255, .02) 45%); }
+    .card.featured:hover { transform: none; }
+    .card h3 a, .card h4 a { text-decoration: none; }
+    .card h3 a:hover, .card h4 a:hover { color: var(--accent); }
+    .card p { color: var(--text); }
+    .badge { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 4px 10px; border-radius: 999px; font: 500 .74rem/1.3 var(--mono); color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ok) 30%, transparent); }
+    .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+    .more-gh { color: var(--muted); font-size: .95rem; }
+
+    /* Timeline */
+    .timeline { position: relative; display: flex; flex-direction: column; gap: 30px; margin-top: 6px; }
+    .timeline::before { content: ""; position: absolute; left: 5px; top: 10px; bottom: 10px; width: 1px; background: linear-gradient(var(--accent), var(--line) 40%, var(--line)); }
+    .timeline .entry { position: relative; padding-left: 30px; }
+    .timeline .entry::before { content: ""; position: absolute; left: 0; top: .5em; width: 11px; height: 11px; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 2px var(--muted); }
+    .timeline .entry.now::before { background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 14px var(--accent); }
+
+    /* Skill chips */
+    .prose .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-flow: row wrap; gap: 8px; }
+    .chips li { padding: 5px 12px; border-radius: 999px; font-size: .9rem; line-height: 1.4; color: var(--ink); background: rgba(255, 255, 255, .05); box-shadow: inset 0 0 0 1px var(--line); }
+    .chips.hot li { background: color-mix(in srgb, var(--accent) 14%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent); }
+    .chips.soon li { background: none; box-shadow: none; outline: 1px dashed color-mix(in srgb, var(--muted) 70%, transparent); outline-offset: -1px; color: var(--muted); }
+
+    /* Section label accent */
+    .sec > header h2 { display: flex; align-items: center; gap: 10px; }
+    .sec > header h2::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); flex: none; }
+
+    /* Gentle reveal on scroll (only for blocks that start below the fold) */
+    .rv { transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .2, 1); }
+    .rv.pre { opacity: 0; transform: translateY(18px); }
+
+    /* Phones: text over the ink stays readable */
+    @media (max-width: 699px) {
+      #fluid { opacity: .55; }
+      .hero h1, .hero .lead { text-shadow: 0 0 2px var(--bg), 0 1px 14px var(--bg), 0 0 28px var(--bg); }
+    }
 
     /* Skills */
-    .skills { margin: 0; display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 14px 24px; }
-    .skills dt { color: var(--muted); font-size: .98rem; }
+    .skills { margin: 0; display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px 24px; align-items: start; }
+    .skills dt { color: var(--muted); font-size: .95rem; padding-top: 5px; }
     .skills dd { margin: 0; color: var(--ink); }
     @media (max-width: 560px) { .skills { grid-template-columns: minmax(0, 1fr); gap: 2px; } .skills dd { margin-bottom: 14px; } }
 
     /* Contact */
     .contact-list { margin: 6px 0 0; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
-    .contact-list div { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .contact-list div { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 4px 16px; padding: 14px 12px; margin-inline: -12px; border-bottom: 1px solid var(--line); border-radius: 12px; transition: background-color .2s; }
+    .contact-list div:hover { background: rgba(255, 255, 255, .04); }
     .contact-list dt { color: var(--muted); font-size: .95rem; }
-    .contact-list dd { margin: 0; display: flex; align-items: center; gap: 12px; font-weight: 500; color: var(--ink); }
+    .contact-list dd { margin: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 12px; font-weight: 500; color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
+    .contact-list dd a { text-decoration: none; }
+    .contact-list dd a::after { content: " ↗"; color: var(--muted); }
+    .contact-list dd a:hover { color: var(--accent); }
+    @media (max-width: 520px) {
+      .contact-list div { grid-template-columns: minmax(0, 1fr); }
+      .contact-list dd { justify-content: flex-start; }
+    }
     .copy { border: 0; border-radius: 999px; padding: 6px 12px; background: var(--ink); color: var(--bg); font-size: .8rem; font-weight: 600; cursor: pointer; }
 
     footer { padding: 36px 0 calc(130px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
@@ -307,8 +352,10 @@
       <section class="sec" id="projetos">
         <header data-barrier><h2 data-en="Projects">Projetos</h2><p data-en="The main one first">O principal primeiro</p></header>
         <div class="prose" data-barrier>
+          <article class="card featured">
           <div class="case-head">
-            <span class="meta" data-en="Professional project · live since Oct 2, 2026">Projeto profissional · no ar desde 02/10/2026</span>
+            <span class="badge" data-en="Live · since Oct 2, 2026">No ar · desde 02/10/2026</span>
+            <span class="meta" data-en="Professional project">Projeto profissional</span>
             <h3><a href="https://www.ociani.com.br/" target="_blank" rel="noopener" data-en="Ociani Transportadora website ↗">Site da Ociani Transportadora ↗</a></h3>
           </div>
           <div class="facts"><span><b>144</b> commits</span><span data-en="<b>15</b> days to launch"><b>15</b> dias até o lançamento</span><span>Astro · TypeScript · Cloudflare · Sanity</span></div>
@@ -343,22 +390,22 @@
           </ul>
           </div>
           </div>
+          </article>
 
-          <div class="divider"></div>
           <div class="entries">
-            <article class="entry">
+            <article class="entry card">
               <div class="entry-top"><h4><a href="https://github.com/KelvinKrauss/Aplicativo-de-Controle-de-Transacoes-Financeiras-com-Java" target="_blank" rel="noopener" data-en="Banking simulator ↗">Simulador bancário ↗</a></h4><span class="meta" data-en="Java · OOP · 2025">Java · POO · 2025</span></div>
               <p data-en="A console system that simulates what a bank does: create accounts (the first one gets id 1001), deposit, withdraw, transfer, create investments with a yield percentage, and see a dated history of every action. It was my first complete system, built in the NTT DATA bootcamp, and it taught me to program thinking about business rules.">Um sistema de console que simula o que um banco faz: criar contas (a primeira recebe o id 1001), depositar, sacar, transferir, criar investimentos com rendimento em % e ver o histórico com data e hora de cada ação. Foi meu primeiro sistema completo, feito no bootcamp da NTT DATA, e me ensinou a programar pensando em regras de negócio.</p>
             </article>
-            <article class="entry">
+            <article class="entry card">
               <div class="entry-top"><h4><a href="https://github.com/KelvinKrauss/Catalogo-e-Simulacao-de-pedido-persistente-em-h2database" target="_blank" rel="noopener" data-en="Catalog and orders ↗">Catálogo e pedidos ↗</a></h4><span class="meta" data-en="Spring Boot · microservices · 2025">Spring Boot · microsserviços · 2025</span></div>
               <p data-en="Four Spring Boot services working together: Eureka Server, product catalog, order simulator and API Gateway. Products live in an in-memory H2 database, and the API lists, searches by name, checks stock, creates and cancels orders. A <code>start-all.bat</code> starts everything with a double-click.">Quatro serviços Spring Boot trabalhando juntos: Eureka Server, catálogo de produtos, simulador de pedidos e API Gateway. Os produtos ficam num banco H2 em memória, e a API lista, busca por nome, confere estoque, cria e cancela pedidos. Um <code>start-all.bat</code> sobe tudo com dois cliques.</p>
             </article>
-            <article class="entry">
+            <article class="entry card">
               <div class="entry-top"><h4><a href="https://github.com/KelvinKrauss/site_kelvinkrauss" target="_blank" rel="noopener" data-en="This portfolio ↗">Este portfólio ↗</a></h4><span class="meta">HTML · CSS · JS · 2026</span></div>
               <p data-en="No framework. The background is a fluid simulation in WebGL that follows your mouse, the buttons use an SVG filter that imitates Apple's liquid glass, and the assistant answers with the Gemini API in a Vercel serverless function.">Sem framework. O fundo é uma simulação de fluido em WebGL que segue o mouse, os botões usam um filtro SVG que imita o vidro líquido da Apple, e o assistente responde com a API do Gemini numa função serverless da Vercel.</p>
             </article>
-            <p class="where" data-en="More on <a href='https://github.com/KelvinKrauss' target='_blank' rel='noopener'>GitHub</a>: a hangman game in Java, a to-do list in JavaScript and my code from college classes.">Mais no <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">GitHub</a>: jogo da forca em Java, lista de tarefas em JavaScript e os códigos das disciplinas da faculdade.</p>
+            <p class="more-gh" data-en="More on <a href='https://github.com/KelvinKrauss' target='_blank' rel='noopener'>GitHub</a>: a hangman game in Java, a to-do list in JavaScript and my code from college classes.">Mais no <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">GitHub</a>: jogo da forca em Java, lista de tarefas em JavaScript e os códigos das disciplinas da faculdade.</p>
           </div>
         </div>
       </section>
@@ -367,12 +414,12 @@
       <section class="sec" id="trajetoria">
         <header data-barrier><h2 data-en="Journey">Trajetória</h2><p data-en="Work and education">Trabalho e estudo</p></header>
         <div class="prose" data-barrier>
-          <div class="entries">
-            <article class="entry">
+          <div class="timeline">
+            <article class="entry now">
               <div class="entry-top"><h4 data-en="Apprentice · Ociani Transportadora">Jovem Aprendiz · Ociani Transportadora</h4><span class="meta" data-en="Jan 2026 – now">jan 2026 – hoje</span></div>
               <p data-en="Through the SEST SENAT program. Day to day I support the administrative and accounting team (documents and data entry), repair computers and help my coworkers with IT. In September 2026 I built the company's new website.">Pelo programa do SEST SENAT. No dia a dia apoio o administrativo e a contabilidade (documentos e lançamentos), faço manutenção de computadores e ajudo os colegas com TI. Em setembro de 2026 criei o novo site da empresa.</p>
             </article>
-            <article class="entry">
+            <article class="entry now">
               <div class="entry-top"><h4 data-en="Systems Analysis and Development · IFSC">Análise e Desenvolvimento de Sistemas · IFSC</h4><span class="meta" data-en="Jul 2026 – Dec 2028">jul 2026 – dez 2028</span></div>
               <p class="where" data-en="Federal Institute of Santa Catarina. In progress.">Instituto Federal de Santa Catarina. Cursando.</p>
             </article>
@@ -393,10 +440,10 @@
         <header data-barrier><h2 data-en="Skills">Habilidades</h2><p data-en="Split by how much I've used them">Separadas pelo quanto já usei</p></header>
         <div class="prose" data-barrier>
           <dl class="skills">
-            <dt data-en="Used in production">Usei em produção</dt><dd>TypeScript, JavaScript, Astro, HTML, CSS, Cloudflare Workers, DNS, <span data-en="SOAP APIs">APIs SOAP</span>, Sanity, Git</dd>
-            <dt data-en="Studied and practiced">Estudei e pratiquei</dt><dd>Java, Spring Boot, SQL, Python, Maven, Postman</dd>
-            <dt data-en="Studying now">Estudando agora</dt><dd>AWS</dd>
-            <dt data-en="Way of working">Jeito de trabalhar</dt><dd data-en="AI as a programming assistant, Git with small commits, and testing on phones and old monitors">IA como assistente de programação, Git com commits pequenos e testes em celular e monitores antigos</dd>
+            <dt data-en="Used in production">Usei em produção</dt><dd><ul class="chips hot"><li>TypeScript</li><li>JavaScript</li><li>Astro</li><li>HTML</li><li>CSS</li><li>Cloudflare Workers</li><li>DNS</li><li data-en="SOAP APIs">APIs SOAP</li><li>Sanity</li><li>Git</li></ul></dd>
+            <dt data-en="Studied and practiced">Estudei e pratiquei</dt><dd><ul class="chips"><li>Java</li><li>Spring Boot</li><li>SQL</li><li>Python</li><li>Maven</li><li>Postman</li></ul></dd>
+            <dt data-en="Studying now">Estudando agora</dt><dd><ul class="chips soon"><li>AWS</li></ul></dd>
+            <dt class="plain" data-en="Way of working">Jeito de trabalhar</dt><dd data-en="AI as a programming assistant, Git with small commits, and testing on phones and old monitors">IA como assistente de programação, Git com commits pequenos e testes em celular e monitores antigos</dd>
             <dt data-en="Languages">Idiomas</dt><dd data-en="Portuguese (native) and English (advanced)">Português (nativo) e inglês (avançado)</dd>
           </dl>
         </div>
@@ -1280,6 +1327,17 @@
   $('#cv-close').addEventListener('click', closeCv);
   cvWrap.addEventListener('click', e => { if (e.target === cvWrap) closeCv(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !cvWrap.hidden) closeCv(); });
+
+  /* ── Blocos aparecem suavemente ao rolar (só os que começam fora da tela) ── */
+  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const items = [...document.querySelectorAll('.sec > header, .card, .timeline .entry, .skills, .prose > p, .prose > h3, .prose > ul, .contact-list, .more-gh')];
+    const io = new IntersectionObserver(entries => entries.forEach(en => {
+      if (en.isIntersecting) { en.target.classList.remove('pre'); io.unobserve(en.target); }
+    }), { rootMargin: '0px 0px -6% 0px' });
+    items.forEach(el => {
+      if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('rv', 'pre'); io.observe(el); }
+    });
+  }
 
   /* ── Dock: marca a seção visível ── */
   const dock = $('#dock'), lens = $('#dock-lens');
