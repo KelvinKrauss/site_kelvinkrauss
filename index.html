@@ -1583,6 +1583,8 @@
   const bubbleRect = () => ({ left: bubblePos.x, top: bubblePos.y, right: bubblePos.x + BUBBLE, bottom: bubblePos.y + BUBBLE, width: BUBBLE, height: BUBBLE });
   function minimizeChat() {
     if (wrap.hidden) return;
+    // Nunca dois atalhos ao mesmo tempo: com a caixa na tela, o chat volta para ela (a conversa fica guardada)
+    if (heroOnScreen) return closeChat();
     stopAnims();
     const r = panel.getBoundingClientRect();
     bubblePos = { x: r.right - BUBBLE, y: r.bottom - BUBBLE };
@@ -1590,9 +1592,9 @@
     const show = () => {
       wrap.hidden = true; stopAnims();
       chatBubble.hidden = false;
-      bubbleMode = 'min';
+      bubbleMode = 'auto'; // vira o mesmo balão do canto: volta para a caixa quando ela aparecer
       stopFlight();
-      autoState = 'box';
+      autoState = 'bubble';
       if (!calm.matches && chatBubble.animate) chatBubble.animate([{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1.12)', opacity: 1, offset: .7 }, { transform: 'scale(1)' }], { duration: 380, easing: 'ease-out' });
       heroAsk.style.visibility = '';
       moveInk(heroAsk);
