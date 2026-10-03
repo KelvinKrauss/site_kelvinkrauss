@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Kelvin Krauss · Desenvolvedor</title>
   <meta name="description" content="Kelvin Krauss, estudante de Análise e Desenvolvimento de Sistemas no IFSC e jovem aprendiz na Ociani Transportadora. Criou o novo site da Ociani, com cotação de frete e rastreamento integrados ao sistema SSW.">
-  <meta name="theme-color" content="#eceef2">
+  <meta name="theme-color" content="#0b0c10">
   <link rel="icon" href="images/foto.jpg">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://kelvinkrauss.me/">
@@ -40,7 +40,7 @@
       --mono: "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
       color-scheme: light;
     }
-    :root.dark {
+    :root { /* dark only */
       --bg: #0b0c10; --ink: #f1f2f6; --text: #c9ccd6; --muted: #8f93a3; --line: rgba(255, 255, 255, .1);
       --card-solid: #16181e; --accent: #6aa5ff; --ok: #4ade80;
       --glass-tint: rgba(255, 255, 255, .06); --glass-tint-hover: rgba(255, 255, 255, .11);
@@ -114,7 +114,7 @@
     .send { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; cursor: pointer; transition: transform .15s; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 4px 14px color-mix(in srgb, var(--accent) 40%, transparent); }
     .send:hover { transform: scale(1.06); }
     .send svg { width: 20px; height: 20px; }
-    .ask-hints { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .ask-hints { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; width: fit-content; max-width: 100%; }
     .ask-hints button { border: 0; background: none; padding: 4px 2px; color: var(--muted); font-size: .9rem; cursor: pointer; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
     .ask-hints button:hover { color: var(--ink); text-decoration-color: var(--accent); }
     .ask-hints span { color: var(--muted); font-size: .9rem; padding: 4px 0; }
@@ -233,9 +233,6 @@
       *, *::before, *::after { animation: none !important; transition: none !important; }
     }
   </style>
-  <script>
-    try { if (localStorage.getItem('kk-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
-  </script>
 </head>
 <body>
 
@@ -278,29 +275,28 @@
       <div class="top-right">
         <a class="pill glass" data-glass="32" href="images/curriculo.pdf" target="_blank" rel="noopener" data-resume><svg><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></a>
         <button class="pill glass" data-glass="30" id="lang-btn" type="button" aria-label="Read in English">EN</button>
-        <button class="glass theme-toggle" data-glass="30" type="button" aria-label="Mudar para tema escuro"><svg class="moon"><use href="#i-moon"/></svg><svg class="sun"><use href="#i-sun"/></svg></button>
       </div>
     </div>
 
     <!-- ── Hero ── -->
     <header class="hero">
       <a class="pill glass" data-glass="34" href="#contato"><span class="dot" aria-hidden="true"></span><span data-en="Open to internships and junior roles">Disponível para estágio e vaga júnior</span></a>
-      <h1 data-en="<span class='soft'>Hi, I'm</span> Kelvin Krauss"><span class="soft">Olá, eu sou o</span> Kelvin Krauss</h1>
-      <p class="lead" data-en="I am a Systems Analysis and Development student at the Federal Institute of Santa Catarina, and a huge technology enthusiast, with a strong interest in AI, web development, and back-end. My main technical focus is the AWS Ecosystem, Java, SQL databases, and Python, creating efficient solutions and robust architectures, such as APIs and microservices.">Sou graduando em Análise e Desenvolvimento de Sistemas no Instituto Federal de Santa Catarina, e um grande entusiasta da tecnologia, com forte interesse em I.A., desenvolvimento web e back-end. Meu foco técnico principal está no Ecossistema AWS, Java, bancos de dados SQL e Python, criando soluções eficientes e arquiteturas robustas, como APIs e microsserviços.</p>
-      <p class="lead lead-2" data-en="Open to internships, collaborations, and continuous learning opportunities in tech, including remote work for international companies.">Aberto a oportunidades de estágio, colaborações e aprendizado contínuo na área de tecnologia, incluindo atuação remota para empresas internacionais.</p>
+      <h1 data-barrier data-en="<span class='soft'>Hi, I'm</span> Kelvin Krauss"><span class="soft">Olá, eu sou o</span> Kelvin Krauss</h1>
+      <p class="lead" data-barrier data-en="I am a Systems Analysis and Development student at the Federal Institute of Santa Catarina, and a huge technology enthusiast, with a strong interest in AI, web development, and back-end. My main technical focus is the AWS Ecosystem, Java, SQL databases, and Python, creating efficient solutions and robust architectures, such as APIs and microservices.">Sou graduando em Análise e Desenvolvimento de Sistemas no Instituto Federal de Santa Catarina, e um grande entusiasta da tecnologia, com forte interesse em I.A., desenvolvimento web e back-end. Meu foco técnico principal está no Ecossistema AWS, Java, bancos de dados SQL e Python, criando soluções eficientes e arquiteturas robustas, como APIs e microsserviços.</p>
+      <p class="lead lead-2" data-barrier data-en="Open to internships, collaborations, and continuous learning opportunities in tech, including remote work for international companies.">Aberto a oportunidades de estágio, colaborações e aprendizado contínuo na área de tecnologia, incluindo atuação remota para empresas internacionais.</p>
 
-      <form class="ask glass" data-glass="44" id="hero-ask" role="search">
+      <form class="ask glass" data-glass="44" data-barrier id="hero-ask" role="search">
         <input id="hero-input" type="text" autocomplete="off" maxlength="400" aria-label="Pergunte ao assistente" placeholder="Pergunte qualquer coisa ao meu assistente de IA..." data-en-ph="Ask my AI assistant anything..." data-en-aria="Ask the assistant">
         <button class="send" type="submit" aria-label="Enviar pergunta" data-en-aria="Send question"><svg><use href="#i-arrow"/></svg></button>
       </form>
-      <div class="ask-hints" id="ask-hints"></div>
+      <div class="ask-hints" data-barrier id="ask-hints"></div>
     </header>
 
     <main>
       <!-- ── Sobre ── -->
       <section class="sec" id="sobre">
-        <header><h2 data-en="About">Sobre</h2></header>
-        <div class="prose">
+        <header data-barrier><h2 data-en="About">Sobre</h2></header>
+        <div class="prose" data-barrier>
           <p data-en="I'm from Blumenau, in southern Brazil. I started Computer Science at the Instituto Federal Catarinense in 2025 and, in 2026, transferred to <strong>Systems Analysis and Development at IFSC</strong>, where I'll graduate in 2028.">Sou de Blumenau/SC. Comecei Ciência da Computação no Instituto Federal Catarinense em 2025 e, em 2026, fiz transferência para <strong>Análise e Desenvolvimento de Sistemas no IFSC</strong>, onde me formo em 2028.</p>
           <p data-en="Since January 2026 I've been an apprentice at Ociani, a trucking company founded in 1981. The job started in the office and in IT support, and it led me to my first real project: rebuilding the company's website from scratch.">Desde janeiro de 2026 sou jovem aprendiz na Ociani, uma transportadora fundada em 1981. O trabalho começou no administrativo e no suporte de TI, e me levou ao meu primeiro projeto de verdade: refazer o site da empresa do zero.</p>
           <p data-en="I built it with AI (Claude) as a programming assistant. The AI helped me write the code; my part was understanding what the company needed, checking every piece of information with the team, testing everything and deciding what went live. I learned a lot about the web, APIs and DNS doing this.">Fiz o site com IA (o Claude) como assistente de programação. A IA me ajudou a escrever o código; o meu papel foi entender o que a empresa precisava, conferir cada informação com a equipe, testar tudo e decidir o que ia ao ar. Aprendi muito sobre web, APIs e DNS fazendo isso.</p>
@@ -310,8 +306,8 @@
 
       <!-- ── Projetos ── -->
       <section class="sec" id="projetos">
-        <header><h2 data-en="Projects">Projetos</h2><p data-en="The main one first">O principal primeiro</p></header>
-        <div class="prose">
+        <header data-barrier><h2 data-en="Projects">Projetos</h2><p data-en="The main one first">O principal primeiro</p></header>
+        <div class="prose" data-barrier>
           <div class="case-head">
             <span class="meta" data-en="Professional project · live since Oct 2, 2026">Projeto profissional · no ar desde 02/10/2026</span>
             <h3><a href="https://www.ociani.com.br/" target="_blank" rel="noopener" data-en="Ociani Transportadora website ↗">Site da Ociani Transportadora ↗</a></h3>
@@ -370,8 +366,8 @@
 
       <!-- ── Trajetória ── -->
       <section class="sec" id="trajetoria">
-        <header><h2 data-en="Journey">Trajetória</h2><p data-en="Work and education">Trabalho e estudo</p></header>
-        <div class="prose">
+        <header data-barrier><h2 data-en="Journey">Trajetória</h2><p data-en="Work and education">Trabalho e estudo</p></header>
+        <div class="prose" data-barrier>
           <div class="entries">
             <article class="entry">
               <div class="entry-top"><h4 data-en="Apprentice · Ociani Transportadora">Jovem Aprendiz · Ociani Transportadora</h4><span class="meta" data-en="Jan 2026 – now">jan 2026 – hoje</span></div>
@@ -395,8 +391,8 @@
 
       <!-- ── Habilidades ── -->
       <section class="sec" id="habilidades">
-        <header><h2 data-en="Skills">Habilidades</h2><p data-en="Split by how much I've used them">Separadas pelo quanto já usei</p></header>
-        <div class="prose">
+        <header data-barrier><h2 data-en="Skills">Habilidades</h2><p data-en="Split by how much I've used them">Separadas pelo quanto já usei</p></header>
+        <div class="prose" data-barrier>
           <dl class="skills">
             <dt data-en="Used in production">Usei em produção</dt><dd>TypeScript, JavaScript, Astro, HTML, CSS, Cloudflare Workers, DNS, <span data-en="SOAP APIs">APIs SOAP</span>, Sanity, Git</dd>
             <dt data-en="Studied and practiced">Estudei e pratiquei</dt><dd>Java, Spring Boot, SQL, Python, Maven, Postman</dd>
@@ -409,8 +405,8 @@
 
       <!-- ── Agora ── -->
       <section class="sec" id="agora">
-        <header><h2 data-en="Now">Agora</h2><p data-en="October 2026">Outubro de 2026</p></header>
-        <div class="prose">
+        <header data-barrier><h2 data-en="Now">Agora</h2><p data-en="October 2026">Outubro de 2026</p></header>
+        <div class="prose" data-barrier>
           <ul>
             <li data-en="First semester of Systems Analysis and Development at IFSC.">Primeiro semestre de Análise e Desenvolvimento de Sistemas no IFSC.</li>
             <li data-en="The Ociani website has just gone live, on October 2.">O site da Ociani acabou de ir ao ar, em 2 de outubro.</li>
@@ -422,8 +418,8 @@
 
       <!-- ── Contato ── -->
       <section class="sec" id="contato">
-        <header><h2 data-en="Contact">Contato</h2></header>
-        <div class="prose">
+        <header data-barrier><h2 data-en="Contact">Contato</h2></header>
+        <div class="prose" data-barrier>
           <h3 data-en="Let's talk?">Vamos conversar?</h3>
           <p data-en="If you have an internship or junior role, or just want to talk about a project, send me a message. I also work remotely for companies outside Brazil.">Se você tem uma vaga de estágio ou júnior, ou só quer conversar sobre um projeto, me chama. Também trabalho remoto para empresas de fora do Brasil.</p>
           <dl class="contact-list">
@@ -449,8 +445,6 @@
   <a href="#trajetoria"><svg><use href="#i-route"/></svg><span data-en="Journey">Trajetória</span></a>
   <a href="#habilidades"><svg><use href="#i-layers"/></svg><span>Skills</span></a>
   <a href="#contato"><svg><use href="#i-mail"/></svg><span data-en="Contact">Contato</span></a>
-  <span class="dock-sep" aria-hidden="true"></span>
-  <button class="theme-toggle" type="button" aria-label="Mudar para tema escuro"><svg class="moon"><use href="#i-moon"/></svg><svg class="sun"><use href="#i-sun"/></svg></button>
 </nav>
 
 <!-- ── Currículo (computador) ── -->
@@ -726,6 +720,49 @@
       gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0);
     }`));
 
+  // Solid barrier: inside the (rounded) rectangle the ink is erased and the flow stops; just outside,
+  // velocity pointing into the wall is reflected, so the ink bounces off instead of passing through.
+  const MAX_WALLS = 10;
+  const obstacleProgram = createProgram(baseVertex, frag(`
+    precision highp float; precision highp sampler2D;
+    varying vec2 vUv;
+    uniform sampler2D uTarget; uniform vec4 rects[10]; uniform int count; uniform float aspectRatio; uniform float mode;
+    float sdBox (vec2 p, vec2 b, float r) {
+      vec2 d = abs(p) - (b - r);
+      return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0) - r;
+    }
+    float dist (vec2 uv) {
+      float best = 10.0;
+      for (int i = 0; i < 10; i++) {
+        if (i >= count) break;
+        vec4 rc = rects[i];
+        vec2 c = (rc.xy + rc.zw) * 0.5;
+        vec2 h = (rc.zw - rc.xy) * 0.5;
+        vec2 p = uv - c;
+        p.x *= aspectRatio; h.x *= aspectRatio;
+        best = min(best, sdBox(p, h, min(0.03, min(h.x, h.y))));
+      }
+      return best;
+    }
+    void main () {
+      vec4 v = texture2D(uTarget, vUv);
+      float d = dist(vUv);
+      if (mode < 0.5) {
+        if (d < 0.0) {
+          v.xy = vec2(0.0);
+        } else if (d < 0.04) {
+          vec2 e = vec2(0.002, 0.0);
+          vec2 n = vec2(dist(vUv + e.xy) - dist(vUv - e.xy), dist(vUv + e.yx) - dist(vUv - e.yx));
+          n = normalize(n + 1e-6);
+          float vn = dot(v.xy, n);
+          if (vn < 0.0) v.xy -= 1.7 * vn * n;
+        }
+        gl_FragColor = vec4(v.xy, 0.0, 1.0);
+      } else {
+        gl_FragColor = vec4(v.rgb * smoothstep(-0.002, 0.012, d), 1.0);
+      }
+    }`));
+
   const gradientSubtractProgram = createProgram(baseVertex, frag(`
     precision mediump float; precision mediump sampler2D;
     varying highp vec2 vUv; varying highp vec2 vL; varying highp vec2 vR; varying highp vec2 vT; varying highp vec2 vB;
@@ -844,8 +881,39 @@
     dye.swap();
   }
 
+  // One box per on-screen [data-barrier] element, in texture coordinates (y up). Off on narrow screens,
+  // where the text takes the whole width.
+  const wallData = new Float32Array(MAX_WALLS * 4);
+  function barrierRects() {
+    const els = document.querySelectorAll('[data-barrier]');
+    if (!els.length || innerWidth < 700) return 0;
+    const W = canvas.clientWidth, H = canvas.clientHeight, pad = 16;
+    let n = 0;
+    for (const el of els) {
+      if (n >= MAX_WALLS) break;
+      const q = el.getBoundingClientRect();
+      if (q.bottom < -pad || q.top > H + pad || !q.width || !q.height) continue;
+      const t = Math.max(q.top - pad, -40), b = Math.min(q.bottom + pad, H + 40);
+      wallData.set([(q.left - pad) / W, 1 - b / H, (q.right + pad) / W, 1 - t / H], n * 4);
+      n++;
+    }
+    return n;
+  }
+  function applyObstacle(count, target, mode) {
+    obstacleProgram.bind();
+    gl.uniform1i(obstacleProgram.uniforms.uTarget, target.read.attach(0));
+    gl.uniform4fv(obstacleProgram.uniforms['rects[0]'], wallData);
+    gl.uniform1i(obstacleProgram.uniforms.count, count);
+    gl.uniform1f(obstacleProgram.uniforms.aspectRatio, canvas.width / canvas.height);
+    gl.uniform1f(obstacleProgram.uniforms.mode, mode);
+    blit(target.write);
+    target.swap();
+  }
+
   function step(dt) {
     gl.disable(gl.BLEND);
+    const wall = barrierRects();
+    if (wall) { applyObstacle(wall, velocity, 0); applyObstacle(wall, dye, 1); }
     curlProgram.bind();
     gl.uniform2f(curlProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
     gl.uniform1i(curlProgram.uniforms.uVelocity, velocity.read.attach(0));
@@ -886,6 +954,7 @@
     gl.uniform1i(gradientSubtractProgram.uniforms.uVelocity, velocity.read.attach(1));
     blit(velocity.write);
     velocity.swap();
+    if (wall) applyObstacle(wall, velocity, 0);
 
     advectionProgram.bind();
     gl.uniform2f(advectionProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
@@ -904,6 +973,7 @@
     gl.uniform1f(advectionProgram.uniforms.dissipation, config.DENSITY_DISSIPATION);
     blit(dye.write);
     dye.swap();
+    if (wall) applyObstacle(wall, dye, 1);
   }
 
   function render() {
@@ -946,7 +1016,16 @@
     introT += dt;
     const w = canvas.clientWidth, h = canvas.clientHeight;
     const k = Math.min(introT / 1.4, 1);
-    updatePointer(w * (0.1 + 0.8 * k), h * (0.45 + 0.16 * Math.sin(k * Math.PI * 2.2)));
+    // With text barriers on screen, sweep up the free column to the right of the text instead of across it.
+    const n = barrierRects();
+    let free = 0;
+    for (let i = 0; i < n; i++) free = Math.max(free, wallData[i * 4 + 2]);
+    const left = free * w, room = w - left;
+    if (n && room > 140) {
+      updatePointer(left + room * (0.5 + 0.28 * Math.sin(k * Math.PI * 2.4)), h * (0.92 - 0.75 * k));
+    } else {
+      updatePointer(w * (0.1 + 0.8 * k), h * (0.45 + 0.16 * Math.sin(k * Math.PI * 2.2)));
+    }
   };
 
   resizeCanvas();
@@ -1028,20 +1107,8 @@
     btn.setAttribute('aria-label', lang === 'en' ? 'Ler em português' : 'Read in English');
     renderHints();
     resetChat();
-    syncThemeLabels();
   }
   $('#lang-btn').addEventListener('click', () => { applyLang(lang === 'en' ? 'pt' : 'en'); store.set('kk-lang', lang); });
-
-  /* ── Tema: claro por padrão; escuro só quando a pessoa escolhe ── */
-  function syncThemeLabels() {
-    const t = TXT[lang], dark = root.classList.contains('dark');
-    document.querySelectorAll('.theme-toggle').forEach(b => b.setAttribute('aria-label', dark ? t.toLight : t.toDark));
-  }
-  document.querySelectorAll('.theme-toggle').forEach(b => b.addEventListener('click', () => {
-    const dark = root.classList.toggle('dark');
-    store.set('kk-theme', dark ? 'dark' : 'light');
-    syncThemeLabels();
-  }));
 
   /* ── Copiar e-mail ── */
   $('#copy-email').addEventListener('click', e => {
