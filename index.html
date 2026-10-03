@@ -52,6 +52,21 @@
 
     *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    /* Background details: a faint dot grid and two soft glows, fixed behind everything */
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(52rem 36rem at 88% -8%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+        radial-gradient(44rem 34rem at -12% 55%, color-mix(in srgb, #a855f7 11%, transparent), transparent 70%),
+        radial-gradient(40rem 30rem at 70% 110%, color-mix(in srgb, #14b8a6 8%, transparent), transparent 70%);
+    }
+    body::after {
+      content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 13%, transparent) 1px, transparent 1.5px);
+      background-size: 26px 26px;
+      -webkit-mask-image: radial-gradient(ellipse 120% 90% at 50% 0%, #000 30%, rgba(0, 0, 0, .35) 75%, transparent 100%);
+      mask-image: radial-gradient(ellipse 120% 90% at 50% 0%, #000 30%, rgba(0, 0, 0, .35) 75%, transparent 100%);
+    }
     body { margin: 0; background: var(--bg); color: var(--text); font: 400 1.1rem/1.75 var(--font); -webkit-font-smoothing: antialiased; overflow-x: hidden; transition: background-color .35s, color .35s; }
     img { max-width: 100%; height: auto; display: block; }
     h1, h2, h3, h4, p { margin: 0; }
@@ -1373,8 +1388,8 @@
   function originRect() {
     const r = heroAsk.getBoundingClientRect();
     if (r.bottom > 0 && r.top < innerHeight) return r;
-    const s = 60, x = innerWidth / 2, y = innerHeight - 110; // fora da tela: nasce de uma bolha perto da barra
-    return { left: x - s / 2, right: x + s / 2, top: y - s / 2, bottom: y + s / 2, width: s, height: s };
+    const s = 62, x = (autoPos ? autoPos.x : innerWidth - s - 24), y = (autoPos ? autoPos.y : innerHeight - s - 110); // fora da tela: o canto do balão
+    return { left: x, right: x + s, top: y, bottom: y + s, width: s, height: s };
   }
   function clipFrom(o, r) {
     const c = v => Math.max(0, Math.round(v));
@@ -1523,6 +1538,7 @@
       heroAsk.style.visibility = '';
       moveInk(heroAsk);
       if (lastFocus) lastFocus.focus({ preventScroll: true });
+      if (!heroOnScreen) showAutoBubble();
     };
     if (calm.matches || !panel.animate) return done();
     stopAnims();
@@ -1565,6 +1581,7 @@
     const show = () => {
       wrap.hidden = true; stopAnims();
       chatBubble.hidden = false;
+      bubbleMode = 'min';
       if (!calm.matches && chatBubble.animate) chatBubble.animate([{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1.12)', opacity: 1, offset: .7 }, { transform: 'scale(1)' }], { duration: 380, easing: 'ease-out' });
       heroAsk.style.visibility = '';
       moveInk(heroAsk);
@@ -1576,6 +1593,8 @@
   }
   function restoreChat(question) {
     const b = bubbleRect();
+    if (bubbleMode === 'auto') autoPos = { x: bubblePos.x, y: bubblePos.y };
+    bubbleMode = null;
     chatBubble.hidden = true;
     chatBubble.classList.remove('unread');
     wrap.hidden = false;
@@ -1613,6 +1632,34 @@
   });
   chatBubble.addEventListener('click', e => { if (e.detail === 0) restoreChat(); }); // teclado (Enter/Espaço)
   addEventListener('resize', () => { if (!chatBubble.hidden) placeBubble(); });
+
+  /* ── Quando a caixa de pergunta sai da tela, o assistente fica como balão no canto, em todo o site ── */
+  let bubbleMode = null;   // 'min' = minimizado pela pessoa, 'auto' = só porque a caixa saiu da tela
+  let autoPos = null;      // onde a pessoa deixou o balão automático
+  let heroOnScreen = true;
+  function showAutoBubble() {
+    if (!wrap.hidden || !chatBubble.hidden) return;
+    bubblePos = autoPos ? { x: autoPos.x, y: autoPos.y } : { x: innerWidth - BUBBLE - 24, y: innerHeight - BUBBLE - 110 };
+    placeBubble();
+    chatBubble.hidden = false;
+    bubbleMode = 'auto';
+    if (!calm.matches && chatBubble.animate) chatBubble.animate([{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1.12)', opacity: 1, offset: .7 }, { transform: 'scale(1)' }], { duration: 380, easing: 'ease-out' });
+  }
+  function hideAutoBubble() {
+    if (bubbleMode !== 'auto' || chatBubble.hidden) return;
+    autoPos = { x: bubblePos.x, y: bubblePos.y };
+    bubbleMode = null;
+    const hide = () => { if (bubbleMode === null) chatBubble.hidden = true; };
+    if (calm.matches || !chatBubble.animate) return hide();
+    chatBubble.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(.4)', opacity: 0 }], { duration: 220, easing: 'ease-in', fill: 'forwards' });
+    setTimeout(() => { hide(); chatBubble.getAnimations().forEach(a => a.cancel()); }, 240); // não depende da animação terminar
+  }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([en]) => {
+      heroOnScreen = en.isIntersecting;
+      if (heroOnScreen) hideAutoBubble(); else showAutoBubble();
+    }).observe(heroAsk);
+  }
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !wrap.hidden) closeChat(); });
 
   /* ── Projeto: abre e fecha os detalhes ── */
