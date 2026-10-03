@@ -270,6 +270,13 @@
     #chat-wrap .chat-head { position: relative; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; padding-top: 18px; }
     #chat-wrap .chat-head::before { content: ""; position: absolute; top: 7px; left: 50%; width: 38px; height: 4px; margin-left: -19px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 22%, transparent); }
     #chat-wrap.dragging .chat-head { cursor: grabbing; }
+    #chat-wrap .rz { position: absolute; z-index: 3; touch-action: none; }
+    #chat-wrap .rz[data-rz="r"] { top: 60px; right: 0; bottom: 26px; width: 9px; cursor: ew-resize; }
+    #chat-wrap .rz[data-rz="l"] { top: 60px; left: 0; bottom: 26px; width: 9px; cursor: ew-resize; }
+    #chat-wrap .rz[data-rz="b"] { left: 26px; right: 26px; bottom: 0; height: 9px; cursor: ns-resize; }
+    #chat-wrap .rz[data-rz="br"] { right: 0; bottom: 0; width: 26px; height: 26px; cursor: nwse-resize; }
+    #chat-wrap .rz[data-rz="bl"] { left: 0; bottom: 0; width: 26px; height: 26px; cursor: nesw-resize; }
+    #chat-wrap.resizing, #chat-wrap.resizing * { user-select: none; -webkit-user-select: none; }
     #chat-wrap.dragging .chat { box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 0 0 1px var(--line), 0 40px 100px rgba(0, 0, 0, .4), var(--shadow-lg); }
     .chat-head img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
     .chat-head div { flex: 1; min-width: 0; }
@@ -577,9 +584,10 @@
 <!-- ── Chat ── -->
 <div class="chat-wrap" id="chat-wrap" hidden>
   <div class="chat" role="dialog" aria-modal="false" aria-labelledby="chat-title">
+    <span class="rz" data-rz="l" aria-hidden="true"></span><span class="rz" data-rz="r" aria-hidden="true"></span><span class="rz" data-rz="b" aria-hidden="true"></span><span class="rz" data-rz="bl" aria-hidden="true"></span><span class="rz" data-rz="br" aria-hidden="true"></span>
     <div class="chat-head">
       <img src="images/foto.jpg" alt="" width="36" height="36">
-      <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume · drag to move">IA que conhece meu currículo · arraste para mover</small></div>
+      <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume · drag the top or the edges">IA que conhece meu currículo · arraste o topo ou as bordas</small></div>
       <button class="x" type="button" id="chat-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
     </div>
     <div class="msgs" id="msgs" aria-live="polite"></div>
@@ -1419,7 +1427,50 @@
     chatHead.addEventListener('pointerup', up);
     chatHead.addEventListener('pointercancel', up);
   });
-  addEventListener('resize', () => { if (!wrap.hidden) placeChat(); });
+  // Redimensionar pelas bordas e cantos de baixo. Durante o arraste a tinta fica parada no tamanho antigo
+  // (redimensionar o canvas a cada quadro apagaria a tinta) e é redesenhada quando a pessoa solta.
+  let chatSize = null;
+  const MIN_W = 300, MIN_H = 360;
+  function applySize() {
+    if (!chatSize) return;
+    const maxW = innerWidth - 16, maxH = innerHeight - 16;
+    chatSize.w = clamp(chatSize.w, Math.min(MIN_W, maxW), maxW);
+    chatSize.h = clamp(chatSize.h, Math.min(MIN_H, maxH), maxH);
+    panel.style.width = Math.round(chatSize.w) + 'px';
+    panel.style.height = Math.round(chatSize.h) + 'px';
+  }
+  panel.querySelectorAll('[data-rz]').forEach(handle => handle.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    stopAnims();
+    const dir = handle.dataset.rz;
+    const start = { x: e.clientX, y: e.clientY, w: panel.offsetWidth, h: panel.offsetHeight, left: chatPos.x, right: chatPos.x + panel.offsetWidth };
+    if (ink && ink.parentElement === panel) { ink.style.width = ink.offsetWidth + 'px'; ink.style.height = ink.offsetHeight + 'px'; }
+    wrap.classList.add('resizing');
+    handle.setPointerCapture(e.pointerId);
+    const move = ev => {
+      const dx = ev.clientX - start.x, dy = ev.clientY - start.y;
+      chatSize = { w: start.w, h: start.h };
+      if (dir.includes('r')) chatSize.w = start.w + dx;
+      if (dir.includes('l')) chatSize.w = start.w - dx;
+      if (dir.includes('b')) chatSize.h = start.h + dy;
+      applySize();
+      if (dir.includes('l')) chatPos.x = start.right - chatSize.w;
+      placeChat();
+    };
+    const up = () => {
+      wrap.classList.remove('resizing');
+      handle.removeEventListener('pointermove', move);
+      handle.removeEventListener('pointerup', up);
+      handle.removeEventListener('pointercancel', up);
+      if (ink) { ink.style.width = ''; ink.style.height = ''; }
+      if (window.fluidRelayout && ink.parentElement === panel) window.fluidRelayout();
+    };
+    handle.addEventListener('pointermove', move);
+    handle.addEventListener('pointerup', up);
+    handle.addEventListener('pointercancel', up);
+  }));
+  addEventListener('resize', () => { if (!wrap.hidden) { applySize(); placeChat(); } });
 
   function openChat(question) {
     if (!wrap.hidden) { // já aberto: só pergunta
