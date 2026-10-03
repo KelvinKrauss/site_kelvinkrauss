@@ -200,9 +200,6 @@
     .sec > header h2 { display: flex; align-items: center; gap: 10px; }
     .sec > header h2::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); flex: none; }
 
-    /* Gentle reveal on scroll (only for blocks that start below the fold) */
-    .rv { transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .2, 1); }
-    .rv.pre { opacity: 0; transform: translateY(18px); }
 
 
 
@@ -1335,17 +1332,6 @@
   $('#cv-close').addEventListener('click', closeCv);
   cvWrap.addEventListener('click', e => { if (e.target === cvWrap) closeCv(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !cvWrap.hidden) closeCv(); });
-
-  /* ── Blocos aparecem suavemente ao rolar (só os que começam fora da tela) ── */
-  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const items = [...document.querySelectorAll('.sec > header, .card, .timeline .entry, .skills, .prose > p, .prose > h3, .prose > ul, .contact-list, .more-gh')];
-    const io = new IntersectionObserver(entries => entries.forEach(en => {
-      if (en.isIntersecting) { en.target.classList.remove('pre'); io.unobserve(en.target); }
-    }), { rootMargin: '0px 0px -6% 0px' });
-    items.forEach(el => {
-      if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('rv', 'pre'); io.observe(el); }
-    });
-  }
 
   /* ── Dock: marca a seção visível ── */
   const dock = $('#dock'), lens = $('#dock-lens');
