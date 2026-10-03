@@ -217,6 +217,21 @@
     .x { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: transparent; cursor: pointer; display: grid; place-items: center; }
     .x svg { width: 18px; height: 18px; }
     .msgs { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+    .chat { position: relative; z-index: 1; will-change: clip-path, transform; }
+    .msg { animation: msg-pop .5s cubic-bezier(.2, 1.5, .4, 1) both; }
+    .msg.ai { transform-origin: 0 100%; }
+    .msg.me { transform-origin: 100% 100%; }
+    .msg.wait { animation: msg-pop .5s cubic-bezier(.2, 1.5, .4, 1) both, wait-pulse 1.2s ease-in-out .5s infinite; }
+    @keyframes msg-pop { from { opacity: 0; transform: translateY(10px) scale(.55); } }
+    @keyframes wait-pulse { 50% { opacity: .45; } }
+    .float-bubble { /* soap bubble: bright highlight, clear middle, iridescent rim */
+      position: fixed; z-index: 2; pointer-events: none; border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 26%, rgba(255, 255, 255, .95) 0 7%, rgba(255, 255, 255, 0) 20%),
+        radial-gradient(circle at 70% 78%, rgba(255, 255, 255, .35) 0 5%, rgba(255, 255, 255, 0) 14%),
+        radial-gradient(circle, rgba(150, 200, 255, .14) 0 42%, rgba(110, 200, 255, .5) 62%, rgba(255, 120, 230, .65) 80%, rgba(255, 255, 255, .95) 100%);
+      box-shadow: 0 0 18px rgba(150, 190, 255, .45), inset 0 0 6px rgba(255, 255, 255, .25);
+    }
     .msg { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: .95rem; line-height: 1.5; overflow-wrap: anywhere; }
     .msg.ai { align-self: flex-start; background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); border-bottom-left-radius: 6px; }
     .msg.me { align-self: flex-end; background: var(--accent); color: var(--accent-ink); border-bottom-right-radius: 6px; }
@@ -1181,15 +1196,79 @@
       $('#chat-send').disabled = false;
     }
   }
-  const wrap = $('#chat-wrap');
-  let lastFocus = null;
+  /* Abre como uma bolha líquida: a janela cresce a partir da caixa de pergunta, balança como gelatina
+     no fim e solta bolhinhas de vidro. Fecha voltando para dentro da caixa. */
+  const wrap = $('#chat-wrap'), panel = wrap.querySelector('.chat'), heroAsk = $('#hero-ask');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)');
+  let lastFocus = null, running = [];
+  const FULL = 'inset(0px 0px 0px 0px round 28px)';
+  function stopAnims() { running.forEach(a => a.cancel()); running = []; }
+  function originRect() {
+    const r = heroAsk.getBoundingClientRect();
+    if (r.bottom > 0 && r.top < innerHeight) return r;
+    const s = 60, x = innerWidth / 2, y = innerHeight - 110; // fora da tela: nasce de uma bolha perto da barra
+    return { left: x - s / 2, right: x + s / 2, top: y - s / 2, bottom: y + s / 2, width: s, height: s };
+  }
+  function clipFrom(o, r) {
+    const c = v => Math.max(0, Math.round(v));
+    return 'inset(' + c(o.top - r.top) + 'px ' + c(r.right - o.right) + 'px ' + c(r.bottom - o.bottom) + 'px ' + c(o.left - r.left) + 'px round ' + Math.round(o.height / 2) + 'px)';
+  }
+  function floatBubbles(r) {
+    // Saem das laterais da janela e sobem para fora, sem passar por cima do texto do chat.
+    for (let i = 0; i < 12; i++) {
+      const b = document.createElement('span');
+      b.className = 'float-bubble';
+      const size = 10 + Math.random() * 30;
+      const right = i % 2 === 1;
+      const x = right ? r.right - 6 : r.left + 6, y = r.top + r.height * (0.25 + Math.random() * 0.7);
+      b.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (x - size / 2) + 'px;top:' + (y - size / 2) + 'px';
+      wrap.appendChild(b);
+      const out = (right ? 1 : -1) * (30 + Math.random() * 110), rise = 70 + Math.random() * 220;
+      const a = b.animate([
+        { transform: 'translate(0, 0) scale(.2)', opacity: 0 },
+        { transform: 'translate(' + out * 0.5 + 'px,' + -rise * 0.4 + 'px) scale(1)', opacity: 1, offset: 0.35 },
+        { transform: 'translate(' + out + 'px,' + -rise + 'px) scale(1.05)', opacity: 0.9, offset: 0.86 },
+        { transform: 'translate(' + out + 'px,' + (-rise - 8) + 'px) scale(1.7)', opacity: 0 },
+      ], { duration: 1000 + Math.random() * 800, delay: 120 + Math.random() * 300, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'both' });
+      a.onfinish = () => b.remove();
+    }
+  }
   function openChat(question) {
     lastFocus = document.activeElement;
+    stopAnims();
     wrap.hidden = false;
+    if (!calm.matches && panel.animate) {
+      const r = panel.getBoundingClientRect(), o = originRect();
+      running.push(wrap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out' }));
+      running.push(panel.animate([
+        { clipPath: clipFrom(o, r), transform: 'scale(1)', easing: 'cubic-bezier(.3, .9, .35, 1)' },
+        { clipPath: FULL, transform: 'scale(1.03, .97)', offset: 0.6, easing: 'ease-in-out' },
+        { clipPath: FULL, transform: 'scale(.985, 1.015)', offset: 0.8, easing: 'ease-in-out' },
+        { clipPath: FULL, transform: 'scale(1)' },
+      ], { duration: 760 }));
+      [...panel.children].forEach((el, i) => running.push(el.animate(
+        [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 380, delay: 260 + i * 70, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' })));
+      floatBubbles(r);
+    }
     if (question) ask(question);
-    $('#chat-input').focus();
+    $('#chat-input').focus({ preventScroll: true });
   }
-  function closeChat() { wrap.hidden = true; if (lastFocus) lastFocus.focus(); }
+  function closeChat() {
+    if (wrap.hidden) return;
+    const done = () => { wrap.hidden = true; stopAnims(); if (lastFocus) lastFocus.focus({ preventScroll: true }); };
+    if (calm.matches || !panel.animate) return done();
+    stopAnims();
+    const r = panel.getBoundingClientRect(), o = originRect();
+    const shrink = panel.animate([
+      { clipPath: FULL, transform: 'scale(1)' },
+      { clipPath: FULL, transform: 'scale(1.02, .98)', offset: 0.18 },
+      { clipPath: clipFrom(o, r), transform: 'scale(1)' },
+    ], { duration: 420, easing: 'cubic-bezier(.5, 0, .75, 0)', fill: 'forwards' });
+    const fade = wrap.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: 160, easing: 'ease-in', fill: 'forwards' });
+    running.push(shrink, fade);
+    Promise.all([shrink.finished, fade.finished]).then(done, () => {});
+  }
   $('#hero-ask').addEventListener('submit', e => {
     e.preventDefault();
     const input = $('#hero-input');
