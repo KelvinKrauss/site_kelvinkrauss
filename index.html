@@ -263,6 +263,14 @@
     .cv iframe { flex: 1; width: 100%; border: 0; background: #fff; }
     .chat { width: min(560px, 100%); height: min(640px, calc(100svh - 32px)); display: flex; flex-direction: column; overflow: hidden; background: color-mix(in srgb, var(--card-solid) 85%, transparent); backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6); border-radius: 28px; box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 0 0 1px var(--line), var(--shadow-lg); }
     .chat-head { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 18px; border-bottom: 1px solid var(--line); line-height: 1.3; }
+    /* Chat: floating window over the page (no backdrop, no blur), dragged by its header */
+    #chat-wrap { display: block; padding: 0; background: none; backdrop-filter: none; -webkit-backdrop-filter: none; pointer-events: none; }
+    #chat-wrap[hidden] { display: none; }
+    #chat-wrap .chat { position: fixed; left: 0; top: 0; pointer-events: auto; width: min(460px, calc(100vw - 16px)); height: min(580px, calc(100svh - 120px)); box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 0 0 1px var(--line), 0 30px 80px rgba(0, 0, 0, .3), var(--shadow-lg); }
+    #chat-wrap .chat-head { position: relative; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; padding-top: 18px; }
+    #chat-wrap .chat-head::before { content: ""; position: absolute; top: 7px; left: 50%; width: 38px; height: 4px; margin-left: -19px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 22%, transparent); }
+    #chat-wrap.dragging .chat-head { cursor: grabbing; }
+    #chat-wrap.dragging .chat { box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 0 0 1px var(--line), 0 40px 100px rgba(0, 0, 0, .4), var(--shadow-lg); }
     .chat-head img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
     .chat-head div { flex: 1; min-width: 0; }
     .chat-head strong { display: block; }
@@ -568,10 +576,10 @@
 
 <!-- ── Chat ── -->
 <div class="chat-wrap" id="chat-wrap" hidden>
-  <div class="chat" role="dialog" aria-modal="true" aria-labelledby="chat-title">
+  <div class="chat" role="dialog" aria-modal="false" aria-labelledby="chat-title">
     <div class="chat-head">
       <img src="images/foto.jpg" alt="" width="36" height="36">
-      <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume">IA que conhece meu currículo</small></div>
+      <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume · drag to move">IA que conhece meu currículo · arraste para mover</small></div>
       <button class="x" type="button" id="chat-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
     </div>
     <div class="msgs" id="msgs" aria-live="polite"></div>
@@ -1096,6 +1104,7 @@
   const refreshBox = () => { box = canvas.getBoundingClientRect(); };
   addEventListener('scroll', refreshBox, { passive: true });
   addEventListener('resize', refreshBox);
+  window.fluidRefresh = refreshBox; // canvas moved (e.g. chat window dragged)
   // Called by the page when the canvas moves between the question box and the chat window.
   window.fluidRelayout = function () {
     const big = canvas.clientHeight > 150;
@@ -1377,13 +1386,55 @@
     target.prepend(ink);
     if (window.fluidRelayout) window.fluidRelayout();
   }
+  // Posição da janela flutuante (fica onde a pessoa deixou enquanto a página estiver aberta)
+  let chatPos = null;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  function placeChat() {
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    if (!chatPos) chatPos = innerWidth < 700
+      ? { x: (innerWidth - w) / 2, y: innerHeight - h - 96 }
+      : { x: innerWidth - w - 40, y: (innerHeight - h) / 2 };
+    chatPos.x = clamp(chatPos.x, 8, Math.max(8, innerWidth - w - 8));
+    chatPos.y = clamp(chatPos.y, 8, Math.max(8, innerHeight - h - 8));
+    panel.style.left = Math.round(chatPos.x) + 'px';
+    panel.style.top = Math.round(chatPos.y) + 'px';
+    if (window.fluidRefresh) window.fluidRefresh();
+  }
+  const chatHead = panel.querySelector('.chat-head');
+  chatHead.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || e.target.closest('button')) return;
+    e.preventDefault();
+    stopAnims();
+    const dx = e.clientX - chatPos.x, dy = e.clientY - chatPos.y;
+    wrap.classList.add('dragging');
+    chatHead.setPointerCapture(e.pointerId);
+    const move = ev => { chatPos.x = ev.clientX - dx; chatPos.y = ev.clientY - dy; placeChat(); };
+    const up = () => {
+      wrap.classList.remove('dragging');
+      chatHead.removeEventListener('pointermove', move);
+      chatHead.removeEventListener('pointerup', up);
+      chatHead.removeEventListener('pointercancel', up);
+    };
+    chatHead.addEventListener('pointermove', move);
+    chatHead.addEventListener('pointerup', up);
+    chatHead.addEventListener('pointercancel', up);
+  });
+  addEventListener('resize', () => { if (!wrap.hidden) placeChat(); });
+
   function openChat(question) {
+    if (!wrap.hidden) { // já aberto: só pergunta
+      if (question) ask(question);
+      $('#chat-input').focus({ preventScroll: true });
+      return;
+    }
     lastFocus = document.activeElement;
     stopAnims();
     const o = originRect();
     wrap.hidden = false;
+    placeChat();
     moveInk(panel);
     heroAsk.style.visibility = 'hidden';
+    setTimeout(() => { if (!wrap.hidden) heroAsk.style.visibility = ''; }, 760);
     if (!calm.matches && panel.animate) running.push(...grow(wrap, panel, o));
     if (question) ask(question);
     $('#chat-input').focus({ preventScroll: true });
@@ -1416,7 +1467,6 @@
     ask(q);
   });
   $('#chat-close').addEventListener('click', closeChat);
-  wrap.addEventListener('click', e => { if (e.target === wrap) closeChat(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !wrap.hidden) closeChat(); });
 
   /* ── Projeto: abre e fecha os detalhes ── */
