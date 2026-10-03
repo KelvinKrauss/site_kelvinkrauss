@@ -280,6 +280,12 @@
     .sugg button:hover { border-color: var(--muted); }
     .chat form { padding: 10px; border-top: 1px solid var(--line); }
     .chat form .ask { margin: 0; max-width: none; }
+    /* Ink inside the chat window */
+    .chat { isolation: isolate; }
+    .chat #fluid { clip-path: inset(0 round 28px); -webkit-mask-image: none; mask-image: none; opacity: .5; }
+    .chat .msg.ai { background: color-mix(in srgb, var(--card-solid) 80%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: inset 0 0 0 1px var(--line); }
+    .chat .sugg button { background: color-mix(in srgb, var(--card-solid) 72%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .chat .chat-head, .chat form { background: color-mix(in srgb, var(--card-solid) 55%, transparent); }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -1090,6 +1096,18 @@
   const refreshBox = () => { box = canvas.getBoundingClientRect(); };
   addEventListener('scroll', refreshBox, { passive: true });
   addEventListener('resize', refreshBox);
+  // Called by the page when the canvas moves between the question box and the chat window.
+  window.fluidRelayout = function () {
+    const big = canvas.clientHeight > 150;
+    config.SIM_RESOLUTION = big ? 96 : 48;
+    config.DYE_RESOLUTION = big ? 512 : 192;
+    config.SPLAT_SIZE = big ? 0.012 : 0.1;
+    canvas.width = 0; // forces resizeCanvas() -> initFramebuffers() on the next frame
+    refreshBox();
+    pointer.started = false;
+    introT = 0;
+    lastInput = performance.now();
+  };
   const near = (x, y) => x > box.left - 24 && x < box.right + 24 && y > box.top - 24 && y < box.bottom + 24;
   function updatePointer(clientX, clientY) {
     const x = (clientX - box.left) * dpr, y = (clientY - box.top) * dpr;
@@ -1218,7 +1236,15 @@
     renderHints();
     resetChat();
   }
-  $('#lang-btn').addEventListener('click', () => { applyLang(lang === 'en' ? 'pt' : 'en'); store.set('kk-lang', lang); });
+  $('#lang-btn').addEventListener('click', () => {
+    const swap = () => { applyLang(lang === 'en' ? 'pt' : 'en'); store.set('kk-lang', lang); };
+    const page = $('.page');
+    if (!page.animate || matchMedia('(prefers-reduced-motion: reduce)').matches) return swap();
+    page.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(4px)' }], { duration: 140, easing: 'ease-in' }).finished.then(() => {
+      swap();
+      page.animate([{ opacity: 0, transform: 'translateY(-4px)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: 'ease-out' });
+    });
+  });
 
   /* ── Brilho: slider contínuo de escuro a claro ── */
   const shade = $('#shade');
@@ -1230,7 +1256,7 @@
   /* ── Copiar e-mail ── */
   $('#copy-email').addEventListener('click', e => {
     const btn = e.currentTarget, email = $('#email').textContent.trim();
-    const done = () => { btn.textContent = TXT[lang].copied; setTimeout(() => { btn.textContent = TXT[lang].copy; }, 1800); };
+    const done = () => { if (btn.animate) btn.animate([{ transform: 'scale(.88)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' }); btn.textContent = TXT[lang].copied; setTimeout(() => { btn.textContent = TXT[lang].copy; }, 1800); };
     const fallback = () => { const r = document.createRange(); r.selectNodeContents($('#email')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
     if (navigator.clipboard) navigator.clipboard.writeText(email).then(done, fallback); else fallback();
   });
@@ -1317,40 +1343,65 @@
     const c = v => Math.max(0, Math.round(v));
     return 'inset(' + c(o.top - r.top) + 'px ' + c(r.right - o.right) + 'px ' + c(r.bottom - o.bottom) + 'px ' + c(o.left - r.left) + 'px round ' + Math.round(o.height / 2) + 'px)';
   }
+  // Janela nasce do retângulo "o" (a caixa ou o botão clicado) e balança no fim.
+  function grow(w, pnl, o) {
+    const r = pnl.getBoundingClientRect();
+    const list = [
+      w.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: 'ease-out' }),
+      pnl.animate([
+        { clipPath: clipFrom(o, r), transform: 'scale(1)', easing: 'cubic-bezier(.3, .9, .35, 1)' },
+        { clipPath: FULL, transform: 'scale(1.025, .975)', offset: 0.62, easing: 'ease-in-out' },
+        { clipPath: FULL, transform: 'scale(.99, 1.01)', offset: 0.82, easing: 'ease-in-out' },
+        { clipPath: FULL, transform: 'scale(1)' },
+      ], { duration: 720 }),
+    ];
+    [...pnl.children].filter(el => el.id !== 'fluid').forEach((el, i) => list.push(el.animate(
+      [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
+      { duration: 360, delay: 240 + i * 60, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' })));
+    return list;
+  }
+  function shrinkTo(w, pnl, o) {
+    const r = pnl.getBoundingClientRect();
+    const a = pnl.animate([
+      { clipPath: FULL, transform: 'scale(1)' },
+      { clipPath: FULL, transform: 'scale(1.02, .98)', offset: 0.18 },
+      { clipPath: clipFrom(o, r), transform: 'scale(1)' },
+    ], { duration: 420, easing: 'cubic-bezier(.5, 0, .75, 0)', fill: 'forwards' });
+    const b = w.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, delay: 180, easing: 'ease-in', fill: 'forwards' });
+    return { list: [a, b], done: Promise.all([a.finished, b.finished]) };
+  }
+  // A tinta da caixa de pergunta vai junto para a janela do chat, e volta quando ela fecha.
+  const ink = $('#fluid');
+  function moveInk(target) {
+    if (!ink || ink.parentElement === target) return;
+    target.prepend(ink);
+    if (window.fluidRelayout) window.fluidRelayout();
+  }
   function openChat(question) {
     lastFocus = document.activeElement;
     stopAnims();
+    const o = originRect();
     wrap.hidden = false;
-    if (!calm.matches && panel.animate) {
-      const r = panel.getBoundingClientRect(), o = originRect();
-      running.push(wrap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out' }));
-      running.push(panel.animate([
-        { clipPath: clipFrom(o, r), transform: 'scale(1)', easing: 'cubic-bezier(.3, .9, .35, 1)' },
-        { clipPath: FULL, transform: 'scale(1.03, .97)', offset: 0.6, easing: 'ease-in-out' },
-        { clipPath: FULL, transform: 'scale(.985, 1.015)', offset: 0.8, easing: 'ease-in-out' },
-        { clipPath: FULL, transform: 'scale(1)' },
-      ], { duration: 760 }));
-      [...panel.children].forEach((el, i) => running.push(el.animate(
-        [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
-        { duration: 380, delay: 260 + i * 70, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' })));
-    }
+    moveInk(panel);
+    heroAsk.style.visibility = 'hidden';
+    if (!calm.matches && panel.animate) running.push(...grow(wrap, panel, o));
     if (question) ask(question);
     $('#chat-input').focus({ preventScroll: true });
   }
   function closeChat() {
     if (wrap.hidden) return;
-    const done = () => { wrap.hidden = true; stopAnims(); if (lastFocus) lastFocus.focus({ preventScroll: true }); };
+    const done = () => {
+      wrap.hidden = true; stopAnims();
+      heroAsk.style.visibility = '';
+      moveInk(heroAsk);
+      if (lastFocus) lastFocus.focus({ preventScroll: true });
+    };
     if (calm.matches || !panel.animate) return done();
     stopAnims();
-    const r = panel.getBoundingClientRect(), o = originRect();
-    const shrink = panel.animate([
-      { clipPath: FULL, transform: 'scale(1)' },
-      { clipPath: FULL, transform: 'scale(1.02, .98)', offset: 0.18 },
-      { clipPath: clipFrom(o, r), transform: 'scale(1)' },
-    ], { duration: 420, easing: 'cubic-bezier(.5, 0, .75, 0)', fill: 'forwards' });
-    const fade = wrap.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: 160, easing: 'ease-in', fill: 'forwards' });
-    running.push(shrink, fade);
-    Promise.all([shrink.finished, fade.finished]).then(done, () => {});
+    heroAsk.style.visibility = '';
+    const s = shrinkTo(wrap, panel, originRect());
+    running.push(...s.list);
+    s.done.then(done, () => {});
   }
   $('#hero-ask').addEventListener('submit', e => {
     e.preventDefault();
@@ -1386,14 +1437,26 @@
   const cvWrap = $('#cv-wrap'), cvFrame = $('#cv-frame');
   const bigScreen = matchMedia('(min-width: 760px) and (pointer: fine)');
   let cvReturn = null;
-  function closeCv() { cvWrap.hidden = true; if (cvReturn) cvReturn.focus(); }
+  const cvPanel = cvWrap.querySelector('.chat');
+  let cvAnims = [];
+  function closeCv() {
+    if (cvWrap.hidden) return;
+    const done = () => { cvWrap.hidden = true; cvAnims.forEach(a => a.cancel()); cvAnims = []; if (cvReturn) cvReturn.focus({ preventScroll: true }); };
+    if (calm.matches || !cvPanel.animate || !cvReturn) return done();
+    cvAnims.forEach(a => a.cancel());
+    const s = shrinkTo(cvWrap, cvPanel, cvReturn.getBoundingClientRect());
+    cvAnims = s.list;
+    s.done.then(done, () => {});
+  }
   document.querySelectorAll('[data-resume]').forEach(a => a.addEventListener('click', e => {
     if (!bigScreen.matches) return;
     e.preventDefault();
     cvReturn = a;
     if (!cvFrame.getAttribute('src')) cvFrame.setAttribute('src', a.getAttribute('href') + '#view=FitH');
+    cvAnims.forEach(x => x.cancel());
     cvWrap.hidden = false;
-    $('#cv-close').focus();
+    if (!calm.matches && cvPanel.animate) cvAnims = grow(cvWrap, cvPanel, a.getBoundingClientRect());
+    $('#cv-close').focus({ preventScroll: true });
   }));
   $('#cv-close').addEventListener('click', closeCv);
   cvWrap.addEventListener('click', e => { if (e.target === cvWrap) closeCv(); });
