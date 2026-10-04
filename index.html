@@ -304,8 +304,8 @@
     #chat-wrap { display: block; padding: 0; background: none; backdrop-filter: none; -webkit-backdrop-filter: none; pointer-events: none; }
     #chat-wrap[hidden] { display: none; }
     #chat-wrap .chat { position: fixed; left: 0; top: 0; pointer-events: auto; width: min(460px, calc(100vw - 16px)); height: min(580px, calc(100svh - 120px)); box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 0 0 1px var(--line), 0 30px 80px rgba(0, 0, 0, .3), var(--shadow-lg); }
-    #chat-wrap .chat-head { position: relative; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; padding-top: 18px; }
-    #chat-wrap .chat-head::before { content: ""; position: absolute; top: 7px; left: 50%; width: 38px; height: 4px; margin-left: -19px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 22%, transparent); }
+    #chat-wrap .chat-head { position: relative; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; gap: 10px; padding: 12px 10px 9px 14px; }
+    #chat-wrap .chat-head::before { content: ""; position: absolute; top: 4px; left: 50%; width: 34px; height: 3px; margin-left: -19px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 22%, transparent); }
     #chat-wrap.dragging .chat-head { cursor: grabbing; }
     #chat-wrap .chat-head .x + .x { margin-left: -4px; }
     /* Minimized chat: a draggable bubble */
@@ -657,7 +657,7 @@
     <span class="rz" data-rz="l" aria-hidden="true"></span><span class="rz" data-rz="r" aria-hidden="true"></span><span class="rz" data-rz="b" aria-hidden="true"></span><span class="rz" data-rz="bl" aria-hidden="true"></span><span class="rz" data-rz="br" aria-hidden="true"></span>
     <div class="chat-head">
       <span class="head-orb" aria-hidden="true"><span class="orb"></span></span>
-      <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume · drag the top or the edges">IA que conhece meu currículo · arraste o topo ou as bordas</small></div>
+      <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume">IA que conhece meu currículo</small></div>
       <button class="x" type="button" id="chat-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
     </div>
     <div class="msgs" id="msgs" aria-live="polite"></div>
