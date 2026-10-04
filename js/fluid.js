@@ -28,16 +28,16 @@
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   // Sized for a small, wide canvas (the question box), not the whole screen.
   const config = {
-    SIM_RESOLUTION: 48,
-    DYE_RESOLUTION: 192,
+    SIM_RESOLUTION: 64,
+    DYE_RESOLUTION: 256,
     DENSITY_DISSIPATION: 0.9,
-    VELOCITY_DISSIPATION: 1,
+    VELOCITY_DISSIPATION: 1.4,
     PRESSURE: 0.1,
     PRESSURE_ITERATIONS: 20,
-    CURL: 6,
+    CURL: 3,
     SPLAT_RADIUS: 0.2,
     SPLAT_SIZE: 0.1,
-    SPLAT_FORCE: 2500,
+    SPLAT_FORCE: 3500,
     COLOR_UPDATE_SPEED: 10,
   };
 
@@ -153,8 +153,10 @@
       float dy = length(tc) - length(bc);
       vec3 n = normalize(vec3(dx, dy, length(texelSize)));
       float diffuse = clamp(dot(n, vec3(0.0, 0.0, 1.0)) + 0.7, 0.7, 1.0);
-      c *= diffuse * 1.7;
-      c = min(c, vec3(1.0));
+      c *= diffuse;
+      // soft roll-off instead of a hard clamp: thick ink stays bright but keeps its gradient and gloss
+      // (a hard clamp turned it into flat neon patches with sharp edges)
+      c = vec3(1.0) - exp(-c * 2.2);
       float a = max(c.r, max(c.g, c.b));
       gl_FragColor = vec4(c, a);
     }`));
@@ -386,7 +388,7 @@
     pressure = createDoubleFBO(simRes.width, simRes.height, formatR.internalFormat, formatR.format, halfFloatTexType, gl.NEAREST);
   }
 
-  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   function resizeCanvas() {
     const w = Math.floor(canvas.clientWidth * dpr), h = Math.floor(canvas.clientHeight * dpr);
     if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; return true; }
@@ -536,13 +538,16 @@
   let stirScale = 1, dyeBoost = 1;
   window.fluidRelayout = function () {
     const big = canvas.clientHeight > 150;
-    // In the chat window the ink is finer: smaller drops, more resolution, gentler and faster-fading.
-    config.SIM_RESOLUTION = big ? 144 : 48;
-    config.DYE_RESOLUTION = big ? 768 : 192;
-    config.SPLAT_SIZE = big ? 0.0035 : 0.1;
-    config.SPLAT_FORCE = big ? 1500 : 2500;
-    config.DENSITY_DISSIPATION = big ? 1.1 : 0.9;
-    config.CURL = big ? 14 : 6;
+    // In the chat window the ink is finer: smaller drops and more resolution.
+    // Motion settles fast (high velocity dissipation) and swirls are gentle (low curl), so strokes stay
+    // smooth and silky instead of breaking into small turbulent curls, as on aaabadcode.com.
+    config.SIM_RESOLUTION = big ? 160 : 64;
+    config.DYE_RESOLUTION = big ? 1024 : 256;
+    config.SPLAT_SIZE = big ? 0.003 : 0.1;
+    config.SPLAT_FORCE = big ? 3000 : 3500;
+    config.VELOCITY_DISSIPATION = big ? 2.6 : 1.4;
+    config.DENSITY_DISSIPATION = big ? 0.75 : 0.9;
+    config.CURL = big ? 4 : 3;
     stirScale = big ? 0.45 : 1;
     dyeBoost = big ? 3 : 1; // smaller drops carry less dye, so each one is brighter
     canvas.width = 0; // forces resizeCanvas() -> initFramebuffers() on the next frame
