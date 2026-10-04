@@ -360,7 +360,22 @@
     return target;
   }
 
-  const dpr = window.devicePixelRatio || 1;
+  // ── Automatic quality ──
+  // Strong graphics cards keep level 0 (the reference's settings). On weaker ones (notebooks with
+  // integrated graphics) the frame rate is measured and the quality drops one level at a time, cutting
+  // first what shows least: pressure passes, then ink resolution, then the simulation grid and pixel density.
+  const QUALITY = [
+    { iter: 20, dye: 1, sim: 1, dpr: 4 },
+    { iter: 12, dye: 1, sim: 1, dpr: 4 },
+    { iter: 10, dye: 0.7, sim: 1, dpr: 1.5 },
+    { iter: 8, dye: 0.5, sim: 0.75, dpr: 1 },
+    { iter: 6, dye: 0.4, sim: 0.6, dpr: 1 },
+  ];
+  let level = 0;
+  try { level = Math.min(QUALITY.length - 1, Math.max(0, +sessionStorage.getItem('kk-ink-q') || 0)); } catch (e) {}
+  let Q = QUALITY[level];
+  const fullDpr = window.devicePixelRatio || 1;
+  let dpr = Math.min(fullDpr, Q.dpr);
   // Simulation area, in CSS pixels. Chat: the window itself. Question box: an area of BOX_AREA x the screen,
   // centered on the box (never smaller than the box); the drops grow with this number
   // (1 = as big as on a full-screen canvas, which was too big; the box alone was too small).
@@ -384,10 +399,10 @@
   let dye, velocity, divergence, curl, pressure;
   // keep = stretch the current ink to the new size (resizing); otherwise start empty (box <-> chat)
   function initFramebuffers(keep) {
-    const simRes = getResolution(config.SIM_RESOLUTION);
+    const simRes = getResolution(Math.round(config.SIM_RESOLUTION * Q.sim));
     // the reference draws 1440 dye pixels over a ~900 px screen (1.6 per pixel); same density here,
     // without building a texture far bigger than the window
-    const dyeRes = getResolution(Math.min(config.DYE_RESOLUTION, Math.ceil(Math.min(simW, simH) * 1.6)));
+    const dyeRes = getResolution(Math.round(Math.min(config.DYE_RESOLUTION, Math.ceil(Math.min(simW, simH) * 1.6)) * Q.dye));
     const filtering = supportLinearFiltering ? gl.LINEAR : gl.NEAREST;
     const rgba = [formatRGBA.internalFormat, formatRGBA.format, halfFloatTexType, filtering];
     const rg = [formatRG.internalFormat, formatRG.format, halfFloatTexType, filtering];
@@ -477,7 +492,7 @@
     pressureProgram.bind();
     gl.uniform2f(pressureProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
     gl.uniform1i(pressureProgram.uniforms.uDivergence, divergence.attach(0));
-    for (let i = 0; i < config.PRESSURE_ITERATIONS; i++) {
+    for (let i = 0; i < Q.iter; i++) {
       gl.uniform1i(pressureProgram.uniforms.uPressure, pressure.read.attach(1));
       blit(pressure.write);
       pressure.swap();
@@ -599,15 +614,41 @@
   window.fluidRelayout = function () { screenMode = canvas.clientHeight <= 150; fresh = true; introT = 0; inside = false; lastInput = performance.now(); };
   window.fluidRefresh = function () { rect = canvas.getBoundingClientRect(); lastInput = performance.now(); };
 
+  // Frames are counted in 1.5 s windows while the ink is working. Two windows under 48 fps: one level down (the ink
+  // is stretched to the new size, nothing blinks), then a short pause before measuring again.
+  // Only downwards, so it never keeps switching; the level is kept until the tab is closed.
+  let meterStart = 0, meterFrames = 0, badWindows = 0, settleUntil = performance.now() + 1500; // page load is not a fair sample
+  function meter(now, gap) {
+    if (gap > 250 || now < settleUntil) { meterStart = 0; return; } // tab switch, idle, or just changed
+    if (!meterStart) { meterStart = now; meterFrames = 0; return; }
+    meterFrames++;
+    if (now - meterStart < 1500) return;
+    const fps = meterFrames * 1000 / (now - meterStart);
+    meterStart = 0;
+    // two slow windows in a row: one stutter (opening the chat, a page load) doesn't count
+    badWindows = fps < 48 ? badWindows + 1 : 0;
+    if (badWindows < 2 || level >= QUALITY.length - 1) return;
+    badWindows = 0;
+    level++;
+    Q = QUALITY[level];
+    dpr = Math.min(fullDpr, Q.dpr);
+    simW = -1; // forces the framebuffers to be rebuilt (stretching the current ink) on the next frame
+    settleUntil = now + 600;
+    try { sessionStorage.setItem('kk-ink-q', String(level)); } catch (e) {}
+  }
+  window.fluidQuality = () => ({ level, ...Q });
+
   resizeCanvas();
   initFramebuffers(false);
   let last = performance.now(), colorTimer = 0;
   function frame() {
     const now = performance.now();
-    const dt = Math.min((now - last) / 1000, 0.016666);
+    const gap = now - last;
+    const dt = Math.min(gap / 1000, 0.016666);
     last = now;
     // nothing on screen to show, or nothing moving for a while: skip the work
-    if (!visible || document.hidden || (now - lastInput > 12000 && introT > 1.4)) { requestAnimationFrame(frame); return; }
+    if (!visible || document.hidden || (now - lastInput > 12000 && introT > 1.4)) { meterStart = 0; requestAnimationFrame(frame); return; }
+    meter(now, gap);
     // resizing the chat window stretches the ink with it; moving between box and chat starts over
     if (resizeCanvas() || fresh) { initFramebuffers(!fresh); fresh = false; }
     colorTimer += dt * config.COLOR_UPDATE_SPEED;
