@@ -139,7 +139,7 @@
     .now-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 50%, transparent); animation: now-pulse 2.4s ease-out infinite; }
     @keyframes now-pulse { 70% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--ok) 0%, transparent); } 100% { box-shadow: 0 0 0 0 transparent; } }
     .now-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
-    .now-card li { position: relative; padding-left: 18px; font-size: .97rem; line-height: 1.5; color: var(--text); }
+    .now-card li { position: relative; text-wrap: pretty; padding-left: 18px; font-size: .97rem; line-height: 1.5; color: var(--text); }
     .now-card li::before { content: ""; position: absolute; left: 0; top: .55em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
     @media (min-width: 1100px) { .hero { grid-template-columns: minmax(0, 1fr) 360px; column-gap: 72px; align-items: center; } }
     h1 { font-size: clamp(2rem, 3.8vw, 3rem); font-weight: 600; line-height: 1.12; letter-spacing: -.03em; max-width: 22ch; }
@@ -499,10 +499,10 @@
       <aside class="now-card" aria-labelledby="now-title">
         <p class="now-head"><span class="now-dot" aria-hidden="true"></span><strong id="now-title" data-en="Now">Agora</strong><span data-en="October 2026">outubro de 2026</span></p>
         <ul>
+          <li data-en="Apprentice at Ociani Transportadora: office work, IT support and the company's new website, live since October 2.">Jovem aprendiz na Ociani Transportadora: administrativo, suporte de TI e o novo site da empresa, que foi ao ar em 2 de outubro.</li>
           <li data-en="First semester of Systems Analysis and Development at IFSC.">Primeiro semestre de Análise e Desenvolvimento de Sistemas no IFSC.</li>
-          <li data-en="The Ociani website has just gone live, on October 2.">O site da Ociani acabou de ir ao ar, em 2 de outubro.</li>
           <li data-en="Studying AWS to take the official certification.">Estudando AWS para tirar a certificação oficial.</li>
-          <li data-en="Looking for an internship or junior role, on-site or remote.">Procurando estágio ou vaga júnior, presencial ou remoto.</li>
+          <li data-en="Open to internship or junior role offers, on-site or remote.">Aberto a propostas de estágio ou vaga júnior, presencial ou remoto.</li>
         </ul>
       </aside>
     </header>
