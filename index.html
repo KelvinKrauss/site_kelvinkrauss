@@ -141,6 +141,32 @@
     .sec > header h2 { font-size: 1rem; font-weight: 600; letter-spacing: 0; color: var(--ink); }
     .sec > header p { font-size: .88rem; color: var(--muted); line-height: 1.5; margin-top: 4px; }
     .prose { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+    .bio-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .bio-links .pill { padding: 10px 16px; }
+    .bio-links + .ask { margin-top: 26px; }
+
+    /* Wide screens: use the 16:9 width so there is less to scroll */
+    @media (min-width: 1100px) {
+      .wrap { max-width: 1320px; }
+      main { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 64px; border-top: 1px solid var(--line); }
+      main > .sec { display: flex; flex-direction: column; gap: 22px; padding-block: 56px; border-top: 0; min-width: 0; }
+      main > .sec > header { position: static; }
+      main > .sec > header p { margin-top: 2px; }
+      #sobre { grid-column: span 7; order: 1; }
+      #trajetoria { grid-column: span 5; order: 2; }
+      #projetos { grid-column: 1 / -1; order: 3; border-top: 1px solid var(--line); }
+      #habilidades { grid-column: span 5; order: 4; border-top: 1px solid var(--line); }
+      #agora { grid-column: span 3; order: 5; border-top: 1px solid var(--line); }
+      #contato { grid-column: span 4; order: 6; border-top: 1px solid var(--line); }
+      #projetos .entries { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+      #projetos .entries .more-gh { grid-column: 1 / -1; }
+      #projetos .entry-top { flex-direction: column; align-items: flex-start; gap: 2px; }
+      #habilidades .skills { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+      #habilidades .skills dd { margin-bottom: 14px; }
+      #contato .contact-list div { grid-template-columns: minmax(0, 1fr); gap: 2px; padding-block: 11px; }
+      #contato .contact-list dd { justify-content: flex-start; }
+      .prose h3 { font-size: 1.5rem; }
+    }
     .prose h3 { font-size: clamp(1.5rem, 2.6vw, 1.9rem); font-weight: 600; line-height: 1.2; letter-spacing: -.025em; }
     .prose h4 { font-size: 1.08rem; font-weight: 600; margin-top: 14px; }
     .prose ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 10px; }
@@ -416,7 +442,6 @@
           <input id="shade" type="range" min="0" max="100" step="100" value="0" aria-label="Tema: escuro ou claro" data-en-aria="Theme: dark or light">
           <svg aria-hidden="true"><use href="#i-sun"/></svg>
         </label>
-        <a class="pill glass" data-glass="32" href="images/curriculo.pdf" target="_blank" rel="noopener" data-resume><svg><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></a>
         <button class="pill glass" data-glass="30" id="lang-btn" type="button" aria-label="Read in English">EN</button>
       </div>
     </div>
@@ -426,6 +451,12 @@
       <h1 data-en="<span class='soft'>Hi, I'm</span> Kelvin Krauss"><span class="soft">Olá, eu sou o</span> Kelvin Krauss</h1>
       <p class="lead" data-en="I am a Systems Analysis and Development student at the Federal Institute of Santa Catarina, and a huge technology enthusiast, with a strong interest in AI, web development, and back-end. My main technical focus is the AWS Ecosystem, Java, SQL databases, and Python, creating efficient solutions and robust architectures, such as APIs and microservices.">Sou graduando em Análise e Desenvolvimento de Sistemas no Instituto Federal de Santa Catarina, e um grande entusiasta da tecnologia, com forte interesse em I.A., desenvolvimento web e back-end. Meu foco técnico principal está no Ecossistema AWS, Java, bancos de dados SQL e Python, criando soluções eficientes e arquiteturas robustas, como APIs e microsserviços.</p>
       <p class="lead lead-2" data-en="Open to internships, collaborations, and continuous learning opportunities in tech, including remote work for international companies.">Aberto a oportunidades de estágio, colaborações e aprendizado contínuo na área de tecnologia, incluindo atuação remota para empresas internacionais.</p>
+      <div class="bio-links">
+        <a class="pill glass" data-glass="32" href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><svg><use href="#i-in"/></svg>LinkedIn</a>
+        <a class="pill glass" data-glass="32" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>
+        <a class="pill glass" data-glass="32" href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><svg><use href="#i-gh"/></svg>GitHub</a>
+        <a class="pill glass" data-glass="32" href="images/curriculo.pdf" target="_blank" rel="noopener" data-resume><svg><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></a>
+      </div>
 
       <form class="ask glass" data-glass="44" id="hero-ask" role="search">
         <canvas id="fluid" aria-hidden="true"></canvas>
