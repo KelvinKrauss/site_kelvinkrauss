@@ -26,18 +26,18 @@
 (function fluid() {
   const canvas = document.getElementById('fluid');
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  // Sized for a small, wide canvas (the question box), not the whole screen.
+  // The same settings as aaabadcode.com (their fluid is a full-screen canvas). Only the ink lasts longer:
+  // DENSITY_DISSIPATION 0.5 -> 0.36 keeps it visible about 2 s more (exp(-d*t): 10% left at 4.6 s -> 6.4 s).
   const config = {
-    SIM_RESOLUTION: 64,
-    DYE_RESOLUTION: 256,
-    DENSITY_DISSIPATION: 0.9,
-    VELOCITY_DISSIPATION: 1.4,
+    SIM_RESOLUTION: 128,
+    DYE_RESOLUTION: 1440,
+    DENSITY_DISSIPATION: 0.36,
+    VELOCITY_DISSIPATION: 3,
     PRESSURE: 0.1,
     PRESSURE_ITERATIONS: 20,
     CURL: 3,
     SPLAT_RADIUS: 0.2,
-    SPLAT_SIZE: 0.1,
-    SPLAT_FORCE: 3500,
+    SPLAT_FORCE: 6000,
     COLOR_UPDATE_SPEED: 10,
   };
 
@@ -139,7 +139,22 @@
     varying highp vec2 vUv; uniform sampler2D uTexture; uniform float value;
     void main () { gl_FragColor = value * texture2D(uTexture, vUv); }`));
 
-  const displayProgram = createProgram(baseVertex, frag(`
+  // Our canvas covers only the box (or the chat), so the display pass maps it onto its part of the screen:
+  // uRect = where the canvas is, in screen texture coordinates (x, y from the bottom-left, width, height).
+  const displayVertex = compileShader(gl.VERTEX_SHADER, `
+    precision highp float;
+    attribute vec2 aPosition;
+    varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB;
+    uniform vec2 texelSize; uniform vec4 uRect;
+    void main () {
+      vUv = uRect.xy + (aPosition * 0.5 + 0.5) * uRect.zw;
+      vL = vUv - vec2(texelSize.x, 0.0);
+      vR = vUv + vec2(texelSize.x, 0.0);
+      vT = vUv + vec2(0.0, texelSize.y);
+      vB = vUv - vec2(0.0, texelSize.y);
+      gl_Position = vec4(aPosition, 0.0, 1.0);
+    }`);
+  const displayProgram = createProgram(displayVertex, frag(`
     precision highp float; precision highp sampler2D;
     varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB;
     uniform sampler2D uTexture; uniform vec2 texelSize;
@@ -154,9 +169,6 @@
       vec3 n = normalize(vec3(dx, dy, length(texelSize)));
       float diffuse = clamp(dot(n, vec3(0.0, 0.0, 1.0)) + 0.7, 0.7, 1.0);
       c *= diffuse;
-      // soft roll-off instead of a hard clamp: thick ink stays bright but keeps its gradient and gloss
-      // (a hard clamp turned it into flat neon patches with sharp edges)
-      c = vec3(1.0) - exp(-c * 2.2);
       float a = max(c.r, max(c.g, c.b));
       gl_FragColor = vec4(c, a);
     }`));
@@ -265,49 +277,6 @@
       gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0);
     }`));
 
-  // Solid barrier: inside the (rounded) rectangle the ink is erased and the flow stops; just outside,
-  // velocity pointing into the wall is reflected, so the ink bounces off instead of passing through.
-  const MAX_WALLS = 10;
-  const obstacleProgram = createProgram(baseVertex, frag(`
-    precision highp float; precision highp sampler2D;
-    varying vec2 vUv;
-    uniform sampler2D uTarget; uniform vec4 rects[10]; uniform int count; uniform float aspectRatio; uniform float mode;
-    float sdBox (vec2 p, vec2 b, float r) {
-      vec2 d = abs(p) - (b - r);
-      return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0) - r;
-    }
-    float dist (vec2 uv) {
-      float best = 10.0;
-      for (int i = 0; i < 10; i++) {
-        if (i >= count) break;
-        vec4 rc = rects[i];
-        vec2 c = (rc.xy + rc.zw) * 0.5;
-        vec2 h = (rc.zw - rc.xy) * 0.5;
-        vec2 p = uv - c;
-        p.x *= aspectRatio; h.x *= aspectRatio;
-        best = min(best, sdBox(p, h, min(0.03, min(h.x, h.y))));
-      }
-      return best;
-    }
-    void main () {
-      vec4 v = texture2D(uTarget, vUv);
-      float d = dist(vUv);
-      if (mode < 0.5) {
-        if (d < 0.0) {
-          v.xy = vec2(0.0);
-        } else if (d < 0.04) {
-          vec2 e = vec2(0.002, 0.0);
-          vec2 n = vec2(dist(vUv + e.xy) - dist(vUv - e.xy), dist(vUv + e.yx) - dist(vUv - e.yx));
-          n = normalize(n + 1e-6);
-          float vn = dot(v.xy, n);
-          if (vn < 0.0) v.xy -= 1.7 * vn * n;
-        }
-        gl_FragColor = vec4(v.xy, 0.0, 1.0);
-      } else {
-        gl_FragColor = vec4(v.rgb * smoothstep(-0.002, 0.012, d), 1.0);
-      }
-    }`));
-
   const gradientSubtractProgram = createProgram(baseVertex, frag(`
     precision mediump float; precision mediump sampler2D;
     varying highp vec2 vUv; varying highp vec2 vL; varying highp vec2 vR; varying highp vec2 vT; varying highp vec2 vB;
@@ -368,11 +337,17 @@
       swap() { const t = a; a = b; b = t; },
     };
   }
+
+  // The simulation is the size of the screen (like the reference's full-screen canvas); the box and the
+  // chat window are windows onto it, so the ink moves exactly the same way and only shows inside them.
+  const dpr = window.devicePixelRatio || 1;
+  let screenW = 0, screenH = 0;
+  const screenAspect = () => screenW / screenH;
   function getResolution(resolution) {
-    let aspect = gl.drawingBufferWidth / gl.drawingBufferHeight;
+    let aspect = screenAspect();
     if (aspect < 1) aspect = 1 / aspect;
     const min = Math.round(resolution), max = Math.round(resolution * aspect);
-    return gl.drawingBufferWidth > gl.drawingBufferHeight ? { width: max, height: min } : { width: min, height: max };
+    return screenW > screenH ? { width: max, height: min } : { width: min, height: max };
   }
 
   let dye, velocity, divergence, curl, pressure;
@@ -387,12 +362,17 @@
     curl = createFBO(simRes.width, simRes.height, formatR.internalFormat, formatR.format, halfFloatTexType, gl.NEAREST);
     pressure = createDoubleFBO(simRes.width, simRes.height, formatR.internalFormat, formatR.format, halfFloatTexType, gl.NEAREST);
   }
-
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  // the screen changed size: new simulation (the reference does the same)
+  function resizeScreen() {
+    const w = Math.floor(innerWidth * dpr), h = Math.floor(innerHeight * dpr);
+    if (w === screenW && h === screenH) return false;
+    screenW = w; screenH = h;
+    return true;
+  }
+  // the canvas itself only needs pixels for the area it covers
   function resizeCanvas() {
-    const w = Math.floor(canvas.clientWidth * dpr), h = Math.floor(canvas.clientHeight * dpr);
-    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; return true; }
-    return false;
+    const w = Math.max(1, Math.floor(canvas.clientWidth * dpr)), h = Math.max(1, Math.floor(canvas.clientHeight * dpr));
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
   }
 
   function HSVtoRGB(h, s, v) {
@@ -405,58 +385,28 @@
     return { r: c.r * 0.15, g: c.g * 0.15, b: c.b * 0.15 };
   }
 
-  const pointer = { x: 0, y: 0, prevX: 0, prevY: 0, dx: 0, dy: 0, moved: false, down: false, color: generateColor(), started: false };
-
-  // Fixed blob size relative to the box height (the default scales with the aspect ratio, which is huge here).
-  function correctRadius() { return config.SPLAT_SIZE; }
+  function correctRadius(radius) {
+    const aspect = screenAspect();
+    if (aspect > 1) radius *= aspect;
+    return radius;
+  }
   function splat(x, y, dx, dy, color) {
     splatProgram.bind();
     gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read.attach(0));
-    gl.uniform1f(splatProgram.uniforms.aspectRatio, canvas.width / canvas.height);
+    gl.uniform1f(splatProgram.uniforms.aspectRatio, screenAspect());
     gl.uniform2f(splatProgram.uniforms.point, x, y);
     gl.uniform3f(splatProgram.uniforms.color, dx, dy, 0);
     gl.uniform1f(splatProgram.uniforms.radius, correctRadius(config.SPLAT_RADIUS / 100));
     blit(velocity.write);
     velocity.swap();
     gl.uniform1i(splatProgram.uniforms.uTarget, dye.read.attach(0));
-    gl.uniform3f(splatProgram.uniforms.color, color.r * dyeBoost, color.g * dyeBoost, color.b * dyeBoost);
+    gl.uniform3f(splatProgram.uniforms.color, color.r, color.g, color.b);
     blit(dye.write);
     dye.swap();
   }
 
-  // One box per on-screen [data-barrier] element, in texture coordinates (y up). Off on narrow screens,
-  // where the text takes the whole width.
-  const wallData = new Float32Array(MAX_WALLS * 4);
-  function barrierRects() {
-    const els = document.querySelectorAll('[data-barrier]');
-    if (!els.length || innerWidth < 700) return 0;
-    const W = canvas.clientWidth, H = canvas.clientHeight, pad = 16;
-    let n = 0;
-    for (const el of els) {
-      if (n >= MAX_WALLS) break;
-      const q = el.getBoundingClientRect();
-      if (q.bottom < -pad || q.top > H + pad || !q.width || !q.height) continue;
-      const t = Math.max(q.top - pad, -40), b = Math.min(q.bottom + pad, H + 40);
-      wallData.set([(q.left - pad) / W, 1 - b / H, (q.right + pad) / W, 1 - t / H], n * 4);
-      n++;
-    }
-    return n;
-  }
-  function applyObstacle(count, target, mode) {
-    obstacleProgram.bind();
-    gl.uniform1i(obstacleProgram.uniforms.uTarget, target.read.attach(0));
-    gl.uniform4fv(obstacleProgram.uniforms['rects[0]'], wallData);
-    gl.uniform1i(obstacleProgram.uniforms.count, count);
-    gl.uniform1f(obstacleProgram.uniforms.aspectRatio, canvas.width / canvas.height);
-    gl.uniform1f(obstacleProgram.uniforms.mode, mode);
-    blit(target.write);
-    target.swap();
-  }
-
   function step(dt) {
     gl.disable(gl.BLEND);
-    const wall = barrierRects();
-    if (wall) { applyObstacle(wall, velocity, 0); applyObstacle(wall, dye, 1); }
     curlProgram.bind();
     gl.uniform2f(curlProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
     gl.uniform1i(curlProgram.uniforms.uVelocity, velocity.read.attach(0));
@@ -497,7 +447,6 @@
     gl.uniform1i(gradientSubtractProgram.uniforms.uVelocity, velocity.read.attach(1));
     blit(velocity.write);
     velocity.swap();
-    if (wall) applyObstacle(wall, velocity, 0);
 
     advectionProgram.bind();
     gl.uniform2f(advectionProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
@@ -516,92 +465,88 @@
     gl.uniform1f(advectionProgram.uniforms.dissipation, config.DENSITY_DISSIPATION);
     blit(dye.write);
     dye.swap();
-    if (wall) applyObstacle(wall, dye, 1);
   }
 
   function render() {
+    const r = canvas.getBoundingClientRect();
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
     displayProgram.bind();
-    gl.uniform2f(displayProgram.uniforms.texelSize, 1 / gl.drawingBufferWidth, 1 / gl.drawingBufferHeight);
+    gl.uniform2f(displayProgram.uniforms.texelSize, 1 / screenW, 1 / screenH);
+    gl.uniform4f(displayProgram.uniforms.uRect, r.left / innerWidth, 1 - r.bottom / innerHeight, r.width / innerWidth, r.height / innerHeight);
     gl.uniform1i(displayProgram.uniforms.uTexture, dye.read.attach(0));
-    blit(null);
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
   }
 
-  // ── Input (only near the box) ──
-  let box = canvas.getBoundingClientRect(), inside = false;
-  const refreshBox = () => { box = canvas.getBoundingClientRect(); };
-  addEventListener('scroll', refreshBox, { passive: true });
-  addEventListener('resize', refreshBox);
-  window.fluidRefresh = refreshBox; // canvas moved (e.g. chat window dragged)
-  // Called by the page when the canvas moves between the question box and the chat window.
-  let stirScale = 1, dyeBoost = 1;
-  window.fluidRelayout = function () {
-    const big = canvas.clientHeight > 150;
-    // In the chat window the ink is finer: smaller drops and more resolution.
-    // Motion settles fast (high velocity dissipation) and swirls are gentle (low curl), so strokes stay
-    // smooth and silky instead of breaking into small turbulent curls, as on aaabadcode.com.
-    config.SIM_RESOLUTION = big ? 160 : 64;
-    config.DYE_RESOLUTION = big ? 1024 : 256;
-    config.SPLAT_SIZE = big ? 0.003 : 0.1;
-    config.SPLAT_FORCE = big ? 3000 : 3500;
-    config.VELOCITY_DISSIPATION = big ? 2.6 : 1.4;
-    config.DENSITY_DISSIPATION = big ? 0.75 : 0.9;
-    config.CURL = big ? 4 : 3;
-    stirScale = big ? 0.45 : 1;
-    dyeBoost = big ? 3 : 1; // smaller drops carry less dye, so each one is brighter
-    canvas.width = 0; // forces resizeCanvas() -> initFramebuffers() on the next frame
-    refreshBox();
-    pointer.started = false;
-    introT = 0;
-    lastInput = performance.now();
-  };
-  const near = (x, y) => x > box.left - 24 && x < box.right + 24 && y > box.top - 24 && y < box.bottom + 24;
-  function updatePointer(clientX, clientY) {
-    const x = (clientX - box.left) * dpr, y = (clientY - box.top) * dpr;
-    const tx = x / canvas.width, ty = 1 - y / canvas.height;
-    if (!pointer.started) { pointer.x = tx; pointer.y = ty; pointer.started = true; }
-    pointer.prevX = pointer.x; pointer.prevY = pointer.y;
-    pointer.x = tx; pointer.y = ty;
-    const aspect = canvas.width / canvas.height;
-    let dx = pointer.x - pointer.prevX, dy = pointer.y - pointer.prevY;
-    if (aspect < 1) dx *= aspect;
-    if (aspect > 1) dy /= aspect;
-    pointer.dx = dx; pointer.dy = dy;
-    pointer.moved = Math.abs(dx) > 0 || Math.abs(dy) > 0;
+  // ── Input: the whole screen, the same way as the reference ──
+  const pointer = { texcoordX: 0, texcoordY: 0, prevTexcoordX: 0, prevTexcoordY: 0, deltaX: 0, deltaY: 0, down: false, moved: false, color: generateColor() };
+  const toX = clientX => (clientX * dpr) / screenW, toY = clientY => 1 - (clientY * dpr) / screenH;
+  function correctDeltaX(delta) { const a = screenAspect(); if (a < 1) delta *= a; return delta; }
+  function correctDeltaY(delta) { const a = screenAspect(); if (a > 1) delta /= a; return delta; }
+  function pointerDown(clientX, clientY) {
+    pointer.down = true; pointer.moved = false;
+    pointer.texcoordX = pointer.prevTexcoordX = toX(clientX);
+    pointer.texcoordY = pointer.prevTexcoordY = toY(clientY);
+    pointer.deltaX = pointer.deltaY = 0;
+    pointer.color = generateColor();
   }
-  let lastInput = performance.now();
-  function track(clientX, clientY) {
-    refreshBox(); // the box can move without a scroll/resize (e.g. language switch changes the text above it)
-    if (!near(clientX, clientY)) { inside = false; return; }
-    if (!inside) { inside = true; pointer.started = false; }
-    updatePointer(clientX, clientY);
-    lastInput = performance.now();
+  function pointerMove(clientX, clientY) {
+    pointer.prevTexcoordX = pointer.texcoordX; pointer.prevTexcoordY = pointer.texcoordY;
+    pointer.texcoordX = toX(clientX); pointer.texcoordY = toY(clientY);
+    pointer.deltaX = correctDeltaX(pointer.texcoordX - pointer.prevTexcoordX);
+    pointer.deltaY = correctDeltaY(pointer.texcoordY - pointer.prevTexcoordY);
+    pointer.moved = Math.abs(pointer.deltaX) > 0 || Math.abs(pointer.deltaY) > 0;
   }
-  window.addEventListener('mousemove', e => track(e.clientX, e.clientY), { passive: true });
-  window.addEventListener('touchstart', e => { inside = false; const t = e.touches[0]; track(t.clientX, t.clientY); }, { passive: true });
-  window.addEventListener('touchmove', e => { const t = e.touches[0]; track(t.clientX, t.clientY); }, { passive: true });
+  let lastInput = performance.now(), started = false;
+  // the first move only places the pointer (no jump from the corner), like the reference
+  window.addEventListener('mousemove', e => {
+    if (!started) { started = true; pointerDown(e.clientX, e.clientY); pointer.down = false; }
+    else pointerMove(e.clientX, e.clientY);
+    lastInput = performance.now();
+  }, { passive: true });
+  // a click drops a bigger, brighter burst of ink
+  window.addEventListener('mousedown', e => {
+    pointerDown(e.clientX, e.clientY);
+    const c = generateColor();
+    c.r *= 10; c.g *= 10; c.b *= 10;
+    splat(pointer.texcoordX, pointer.texcoordY, 10 * (Math.random() - 0.5), 30 * (Math.random() - 0.5), c);
+    lastInput = performance.now();
+  });
+  window.addEventListener('mouseup', () => { pointer.down = false; });
+  window.addEventListener('touchstart', e => { const t = e.targetTouches[0]; if (t) { pointerDown(t.clientX, t.clientY); started = true; lastInput = performance.now(); } }, { passive: true });
+  window.addEventListener('touchmove', e => { const t = e.targetTouches[0]; if (t) { pointerMove(t.clientX, t.clientY); lastInput = performance.now(); } }, { passive: true });
+  window.addEventListener('touchend', () => { pointer.down = false; });
 
-  // Opening flourish: one sweep along the box so it is visible before anyone moves the mouse.
+  // Kept from before: an opening sweep along the box, and a soft stir every few seconds while nobody is
+  // moving the mouse, so the box is never empty. Both go through the same simulation.
+  const boxStroke = (k, r) => [r.left + r.width * (0.04 + 0.92 * k), r.top + r.height * (0.5 + 0.32 * Math.sin(k * Math.PI * 3))];
   let introT = 0;
-  const intro = (dt) => {
+  function intro(dt) {
     if (introT > 1.4) return;
+    const r = canvas.getBoundingClientRect();
+    const first = introT === 0;
     introT += dt;
-    refreshBox();
-    const k = Math.min(introT / 1.4, 1);
-    updatePointer(box.left + box.width * (0.04 + 0.92 * k), box.top + box.height * (0.5 + 0.32 * Math.sin(k * Math.PI * 3)));
-  };
-
-  // A soft stir every few seconds while the box is on screen, so the glass looks alive.
+    const [x, y] = boxStroke(Math.min(introT / 1.4, 1), r);
+    if (first) { pointerDown(x, y); pointer.down = false; } else pointerMove(x, y);
+  }
   let visible = true;
   if ('IntersectionObserver' in window) new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(canvas);
   setInterval(() => {
     if (!visible || document.hidden || introT <= 1.4 || performance.now() - lastInput < 2500) return;
-    const dir = Math.random() < 0.5 ? -1 : 1;
-    splat(0.15 + Math.random() * 0.7, stirScale < 1 ? 0.15 + Math.random() * 0.7 : 0.5, dir * (250 + Math.random() * 250) * stirScale, (Math.random() - 0.5) * 150 * stirScale, generateColor());
+    const r = canvas.getBoundingClientRect(), dir = Math.random() < 0.5 ? -1 : 1;
+    const x = toX(r.left + r.width * (0.15 + Math.random() * 0.7)), y = toY(r.top + r.height * (0.2 + Math.random() * 0.6));
+    splat(x, y, dir * (40 + Math.random() * 40), (Math.random() - 0.5) * 20, generateColor());
     lastInput = performance.now();
   }, 3200);
 
+  // Called by the page when the canvas moves between the question box and the chat window.
+  window.fluidRelayout = function () { resizeCanvas(); introT = 0; lastInput = performance.now(); };
+  window.fluidRefresh = function () { lastInput = performance.now(); };
+
+  resizeScreen();
   resizeCanvas();
   initFramebuffers();
   let last = performance.now(), colorTimer = 0;
@@ -609,14 +554,16 @@
     const now = performance.now();
     const dt = Math.min((now - last) / 1000, 0.016666);
     last = now;
-    if (now - lastInput > 10000 && introT > 1.4) { requestAnimationFrame(frame); return; }
-    if (resizeCanvas()) initFramebuffers();
+    // nothing on screen to show, or nothing moving for a while: skip the work
+    if (!visible || document.hidden || (now - lastInput > 12000 && introT > 1.4)) { requestAnimationFrame(frame); return; }
+    if (resizeScreen()) initFramebuffers();
+    resizeCanvas();
     colorTimer += dt * config.COLOR_UPDATE_SPEED;
-    if (colorTimer >= 1) { colorTimer = 0; pointer.color = generateColor(); }
+    if (colorTimer >= 1) { colorTimer %= 1; pointer.color = generateColor(); }
     intro(dt);
     if (pointer.moved) {
       pointer.moved = false;
-      splat(pointer.x, pointer.y, pointer.dx * config.SPLAT_FORCE, pointer.dy * config.SPLAT_FORCE, pointer.color);
+      splat(pointer.texcoordX, pointer.texcoordY, pointer.deltaX * config.SPLAT_FORCE, pointer.deltaY * config.SPLAT_FORCE, pointer.color);
     }
     step(dt);
     render();
