@@ -107,14 +107,28 @@
     .me strong { display: block; font-size: 1rem; }
     .me small { display: block; color: var(--muted); font-size: .82rem; }
     .top-right { display: flex; align-items: center; gap: 8px; }
-    .shade { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 13px; border-radius: 999px; color: var(--ink); cursor: pointer; }
-    .shade svg { width: 15px; height: 15px; flex: none; opacity: .75; }
-    .shade input { -webkit-appearance: none; appearance: none; width: 46px; height: 6px; margin: 0; border-radius: 999px; cursor: pointer; background: linear-gradient(90deg, #0b0c10, #eceef2); box-shadow: inset 0 0 0 1px var(--line); }
-    .shade input::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 2px solid var(--card-solid); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
-    .shade input::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--card-solid); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
-    .shade input:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 6px; }
+    .themes { display: inline-flex; align-items: center; height: 40px; padding: 0 6px; border-radius: 999px; }
+    .themes .sw { all: unset; box-sizing: border-box; position: relative; width: 28px; height: 28px; display: grid; place-items: center; cursor: pointer; border-radius: 50%;
+      transition: width .38s cubic-bezier(.2, .9, .3, 1.15), opacity .25s, transform .25s cubic-bezier(.2, .9, .3, 1.4); }
+    .themes .sw i { width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(135deg, var(--sw-bg) 52%, var(--sw-ac) 52%);
+      box-shadow: inset 0 0 0 1px rgba(128, 128, 128, .45); transition: transform .3s cubic-bezier(.2, .9, .3, 1.5), box-shadow .3s; }
+    .themes .sw:hover i { transform: scale(1.18); }
+    .themes .sw:active i { transform: scale(.88); }
+    .themes .sw[aria-checked="true"] i { transform: scale(1.12); box-shadow: inset 0 0 0 1px rgba(128, 128, 128, .45), 0 0 0 2px var(--bg), 0 0 0 3.5px var(--ink); }
+    .themes .sw:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 1px; }
+    .themes .sw[data-theme="escuro"]  { --sw-bg: #0b0c10; --sw-ac: #6aa5ff; }
+    .themes .sw[data-theme="grafite"] { --sw-bg: #27282c; --sw-ac: #9ec1ff; }
+    .themes .sw[data-theme="ardosia"] { --sw-bg: #1d2532; --sw-ac: #7cc7ff; }
+    .themes .sw[data-theme="ameixa"]  { --sw-bg: #211924; --sw-ac: #f2a6c9; }
+    .themes .sw[data-theme="nevoa"]   { --sw-bg: #c9ccd1; --sw-ac: #2c5fc9; }
+    .themes .sw.pop i { animation: sw-pop .5s cubic-bezier(.2, .9, .3, 1.4); }
+    @keyframes sw-pop { 0% { transform: scale(.6); } 60% { transform: scale(1.3); } 100% { transform: scale(1.12); } }
     :root.shading *, :root.shading { transition: none !important; }
-    @media (max-width: 480px) { .shade { gap: 6px; padding: 0 10px; } .shade input { width: 40px; } .me strong { font-size: .92rem; } }
+    /* phones: only the current dot shows; tapping it opens the row */
+    @media (max-width: 560px) {
+      .themes:not(.open) .sw:not([aria-checked="true"]) { width: 0; opacity: 0; transform: scale(.4); pointer-events: none; }
+      .me strong { font-size: .92rem; }
+    }
 
     /* ── Hero ── */
     .hero { padding-block: clamp(48px, 9vh, 110px) clamp(72px, 11vh, 120px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; }
@@ -371,41 +385,48 @@
      para escuro no ponto em que os dois dão o mesmo contraste (luminância ~0,18), então ele
      fica sempre legível, inclusive nos cinzas do meio. */
   (function () {
-    const D = { bg: [11, 12, 16], card: [22, 24, 30] }, L = { bg: [236, 238, 242], card: [247, 248, 250] };
-    const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
-    const lerp = (a, b, k) => +(a + (b - a) * k).toFixed(3);
-    const rgb = c => 'rgb(' + c.join(',') + ')';
-    const lin = v => { v /= 255; return v <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
-    const lum = c => .2126 * lin(c[0]) + .7152 * lin(c[1]) + .0722 * lin(c[2]);
-    window.applyShade = function (value) {
-      const k = Math.max(0, Math.min(100, +value || 0)) / 100;
-      const bg = mix(D.bg, L.bg, k), y = lum(bg), light = y > .179;
-      const ink = light ? [20, 22, 28] : [241, 242, 246];
-      // secondary text gets closer to the main text near the crossover, where contrast is tightest
-      const far = Math.min(1, Math.abs(Math.log(y / .179)) / 1.6);
-      const s = document.documentElement.style, set = (n, v) => s.setProperty(n, v);
-      set('--bg', rgb(bg));
-      set('--card-solid', rgb(mix(D.card, L.card, k)));
-      set('--ink', rgb(ink));
-      set('--text', rgb(mix(ink, bg, .13 * far)));
-      set('--muted', rgb(mix(ink, bg, .06 + .34 * far)));
-      set('--line', light ? 'rgba(20, 22, 28, .11)' : 'rgba(255, 255, 255, .1)');
-      // the blue leans toward the text color near the crossover, so it never melts into a grey background
-      set('--accent', rgb(mix(light ? [47, 111, 228] : [106, 165, 255], ink, .6 * (1 - far))));
-      set('--ok', light ? '#15803d' : '#4ade80');
-      set('--glass-tint', 'rgba(255, 255, 255, ' + lerp(.06, .36, k) + ')');
-      set('--glass-tint-hover', 'rgba(255, 255, 255, ' + lerp(.11, .55, k) + ')');
-      set('--rim-hi', 'rgba(255, 255, 255, ' + lerp(.42, .95, k) + ')');
-      set('--rim-lo', 'rgba(255, 255, 255, ' + lerp(.06, .25, k) + ')');
-      set('--glass-shadow', '0 1px 1px rgba(0, 0, 0, ' + lerp(.3, .04, k) + '), 0 8px 26px rgba(0, 0, 0, ' + lerp(.35, .08, k) + ')');
-      set('--shadow-lg', '0 2px 4px rgba(0, 0, 0, ' + lerp(.4, .05, k) + '), 0 24px 60px rgba(0, 0, 0, ' + lerp(.5, .12, k) + ')');
-      s.colorScheme = light ? 'light' : 'dark';
-      const meta = document.querySelector('meta[name=theme-color]');
-      if (meta) meta.content = rgb(bg);
+    // i = the three ink colors used with the accent in the background echo
+    const T = {
+      escuro:  { bg: [11, 12, 16],    card: [22, 24, 30],    ink: [241, 242, 246], text: [201, 204, 214], muted: [143, 147, 163], line: [255, 255, 255, .1],  accent: [106, 165, 255], ok: [74, 222, 128],  i: [[168, 85, 247], [236, 72, 153], [20, 184, 166]], light: 0 },
+      grafite: { bg: [39, 40, 44],    card: [50, 51, 56],    ink: [243, 242, 239], text: [211, 210, 205], muted: [156, 155, 149], line: [255, 255, 255, .11], accent: [158, 193, 255], ok: [134, 224, 163], i: [[196, 167, 255], [255, 158, 199], [127, 224, 207]], light: 0 },
+      ardosia: { bg: [29, 37, 50],    card: [39, 49, 65],    ink: [238, 242, 248], text: [201, 210, 224], muted: [141, 153, 173], line: [255, 255, 255, .1],  accent: [124, 199, 255], ok: [111, 227, 176], i: [[143, 155, 255], [95, 224, 200], [199, 160, 255]], light: 0 },
+      ameixa:  { bg: [33, 25, 36],    card: [44, 34, 48],    ink: [245, 238, 246], text: [217, 203, 221], muted: [161, 143, 167], line: [255, 230, 255, .1],  accent: [242, 166, 201], ok: [134, 223, 184], i: [[193, 140, 255], [255, 162, 124], [127, 214, 194]], light: 0 },
+      nevoa:   { bg: [201, 204, 209], card: [215, 218, 222], ink: [21, 23, 27],    text: [43, 46, 52],    muted: [86, 91, 100],   line: [20, 22, 28, .13],    accent: [44, 95, 201],   ok: [29, 122, 67],   i: [[124, 58, 237], [219, 39, 119], [13, 148, 136]], light: 1 }
     };
-    let saved = 0;
-    try { saved = +localStorage.getItem('kk-shade') >= 50 ? 100 : 0; } catch (e) {}
-    window.applyShade(saved);
+    const num = (a, b, k) => a + (b - a) * k;
+    const mixAny = (a, b, k) => Array.isArray(a) ? a.map((v, n) => mixAny(v, b[n], k)) : num(a, b, k);
+    const rgb = c => 'rgb(' + c.slice(0, 3).map(Math.round).join(',') + ')';
+    const rgba = c => 'rgba(' + c.slice(0, 3).map(Math.round).join(',') + ',' + (+c[3]).toFixed(3) + ')';
+    const f3 = v => +v.toFixed(3);
+    window.kkTheme = {
+      names: Object.keys(T),
+      pal: name => T[name] || T.escuro,
+      mix: (a, b, k) => { const o = {}; for (const key in a) o[key] = mixAny(a[key], b[key], k); return o; },
+      paint(p) {
+        this.now = p;
+        const s = document.documentElement.style, set = (n, v) => s.setProperty(n, v), L = p.light;
+        set('--bg', rgb(p.bg)); set('--card-solid', rgb(p.card));
+        set('--ink', rgb(p.ink)); set('--text', rgb(p.text)); set('--muted', rgb(p.muted));
+        set('--line', rgba(p.line)); set('--accent', rgb(p.accent)); set('--ok', rgb(p.ok));
+        set('--i1', rgb(p.i[0])); set('--i2', rgb(p.i[1])); set('--i3', rgb(p.i[2]));
+        set('--glass-tint', 'rgba(255, 255, 255, ' + f3(num(.06, .3, L)) + ')');
+        set('--glass-tint-hover', 'rgba(255, 255, 255, ' + f3(num(.11, .45, L)) + ')');
+        set('--rim-hi', 'rgba(255, 255, 255, ' + f3(num(.42, .85, L)) + ')');
+        set('--rim-lo', 'rgba(255, 255, 255, ' + f3(num(.06, .22, L)) + ')');
+        set('--glass-shadow', '0 1px 1px rgba(0, 0, 0, ' + f3(num(.3, .05, L)) + '), 0 8px 26px rgba(0, 0, 0, ' + f3(num(.35, .1, L)) + ')');
+        set('--shadow-lg', '0 2px 4px rgba(0, 0, 0, ' + f3(num(.4, .06, L)) + '), 0 24px 60px rgba(0, 0, 0, ' + f3(num(.5, .15, L)) + ')');
+        s.colorScheme = L > .5 ? 'light' : 'dark';
+        const meta = document.querySelector('meta[name=theme-color]');
+        if (meta) meta.content = rgb(p.bg);
+      }
+    };
+    let saved = 'escuro';
+    try {
+      saved = localStorage.getItem('kk-theme') || (+localStorage.getItem('kk-shade') >= 50 ? 'nevoa' : 'escuro'); // old light/dark choice
+      if (!T[saved]) saved = 'escuro';
+    } catch (e) {}
+    window.kkTheme.current = saved;
+    window.kkTheme.paint(T[saved]);
   })();
 </script>
 
@@ -446,11 +467,13 @@
         <span><strong>Kelvin Krauss</strong><small data-en="Developer · Blumenau, Brazil">Desenvolvedor · Blumenau/SC</small></span>
       </a>
       <div class="top-right">
-        <label class="shade glass" data-glass="30" title="Claro ou escuro" data-en-title="Light or dark">
-          <svg aria-hidden="true"><use href="#i-moon"/></svg>
-          <input id="shade" type="range" min="0" max="100" step="100" value="0" aria-label="Tema: escuro ou claro" data-en-aria="Theme: dark or light">
-          <svg aria-hidden="true"><use href="#i-sun"/></svg>
-        </label>
+        <div class="themes glass" data-glass="30" id="themes" role="radiogroup" aria-label="Tema do site" data-en-aria="Site theme">
+          <button type="button" class="sw" data-theme="escuro" role="radio" aria-checked="false" title="Escuro" data-en-title="Dark" aria-label="Tema Escuro" data-en-aria="Dark theme"><i></i></button>
+          <button type="button" class="sw" data-theme="grafite" role="radio" aria-checked="false" title="Grafite" data-en-title="Graphite" aria-label="Tema Grafite" data-en-aria="Graphite theme"><i></i></button>
+          <button type="button" class="sw" data-theme="ardosia" role="radio" aria-checked="false" title="Ardósia" data-en-title="Slate" aria-label="Tema Ardósia" data-en-aria="Slate theme"><i></i></button>
+          <button type="button" class="sw" data-theme="ameixa" role="radio" aria-checked="false" title="Ameixa" data-en-title="Plum" aria-label="Tema Ameixa" data-en-aria="Plum theme"><i></i></button>
+          <button type="button" class="sw" data-theme="nevoa" role="radio" aria-checked="false" title="Névoa" data-en-title="Mist" aria-label="Tema Névoa" data-en-aria="Mist theme"><i></i></button>
+        </div>
         <button class="pill glass" data-glass="30" id="lang-btn" type="button" aria-label="Read in English">EN</button>
       </div>
     </div>
@@ -1290,7 +1313,6 @@
       wait: 'Pensando...',
       offline: 'Não consegui responder agora. Tente de novo em instantes ou fale direto com o Kelvin: kelvin.krauss.br@gmail.com',
       copied: 'Copiado!', copy: 'Copiar',
-      toDark: 'Mudar para tema escuro', toLight: 'Mudar para tema claro',
     },
     en: {
       hello: "Hi! I'm Kelvin's assistant. Ask about his projects, studies or how to reach him.",
@@ -1299,7 +1321,6 @@
       wait: 'Thinking...',
       offline: "I couldn't answer right now. Try again in a moment or reach Kelvin directly: kelvin.krauss.br@gmail.com",
       copied: 'Copied!', copy: 'Copy',
-      toDark: 'Switch to dark theme', toLight: 'Switch to light theme',
     },
   };
 
@@ -1340,29 +1361,41 @@
     });
   });
 
-  /* ── Tema: slider de 2 níveis (escuro / claro), escuro por padrão; troca com um fade de 350 ms ── */
-  const shade = $('#shade');
-  let shadeNow = +store.get('kk-shade') >= 50 ? 100 : 0, shadeAnim = 0;
-  shade.value = shadeNow;
-  function goShade(target) {
-    cancelAnimationFrame(shadeAnim);
-    const from = shadeNow, t0 = performance.now(), ms = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 350;
+  /* ── Tema: 5 paletas escolhidas pelas bolinhas do topo; troca com um fade de 450 ms ── */
+  const themes = $('#themes'), swatches = [...themes.querySelectorAll('.sw')];
+  const phoneThemes = matchMedia('(max-width: 560px)');
+  let themeAnim = 0;
+  const markTheme = name => swatches.forEach(b => b.setAttribute('aria-checked', String(b.dataset.theme === name)));
+  markTheme(kkTheme.current);
+  function goTheme(name) {
+    cancelAnimationFrame(themeAnim);
+    const from = kkTheme.now, to = kkTheme.pal(name), t0 = performance.now(), ms = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450;
+    kkTheme.current = name; markTheme(name); store.set('kk-theme', name);
     root.classList.add('shading');
     const step = now => {
       const k = ms ? Math.min(1, (now - t0) / ms) : 1, e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-      shadeNow = from + (target - from) * e;
-      window.applyShade(shadeNow);
-      if (k < 1) shadeAnim = requestAnimationFrame(step);
-      else { root.classList.remove('shading'); shade.dispatchEvent(new Event('shade-done')); }
+      kkTheme.paint(kkTheme.mix(from, to, e));
+      if (k < 1) themeAnim = requestAnimationFrame(step);
+      else { root.classList.remove('shading'); document.dispatchEvent(new Event('theme-done')); }
     };
-    shadeAnim = requestAnimationFrame(step);
-    store.set('kk-shade', String(target));
+    themeAnim = requestAnimationFrame(step);
   }
-  shade.addEventListener('input', () => goShade(+shade.value));
-  shade.closest('.shade').addEventListener('click', e => {
-    if (e.target === shade) return; // the slider itself handles its own input
-    shade.value = +shade.value ? 0 : 100;
-    goShade(+shade.value);
+  themes.addEventListener('click', e => {
+    const b = e.target.closest('.sw');
+    if (!b) return;
+    // no celular a fileira fica fechada mostrando só a cor atual: o primeiro toque abre
+    if (phoneThemes.matches && !themes.classList.contains('open')) { themes.classList.add('open'); return; }
+    themes.classList.remove('open');
+    if (b.dataset.theme === kkTheme.current) return;
+    b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+    goTheme(b.dataset.theme);
+  });
+  document.addEventListener('pointerdown', e => { if (!themes.contains(e.target)) themes.classList.remove('open'); });
+  themes.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault();
+    const n = swatches.findIndex(b => b.dataset.theme === kkTheme.current), next = swatches[(n + (e.key === 'ArrowRight' ? 1 : -1) + swatches.length) % swatches.length];
+    next.focus(); goTheme(next.dataset.theme);
   });
 
   /* ── Copiar e-mail ── */
@@ -2026,7 +2059,7 @@
       const cs = getComputedStyle(root);
       bg = parse(cs.getPropertyValue('--bg'));
       light = (bg[0] + bg[1] + bg[2]) / 3 > 128;
-      cols = [parse(cs.getPropertyValue('--accent')), light ? [139, 92, 246] : [168, 85, 247], light ? [219, 39, 119] : [236, 72, 153], light ? [13, 148, 136] : [20, 184, 166]];
+      cols = ['--accent', '--i1', '--i2', '--i3'].map(n => parse(cs.getPropertyValue(n)));
     }
     function size() {
       const dpr = Math.min(devicePixelRatio || 1, 1.5);
@@ -2056,11 +2089,7 @@
       requestAnimationFrame(loop);
     })(performance.now());
     addEventListener('resize', () => { size(); draw(performance.now()); });
-    const shadeInput = $('#shade');
-    if (shadeInput) {
-      shadeInput.addEventListener('input', () => { readTheme(); draw(performance.now()); });
-      shadeInput.addEventListener('shade-done', () => { readTheme(); draw(performance.now()); });
-    }
+    document.addEventListener('theme-done', () => { readTheme(); draw(performance.now()); });
     // durante o fade de tema, acompanha a cor de fundo
     new MutationObserver(() => readTheme()).observe(root, { attributes: true, attributeFilter: ['style'] });
   })();
