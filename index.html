@@ -117,7 +117,18 @@
     @media (max-width: 480px) { .shade { gap: 6px; padding: 0 10px; } .shade input { width: 40px; } .me strong { font-size: .92rem; } }
 
     /* ── Hero ── */
-    .hero { padding-block: clamp(48px, 9vh, 110px) clamp(72px, 11vh, 120px); }
+    .hero { padding-block: clamp(48px, 9vh, 110px) clamp(72px, 11vh, 120px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .hero-main { min-width: 0; }
+    .now-card { align-self: center; max-width: 520px; padding: 22px 24px 24px; border-radius: 22px; background: color-mix(in srgb, var(--card-solid) 55%, transparent); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); box-shadow: inset 0 0 0 1px var(--line), inset 0 1px 0 var(--rim-lo), var(--glass-shadow); }
+    .now-head { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font-size: .9rem; color: var(--muted); }
+    .now-head strong { color: var(--ink); font-size: 1rem; }
+    .now-head span:last-child { margin-left: auto; font: 500 .78rem var(--mono); }
+    .now-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 50%, transparent); animation: now-pulse 2.4s ease-out infinite; }
+    @keyframes now-pulse { 70% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--ok) 0%, transparent); } 100% { box-shadow: 0 0 0 0 transparent; } }
+    .now-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .now-card li { position: relative; padding-left: 18px; font-size: .97rem; line-height: 1.5; color: var(--text); }
+    .now-card li::before { content: ""; position: absolute; left: 0; top: .55em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+    @media (min-width: 1100px) { .hero { grid-template-columns: minmax(0, 1fr) 360px; column-gap: 72px; align-items: center; } }
     h1 { font-size: clamp(2rem, 3.8vw, 3rem); font-weight: 600; line-height: 1.12; letter-spacing: -.03em; max-width: 22ch; }
     h1 .soft { color: var(--muted); }
     .lead { font-size: clamp(1.05rem, 1.4vw, 1.16rem); line-height: 1.7; max-width: 64ch; margin-top: 22px; }
@@ -153,15 +164,12 @@
       main > .sec > header p { margin-top: 2px; }
       #sobre { grid-column: span 7; order: 1; }
       #trajetoria { grid-column: span 5; order: 2; }
-      #projetos { grid-column: 1 / -1; order: 3; border-top: 1px solid var(--line); }
-      #habilidades { grid-column: span 5; order: 4; border-top: 1px solid var(--line); }
-      #agora { grid-column: span 3; order: 5; border-top: 1px solid var(--line); }
-      #contato { grid-column: span 4; order: 6; border-top: 1px solid var(--line); }
+      #projetos { grid-column: 1 / -1; order: 3; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      #habilidades { grid-column: span 7; order: 4; }
+      #contato { grid-column: span 5; order: 6; }
       #projetos .entries { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
       #projetos .entries .more-gh { grid-column: 1 / -1; }
       #projetos .entry-top { flex-direction: column; align-items: flex-start; gap: 2px; }
-      #habilidades .skills { grid-template-columns: minmax(0, 1fr); gap: 4px; }
-      #habilidades .skills dd { margin-bottom: 14px; }
       #contato .contact-list div { grid-template-columns: minmax(0, 1fr); gap: 2px; padding-block: 11px; }
       #contato .contact-list dd { justify-content: flex-start; }
       .prose h3 { font-size: 1.5rem; }
@@ -447,6 +455,7 @@
 
     <!-- ── Hero ── -->
     <header class="hero">
+      <div class="hero-main">
       <h1 data-en="<span class='soft'>Hi, I'm</span> Kelvin Krauss"><span class="soft">Olá, eu sou o</span> Kelvin Krauss</h1>
       <p class="lead" data-en="I am a Systems Analysis and Development student at the Federal Institute of Santa Catarina, and a huge technology enthusiast, with a strong interest in AI, web development, and back-end. My main technical focus is the AWS Ecosystem, Java, SQL databases, and Python, creating efficient solutions and robust architectures, such as APIs and microservices.">Sou graduando em Análise e Desenvolvimento de Sistemas no Instituto Federal de Santa Catarina, e um grande entusiasta da tecnologia, com forte interesse em I.A., desenvolvimento web e back-end. Meu foco técnico principal está no Ecossistema AWS, Java, bancos de dados SQL e Python, criando soluções eficientes e arquiteturas robustas, como APIs e microsserviços.</p>
       <p class="lead lead-2" data-en="Open to internships, collaborations, and continuous learning opportunities in tech, including remote work for international companies.">Aberto a oportunidades de estágio, colaborações e aprendizado contínuo na área de tecnologia, incluindo atuação remota para empresas internacionais.</p>
@@ -463,6 +472,17 @@
         <button class="send" type="submit" aria-label="Enviar pergunta" data-en-aria="Send question"><svg><use href="#i-arrow"/></svg></button>
       </form>
       <div class="ask-hints" id="ask-hints"></div>
+      </div>
+
+      <aside class="now-card" aria-labelledby="now-title">
+        <p class="now-head"><span class="now-dot" aria-hidden="true"></span><strong id="now-title" data-en="Now">Agora</strong><span data-en="October 2026">outubro de 2026</span></p>
+        <ul>
+          <li data-en="First semester of Systems Analysis and Development at IFSC.">Primeiro semestre de Análise e Desenvolvimento de Sistemas no IFSC.</li>
+          <li data-en="The Ociani website has just gone live, on October 2.">O site da Ociani acabou de ir ao ar, em 2 de outubro.</li>
+          <li data-en="Studying AWS to take the official certification.">Estudando AWS para tirar a certificação oficial.</li>
+          <li data-en="Looking for an internship or junior role, on-site or remote.">Procurando estágio ou vaga júnior, presencial ou remoto.</li>
+        </ul>
+      </aside>
     </header>
 
     <main>
@@ -532,7 +552,7 @@
             </article>
             <article class="entry card">
               <div class="entry-top"><h4><a href="https://github.com/KelvinKrauss/site_kelvinkrauss" target="_blank" rel="noopener" data-en="This portfolio ↗">Este portfólio ↗</a></h4><span class="meta">HTML · CSS · JS · 2026</span></div>
-              <p data-en="No framework. The background is a fluid simulation in WebGL that follows your mouse, the buttons use an SVG filter that imitates Apple's liquid glass, and the assistant answers with the Gemini API in a Vercel serverless function.">Sem framework. O fundo é uma simulação de fluido em WebGL que segue o mouse, os botões usam um filtro SVG que imita o vidro líquido da Apple, e o assistente responde com a API do Gemini numa função serverless da Vercel.</p>
+              <p data-en="No framework. The AI box has liquid ink simulated in WebGL, the page background is a slow echo of it, the buttons use an SVG filter that imitates Apple's liquid glass, and the assistant answers with the Gemini API in a Vercel serverless function.">Sem framework. A caixa da IA tem uma tinta líquida simulada em WebGL, o fundo da página é um eco lento dela, os botões usam um filtro SVG que imita o vidro líquido da Apple e o assistente responde com a API do Gemini numa função serverless da Vercel.</p>
             </article>
             <p class="more-gh" data-en="More on <a href='https://github.com/KelvinKrauss' target='_blank' rel='noopener'>GitHub</a>: a hangman game in Java, a to-do list in JavaScript and my code from college classes.">Mais no <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">GitHub</a>: jogo da forca em Java, lista de tarefas em JavaScript e os códigos das disciplinas da faculdade.</p>
           </div>
@@ -578,18 +598,6 @@
         </div>
       </section>
 
-      <!-- ── Agora ── -->
-      <section class="sec" id="agora">
-        <header><h2 data-en="Now">Agora</h2><p data-en="October 2026">Outubro de 2026</p></header>
-        <div class="prose">
-          <ul>
-            <li data-en="First semester of Systems Analysis and Development at IFSC.">Primeiro semestre de Análise e Desenvolvimento de Sistemas no IFSC.</li>
-            <li data-en="The Ociani website has just gone live, on October 2.">O site da Ociani acabou de ir ao ar, em 2 de outubro.</li>
-            <li data-en="Studying AWS to take the official certification.">Estudando AWS para tirar a certificação oficial.</li>
-            <li data-en="Looking for an internship or junior role, on-site or remote.">Procurando estágio ou vaga júnior, presencial ou remoto.</li>
-          </ul>
-        </div>
-      </section>
 
       <!-- ── Contato ── -->
       <section class="sec" id="contato">
