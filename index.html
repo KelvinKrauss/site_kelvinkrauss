@@ -1030,7 +1030,7 @@
     blit(velocity.write);
     velocity.swap();
     gl.uniform1i(splatProgram.uniforms.uTarget, dye.read.attach(0));
-    gl.uniform3f(splatProgram.uniforms.color, color.r, color.g, color.b);
+    gl.uniform3f(splatProgram.uniforms.color, color.r * dyeBoost, color.g * dyeBoost, color.b * dyeBoost);
     blit(dye.write);
     dye.swap();
   }
@@ -1146,11 +1146,18 @@
   addEventListener('resize', refreshBox);
   window.fluidRefresh = refreshBox; // canvas moved (e.g. chat window dragged)
   // Called by the page when the canvas moves between the question box and the chat window.
+  let stirScale = 1, dyeBoost = 1;
   window.fluidRelayout = function () {
     const big = canvas.clientHeight > 150;
-    config.SIM_RESOLUTION = big ? 96 : 48;
-    config.DYE_RESOLUTION = big ? 512 : 192;
-    config.SPLAT_SIZE = big ? 0.012 : 0.1;
+    // In the chat window the ink is finer: smaller drops, more resolution, gentler and faster-fading.
+    config.SIM_RESOLUTION = big ? 144 : 48;
+    config.DYE_RESOLUTION = big ? 768 : 192;
+    config.SPLAT_SIZE = big ? 0.0035 : 0.1;
+    config.SPLAT_FORCE = big ? 1500 : 2500;
+    config.DENSITY_DISSIPATION = big ? 1.1 : 0.9;
+    config.CURL = big ? 14 : 6;
+    stirScale = big ? 0.45 : 1;
+    dyeBoost = big ? 3 : 1; // smaller drops carry less dye, so each one is brighter
     canvas.width = 0; // forces resizeCanvas() -> initFramebuffers() on the next frame
     refreshBox();
     pointer.started = false;
@@ -1198,7 +1205,7 @@
   setInterval(() => {
     if (!visible || document.hidden || introT <= 1.4 || performance.now() - lastInput < 2500) return;
     const dir = Math.random() < 0.5 ? -1 : 1;
-    splat(0.15 + Math.random() * 0.7, 0.5, dir * (250 + Math.random() * 250), (Math.random() - 0.5) * 150, generateColor());
+    splat(0.15 + Math.random() * 0.7, stirScale < 1 ? 0.15 + Math.random() * 0.7 : 0.5, dir * (250 + Math.random() * 250) * stirScale, (Math.random() - 0.5) * 150 * stirScale, generateColor());
     lastInput = performance.now();
   }, 3200);
 
