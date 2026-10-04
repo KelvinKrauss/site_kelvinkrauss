@@ -485,7 +485,7 @@
         <a class="pill glass" data-glass="32" href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><svg><use href="#i-in"/></svg>LinkedIn</a>
         <a class="pill glass" data-glass="32" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>
         <a class="pill glass" data-glass="32" href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><svg><use href="#i-gh"/></svg>GitHub</a>
-        <a class="pill glass" data-glass="32" href="images/curriculo.pdf" target="_blank" rel="noopener" data-resume><svg><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></a>
+        <a class="pill glass" data-glass="32" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener" data-resume><svg><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></a>
       </div>
 
       <form class="ask glass" data-glass="44" id="hero-ask" role="search">
@@ -631,7 +631,7 @@
             <div><dt>WhatsApp</dt><dd><a href="https://wa.me/5547999104771" target="_blank" rel="noopener">+55 47 99910-4771</a></dd></div>
             <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener">in/kelvin-krauss-04b7622b8</a></dd></div>
             <div><dt>GitHub</dt><dd><a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">github.com/KelvinKrauss</a></dd></div>
-            <div><dt data-en="Resume">Currículo</dt><dd><a href="images/curriculo.pdf" target="_blank" rel="noopener" data-resume data-en="PDF, in Portuguese">PDF</a></dd></div>
+            <div><dt data-en="Resume">Currículo</dt><dd><a href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener" data-resume>PDF</a></dd></div>
           </dl>
         </div>
       </section>
@@ -655,11 +655,11 @@
 <div class="chat-wrap" id="cv-wrap" hidden>
   <div class="chat cv" role="dialog" aria-modal="true" aria-labelledby="cv-title">
     <div class="chat-head">
-      <div><strong id="cv-title" data-en="Resume">Currículo</strong><small data-en="Kelvin Krauss · PDF in Portuguese">Kelvin Krauss · PDF</small></div>
-      <a class="pill glass" href="images/curriculo.pdf" download="Curriculo-Kelvin-Krauss.pdf" data-en="Download">Baixar</a>
+      <div><strong id="cv-title" data-en="Resume">Currículo</strong><small>Kelvin Krauss · PDF</small></div>
+      <a class="pill glass" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" download="Curriculo-Kelvin-Krauss.pdf" data-en-download="Resume-Kelvin-Krauss.pdf" data-en="Download">Baixar</a>
       <button class="x" type="button" id="cv-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
     </div>
-    <iframe id="cv-frame" title="Currículo de Kelvin Krauss"></iframe>
+    <iframe id="cv-frame" title="Currículo de Kelvin Krauss" data-en-title="Kelvin Krauss's resume"></iframe>
   </div>
 </div>
 
@@ -1342,6 +1342,14 @@
       if (el.dataset.ptTitle === undefined) el.dataset.ptTitle = el.title;
       el.title = lang === 'en' ? el.dataset.enTitle : el.dataset.ptTitle;
     });
+    document.querySelectorAll('[data-en-href]').forEach(el => {
+      if (el.dataset.ptHref === undefined) el.dataset.ptHref = el.getAttribute('href');
+      el.setAttribute('href', lang === 'en' ? el.dataset.enHref : el.dataset.ptHref);
+    });
+    document.querySelectorAll('[data-en-download]').forEach(el => {
+      if (el.dataset.ptDownload === undefined) el.dataset.ptDownload = el.getAttribute('download');
+      el.setAttribute('download', lang === 'en' ? el.dataset.enDownload : el.dataset.ptDownload);
+    });
     const btn = $('#lang-btn');
     btn.textContent = lang === 'en' ? 'PT' : 'EN';
     btn.setAttribute('aria-label', lang === 'en' ? 'Ler em português' : 'Read in English');
@@ -1905,7 +1913,8 @@
     if (!bigScreen.matches) return;
     e.preventDefault();
     cvReturn = a;
-    if (!cvFrame.getAttribute('src')) cvFrame.setAttribute('src', a.getAttribute('href') + '#view=FitH');
+    const want = a.getAttribute('href') + '#view=FitH';
+    if (cvFrame.getAttribute('src') !== want) cvFrame.setAttribute('src', want);
     cvAnims.forEach(x => x.cancel());
     cvWrap.hidden = false;
     if (!calm.matches && cvPanel.animate) openCvAnim(a.getBoundingClientRect());
