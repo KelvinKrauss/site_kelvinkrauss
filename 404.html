@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Página não encontrada · Kelvin Krauss</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b0c10">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2232%22%20fill%3D%22%230b0c10%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2241%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22%23f1f2f6%22%20text-anchor%3D%22middle%22%3EKK%3C%2Ftext%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&family=Geist+Mono:wght@500&display=swap">
+  <style>
+    :root { --bg: #0b0c10; --ink: #f1f2f6; --text: #c9ccd6; --muted: #8f93a3; --line: rgba(255, 255, 255, .1); --card: #16181e;
+      --accent: #6aa5ff; --i1: #a855f7; --i2: #ec4899; --i3: #14b8a6; color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 400 1.05rem/1.6 "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased; display: grid; place-items: center; padding: 24px 16px; overflow: hidden; }
+    /* the site's ink, drifting at the edges of the screen */
+    .ink { position: fixed; inset: -25%; z-index: -1; pointer-events: none; filter: blur(70px); opacity: .55;
+      background:
+        radial-gradient(26% 30% at 88% 14%, var(--i2), transparent 70%),
+        radial-gradient(22% 26% at 72% 6%, var(--i1), transparent 70%),
+        radial-gradient(28% 32% at 10% 88%, var(--i3), transparent 70%),
+        radial-gradient(20% 24% at 28% 96%, var(--accent), transparent 70%);
+      animation: drift 18s ease-in-out infinite alternate; }
+    @keyframes drift { to { transform: translate(3%, -2%) rotate(4deg) scale(1.04); } }
+    main { width: min(560px, 100%); display: flex; flex-direction: column; gap: 18px; }
+    .code { font: 500 .85rem "Geist Mono", ui-monospace, Consolas, monospace; color: var(--muted); letter-spacing: .08em; }
+    h1 { margin: 0; color: var(--ink); font-size: clamp(2.2rem, 7vw, 3.4rem); line-height: 1.02; letter-spacing: -.035em; text-wrap: balance; }
+    p { margin: 0; max-width: 44ch; }
+    .path { font: 500 .9em "Geist Mono", ui-monospace, Consolas, monospace; color: var(--ink); word-break: break-all; }
+    .back { align-self: flex-start; margin-top: 8px; display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px 12px 16px;
+      border-radius: 999px; color: var(--ink); text-decoration: none; font-weight: 600; background: color-mix(in srgb, var(--card) 70%, transparent);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: inset 0 0 0 1px var(--line), 0 10px 30px rgba(0, 0, 0, .25);
+      transition: transform .3s cubic-bezier(.2, .9, .3, 1.4), box-shadow .3s; }
+    .back:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 60%, transparent), 0 14px 34px rgba(0, 0, 0, .3); }
+    .back:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 3px; }
+    .back svg { width: 18px; height: 18px; transition: transform .3s; }
+    .back:hover svg { transform: translateX(-3px); }
+    @media (prefers-reduced-motion: reduce) { .ink { animation: none; } .back, .back svg { transition: none; } }
+  </style>
+</head>
+<body>
+  <div class="ink" aria-hidden="true"></div>
+  <main>
+    <span class="code">404</span>
+    <h1 id="t">Essa página não existe.</h1>
+    <p id="d">O endereço <span class="path" id="p"></span> não leva a lugar nenhum. O portfólio inteiro fica numa página só.</p>
+    <a class="back" href="/" id="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Voltar ao início</span></a>
+  </main>
+  <script>
+    (function () {
+      // same theme and language the visitor chose on the main page
+      var themes = {
+        ardosia: { bg: '#1d2532', ink: '#eef2f8', text: '#c9d2e0', muted: '#8d99ad', card: '#273141', accent: '#7cc7ff', i1: '#8f9bff', i2: '#5fe0c8', i3: '#c7a0ff' },
+        ameixa: { bg: '#211924', ink: '#f5eef6', text: '#d9cbdd', muted: '#a18fa7', card: '#2c2230', accent: '#f2a6c9', i1: '#c18cff', i2: '#ffa27c', i3: '#7fd6c2' },
+        nevoa: { bg: '#c9ccd1', ink: '#15171b', text: '#2b2e34', muted: '#565b64', card: '#d7dade', accent: '#2c5fc9', i1: '#7c3aed', i2: '#db2777', i3: '#0d9488', line: 'rgba(20, 22, 28, .13)', light: true }
+      };
+      var theme = null, lang = null;
+      try { theme = themes[localStorage.getItem('kk-theme')]; lang = localStorage.getItem('kk-lang'); } catch (e) {}
+      if (theme) {
+        var s = document.documentElement.style;
+        for (var k in theme) if (k !== 'light') s.setProperty('--' + k, theme[k]);
+        if (theme.light) s.colorScheme = 'light';
+        document.querySelector('meta[name=theme-color]').content = theme.bg;
+      }
+      document.getElementById('p').textContent = location.pathname;
+      if ((lang || (navigator.language || '').slice(0, 2)) === 'en') {
+        document.documentElement.lang = 'en';
+        document.title = 'Page not found · Kelvin Krauss';
+        document.getElementById('t').textContent = "This page doesn't exist.";
+        var d = document.getElementById('d');
+        d.firstChild.textContent = 'The address ';
+        d.lastChild.textContent = " doesn't lead anywhere. The whole portfolio is on a single page.";
+        document.querySelector('#b span').textContent = 'Back to the start';
+      }
+    })();
+  </script>
+</body>
+</html>
