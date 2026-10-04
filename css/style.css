@@ -345,6 +345,23 @@
   .sugg { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 12px; }
   .sugg button { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 7px 13px; font-size: .85rem; cursor: pointer; color: var(--ink); }
   .sugg button:hover { border-color: var(--muted); }
+  /* the answer is still arriving: a blinking caret at the end */
+  .msg.streaming::after { content: ""; display: inline-block; width: 7px; height: 1.05em; margin-left: 3px; vertical-align: -.16em; border-radius: 2px; background: var(--accent); animation: caret .9s steps(2, jump-none) infinite; }
+  @keyframes caret { 50% { opacity: 0; } }
+  /* buttons the assistant adds under an answer ([[ociani]], [[contato]]...) */
+  .go-row { align-self: flex-start; display: flex; flex-wrap: wrap; gap: 8px; margin-top: -2px; }
+  .go { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 999px; padding: 8px 14px 8px 12px; font: 600 .85rem var(--font); cursor: pointer;
+    color: var(--ink); background: color-mix(in srgb, var(--accent) 16%, var(--card-solid)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+    animation: go-in .45s cubic-bezier(.2, .9, .3, 1.3) both; transition: transform .25s cubic-bezier(.2, .9, .3, 1.4), background .2s; }
+  .go::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+  .go:hover { transform: translateY(-1px); background: color-mix(in srgb, var(--accent) 26%, var(--card-solid)); }
+  .go:active { transform: scale(.96); }
+  .go:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; }
+  @keyframes go-in { from { opacity: 0; transform: translateY(6px) scale(.92); } }
+  /* ring of light around the part of the page a chat button leads to */
+  .spot-ring { position: absolute; z-index: 40; pointer-events: none; border-radius: 22px;
+    box-shadow: 0 0 0 2px var(--accent), 0 0 0 8px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 46px color-mix(in srgb, var(--accent) 35%, transparent); }
+  @media (prefers-reduced-motion: reduce) { .msg.streaming::after, .go { animation: none; } }
   .chat form { padding: 10px; border-top: 1px solid var(--line); }
   .chat form .ask { margin: 0; max-width: none; }
   /* Ink inside the chat window */

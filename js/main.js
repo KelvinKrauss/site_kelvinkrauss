@@ -16,6 +16,7 @@
       hintsLabel: 'Por exemplo:',
       wait: 'Pensando...',
       offline: 'Não consegui responder agora. Tente de novo em instantes ou fale direto com o Kelvin: kelvin.krauss.br@gmail.com',
+      go: { ociani: 'Ver o projeto da Ociani', projetos: 'Ver os projetos', trajetoria: 'Ver a trajetória', habilidades: 'Ver as habilidades', contato: 'Ver o contato', curriculo: 'Abrir o currículo' },
       copied: 'Copiado!', copy: 'Copiar',
     },
     en: {
@@ -24,6 +25,7 @@
       hintsLabel: 'For example:',
       wait: 'Thinking...',
       offline: "I couldn't answer right now. Try again in a moment or reach Kelvin directly: kelvin.krauss.br@gmail.com",
+      go: { ociani: 'See the Ociani project', projetos: 'See the projects', trajetoria: 'See the journey', habilidades: 'See the skills', contato: 'See the contact', curriculo: 'Open the resume' },
       copied: 'Copied!', copy: 'Copy',
     },
   };
@@ -121,14 +123,77 @@
   /* ── Assistente ── */
   let history = [];
   const msgs = $('#msgs');
+  const fmt = text => text.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
   function bubble(text, who) {
     const div = document.createElement('div');
     div.className = 'msg ' + who;
-    const safe = text.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    div.innerHTML = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+    div.innerHTML = fmt(text);
     msgs.appendChild(div);
     msgs.scrollTop = msgs.scrollHeight;
     return div;
+  }
+  // O assistente termina algumas respostas com marcações como [[ociani]] (regra no api/chat.js).
+  // Elas viram botões e nunca aparecem no texto, nem pela metade enquanto a resposta chega.
+  const GO_KEYS = ['ociani', 'projetos', 'trajetoria', 'habilidades', 'contato', 'curriculo'];
+  function splitReply(raw, final) {
+    const keys = [];
+    let text = raw.replace(/\[\[\s*([a-zà-ú]+)\s*\]\]/gi, (m, k) => {
+      k = k.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      if (GO_KEYS.includes(k) && !keys.includes(k)) keys.push(k);
+      return '';
+    });
+    if (!final) text = text.replace(/\[\[?[^\]\n]*\]?$/, ''); // marcação ainda chegando
+    return { text: text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim(), keys: keys.slice(0, 2) };
+  }
+  function addGoButtons(div, keys) {
+    if (!keys.length) return;
+    const row = document.createElement('div');
+    row.className = 'go-row';
+    keys.forEach((k, i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'go'; b.textContent = TXT[lang].go[k];
+      b.style.animationDelay = (i * 80) + 'ms';
+      b.addEventListener('click', () => goTo(k));
+      row.appendChild(b);
+    });
+    div.after(row);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  // Leva até a parte do site: a página rola até lá, o chat encolhe para o balão no canto e um anel
+  // de luz contorna o destino.
+  function goTo(key) {
+    if (key === 'curriculo') { const a = document.querySelector('[data-resume]'); if (a) a.click(); return; }
+    const el = document.getElementById(key === 'ociani' ? 'ociani' : key);
+    if (!el) return;
+    const smooth = !calm.matches;
+    const r = el.getBoundingClientRect();
+    const top = scrollY + r.top - (key === 'ociani' ? Math.max(24, (innerHeight - r.height) / 2) : 28);
+    scrollTo({ top: Math.max(0, top), behavior: smooth ? 'smooth' : 'auto' });
+    let fired = false;
+    const arrived = () => {
+      if (fired) return; fired = true;
+      removeEventListener('scrollend', arrived);
+      closeChat();
+      setTimeout(() => spotlight(el), smooth ? 260 : 0);
+    };
+    if (!smooth || Math.abs(top - scrollY) < 4) return arrived();
+    addEventListener('scrollend', arrived, { once: true });
+    setTimeout(arrived, 1100); // navegadores sem o evento scrollend
+  }
+  function spotlight(el) {
+    const r = el.getBoundingClientRect(), pad = el.matches('.card') ? 6 : 14;
+    const ring = document.createElement('div');
+    ring.className = 'spot-ring';
+    Object.assign(ring.style, { left: (r.left + scrollX - pad) + 'px', top: (r.top + scrollY - pad) + 'px', width: (r.width + pad * 2) + 'px', height: (r.height + pad * 2) + 'px' });
+    document.body.appendChild(ring);
+    if (calm.matches || !ring.animate) { setTimeout(() => ring.remove(), 1600); return; }
+    ring.animate([
+      { opacity: 0, transform: 'scale(1.035)' },
+      { opacity: 1, transform: 'scale(1)', offset: .22 },
+      { opacity: 1, offset: .7 },
+      { opacity: 0, transform: 'scale(1.01)' },
+    ], { duration: 1900, easing: 'cubic-bezier(.2, .8, .3, 1)' }).finished.then(() => ring.remove(), () => ring.remove());
   }
   function renderHints() {
     const box = $('#ask-hints');
@@ -164,20 +229,44 @@
     history.push({ role: 'user', parts: [{ text }] });
     const wait = bubble(TXT[lang].wait, 'ai wait');
     $('#chat-send').disabled = true;
+    let raw = '', live = null;
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ history }),
       });
-      const data = await res.json();
-      if (!res.ok || data.error || !data.reply) throw new Error(data.error || res.status);
-      history.push({ role: 'model', parts: [{ text: data.reply }] });
+      const type = res.headers.get('content-type') || '';
+      if (!res.ok || type.includes('json') || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || res.status);
+      }
+      // a resposta chega em pedaços: o balão aparece no primeiro pedaço e vai crescendo
+      const reader = res.body.getReader(), dec = new TextDecoder();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        raw += dec.decode(value, { stream: true });
+        const shown = splitReply(raw, false).text;
+        if (!shown) continue;
+        if (!live) { wait.remove(); live = bubble('', 'ai streaming'); }
+        const nearEnd = msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 40;
+        live.innerHTML = fmt(shown);
+        if (nearEnd) msgs.scrollTop = msgs.scrollHeight;
+      }
+      raw += dec.decode();
+      const out = splitReply(raw, true);
+      if (!out.text) throw new Error('empty');
+      history.push({ role: 'model', parts: [{ text: raw }] });
       wait.remove();
-      bubble(data.reply, 'ai');
+      if (!live) live = bubble('', 'ai');
+      live.classList.remove('streaming');
+      live.innerHTML = fmt(out.text);
+      addGoButtons(live, out.keys);
       if (!chatBubble.hidden) chatBubble.classList.add('unread');
     } catch (err) {
       wait.remove();
+      if (live) live.remove();
       history.pop();
       bubble(TXT[lang].offline, 'ai');
     } finally {
