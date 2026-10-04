@@ -268,11 +268,40 @@
           </article>
 
           <div class="entries">
-            <article class="entry card">
+            <article class="entry card has-peek">
+              <div class="peek" aria-hidden="true">
+                <div class="peek-bar"><i></i><i></i><i></i><span>java Main</span></div>
+                <pre class="term"><span class="p">Escolha uma opção:</span> 8
+<span class="h">--- CONTAS CRIADAS ---</span>
+Conta: 1002 | Tipo: Conta Poupança | Titular: Joao Souza | CPF: 55566677788 | Saldo: R$ 0.00 | Criada em: 04/10/2026 15:22
+Conta: 1001 | Tipo: Conta Corrente | Titular: Maria Silva | CPF: 11122233344 | Saldo: R$ 1000.00 | Criada em: 04/10/2026 15:22
+
+<span class="p">Escolha uma opção:</span> 9
+<span class="h">--- INVESTIMENTOS DISPONÍVEIS ---</span>
+ID: 7d1a0274 | Nome: CDB Banco Brothersco | Taxa: 1.20% | Criado em: 04/10/2026 15:22</pre>
+                <p class="peek-cap" data-en="Real output of the program, with sample data">Saída real do programa, com dados de exemplo</p>
+              </div>
               <div class="entry-top"><h4><a href="https://github.com/KelvinKrauss/Aplicativo-de-Controle-de-Transacoes-Financeiras-com-Java" target="_blank" rel="noopener" data-en="Banking simulator ↗">Simulador bancário ↗</a></h4><span class="meta" data-en="Java · OOP · 2025">Java · POO · 2025</span></div>
               <p data-en="A console system that simulates what a bank does: create accounts, deposit, withdraw, transfer, create investments with a yield percentage, and see a dated history of every action. It was my first complete system, built in the NTT DATA bootcamp, and it taught me to program thinking about business rules.">Um sistema de console que simula o que um banco faz: criar contas, depositar, sacar, transferir, criar investimentos com rendimento em % e ver o histórico com data e hora de cada ação. Foi meu primeiro sistema completo, feito no bootcamp da NTT DATA, e me ensinou a programar pensando em regras de negócio.</p>
             </article>
-            <article class="entry card">
+            <article class="entry card has-peek">
+              <div class="peek" aria-hidden="true">
+                <div class="peek-bar"><i></i><i></i><i></i><span data-en="4 Spring Boot services">4 serviços Spring Boot</span></div>
+                <div class="arch">
+                  <div class="arch-row">
+                    <div class="node"><b data-en="Client">Cliente</b></div>
+                    <span class="link"></span>
+                    <div class="node gw"><b>API Gateway</b><small>:8700 · token Bearer</small></div>
+                    <span class="link split"></span>
+                    <div class="arch-col">
+                      <div class="node"><b data-en="Catalog">Catálogo</b><small>:8100 · /api/produtos · H2</small></div>
+                      <div class="node"><b data-en="Orders">Pedidos</b><small data-en=":8200 · /api/pedidos · H2 · checks stock in the catalog">:8200 · /api/pedidos · H2 · confere o estoque no catálogo</small></div>
+                    </div>
+                  </div>
+                  <div class="node eureka"><b>Eureka</b><small data-en=":8761 · every service registers here and finds the others">:8761 · todos se registram aqui e se encontram por ele</small></div>
+                </div>
+                <p class="peek-cap" data-en="Architecture taken from the project's configuration files">Arquitetura tirada dos arquivos de configuração do projeto</p>
+              </div>
               <div class="entry-top"><h4><a href="https://github.com/KelvinKrauss/Catalogo-e-Simulacao-de-pedido-persistente-em-h2database" target="_blank" rel="noopener" data-en="Catalog and orders ↗">Catálogo e pedidos ↗</a></h4><span class="meta" data-en="Spring Boot · microservices · 2025">Spring Boot · microsserviços · 2025</span></div>
               <p data-en="Four Spring Boot services working together: Eureka Server, product catalog, order simulator and API Gateway. Products live in an in-memory H2 database, and the API lists, searches by name, checks stock, creates and cancels orders.">Quatro serviços Spring Boot trabalhando juntos: Eureka Server, catálogo de produtos, simulador de pedidos e API Gateway. Os produtos ficam num banco H2 em memória, e a API lista, busca por nome, confere estoque, cria e cancela pedidos.</p>
             </article>
