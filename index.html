@@ -311,9 +311,8 @@
     #chat-bubble .orb-icon { position: relative; z-index: 1; width: 24px; height: 24px; color: #fff; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .45)); pointer-events: none; }
     #chat-bubble:hover .orb::before { animation-duration: 2.5s; }
     /* The question box flying to the bubble corner (and back) */
-    .fly { position: fixed; z-index: 61; pointer-events: none; overflow: hidden; box-shadow: 0 14px 34px rgba(0, 0, 0, .35); }
-    .fly .fly-box { position: absolute; inset: 0; background: color-mix(in srgb, var(--card-solid) 78%, transparent); box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 0 0 1px var(--line); border-radius: inherit; }
-    .fly .orb { inset: 0; }
+    /* Dive / emerge: a ring spreads on the page surface where something sinks or comes up */
+    .ripple { position: fixed; z-index: 60; pointer-events: none; border-radius: 999px; box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--accent) 70%, transparent), 0 0 24px color-mix(in srgb, var(--accent) 35%, transparent), inset 0 0 18px color-mix(in srgb, var(--accent) 25%, transparent); }
     @media (prefers-reduced-motion: reduce) { .orb::before { animation: none; } }
     #chat-bubble .bubble-new { position: absolute; top: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 0 2px var(--bg); pointer-events: none; display: none; }
     #chat-bubble.unread .bubble-new { display: block; animation: bubble-ping 1.4s ease-out infinite; }
@@ -1696,82 +1695,99 @@
   let bubbleMode = null;   // 'min' = minimizado pela pessoa, 'auto' = só porque a caixa saiu da tela
   let autoPos = null;      // onde a pessoa deixou o balão automático
   let heroOnScreen = true;
-  // A caixa voa até o canto e vira o balão (e o contrário). Um "fantasma" fixo faz o voo, quadro a quadro,
-  // seguindo a posição atual da caixa (que continua andando enquanto a pessoa rola). Se a pessoa inverte a
-  // rolagem no meio do voo, ele faz a curva a partir de onde está. Estados: box, toBubble, bubble, toBox.
+  // A caixa não voa mais: ela mergulha na página (encolhe, achata, desfoca e some, com uma onda no lugar)
+  // e o balão emerge no canto (sobe de dentro da página com outra onda e dá um pulinho). O contrário ao voltar.
+  // Estados: box, toBubble, bubble, toBox. Inverter no meio cancela o que estava rodando.
   let autoState = 'box';
-  let ghost = null, flight = null;
-  const FLY_MS = 620;
-  const lerp = (a, b, k) => a + (b - a) * k;
-  const easeInOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  let diveAnims = [], diveTimer = 0;
+  const DIVE_MS = 300, EMERGE_MS = 460, GAP_MS = 140;
   const boxRect = () => heroAsk.getBoundingClientRect();
   function stopFlight() {
-    flight = null;
-    if (ghost) { ghost.remove(); ghost = null; }
+    diveAnims.forEach(a => a.cancel()); diveAnims = [];
+    clearTimeout(diveTimer);
+    document.querySelectorAll('.ripple').forEach(r => r.remove());
   }
-  function fly(fromFn, toFn, toBubble) {
-    return new Promise(res => {
-      if (!ghost) {
-        ghost = document.createElement('div');
-        ghost.className = 'fly';
-        ghost.innerHTML = '<span class="orb"></span><span class="fly-box"></span>';
-        document.body.appendChild(ghost);
-      }
-      const g = ghost, box = g.lastChild;
-      const turning = !!g._rect;                       // já estava voando: faz a curva de onde está
-      const fromSnap = g._rect, orbFrom = turning ? g._orb : (toBubble ? 0 : 1), orbTo = toBubble ? 1 : 0;
-      const token = {};
-      flight = token;
-      const t0 = performance.now();
-      const finish = () => {
-        if (flight !== token) return;
-        flight = null; g.remove(); if (ghost === g) ghost = null;
-        res();
-      };
-      const step = now => {
-        if (flight !== token) return;
-        const k = Math.min(1, (now - t0) / FLY_MS), e = easeInOut(k);
-        const a = turning ? fromSnap : fromFn(), b = toFn();
-        const r = { left: lerp(a.left, b.left, e), top: lerp(a.top, b.top, e), width: lerp(a.width, b.width, e), height: lerp(a.height, b.height, e) };
-        g.style.left = r.left + 'px'; g.style.top = r.top + 'px';
-        g.style.width = r.width + 'px'; g.style.height = r.height + 'px';
-        g.style.borderRadius = r.height / 2 + 'px';
-        g._rect = r;
-        g._orb = lerp(orbFrom, orbTo, e);
-        box.style.opacity = String(1 - g._orb);
-        if (k < 1) requestAnimationFrame(step); else finish();
-      };
-      step(t0);
-      setTimeout(finish, FLY_MS + 500); // garantia caso o navegador pare de desenhar quadros
-    });
+  function ripple(r, delay = 0) {
+    const el = document.createElement('div');
+    el.className = 'ripple';
+    const w = r.width, h = r.height;
+    el.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + w + 'px;height:' + h + 'px';
+    document.body.appendChild(el);
+    const a = el.animate([
+      { transform: 'scale(.9)', opacity: 0 },
+      { transform: 'scale(1)', opacity: 1, offset: .2 },
+      { transform: 'scale(' + (1 + 60 / w) + ',' + (1 + 60 / h) + ')', opacity: 0 },
+    ], { duration: 700, delay, easing: 'cubic-bezier(.2, .7, .3, 1)', fill: 'both' });
+    a.onfinish = a.oncancel = () => el.remove();
+    diveAnims.push(a);
   }
-  const onScreen = r => r.bottom > 0 && r.top < innerHeight;
-  function popBubble() {
-    chatBubble.hidden = false;
-    if (!calm.matches && chatBubble.animate) chatBubble.animate([{ transform: 'scale(.85)' }, { transform: 'scale(1.1)', offset: .6 }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' });
+  const SINK = [
+    { transform: 'translateY(0) scale(1, 1)', filter: 'blur(0px)', opacity: 1 },
+    { transform: 'translateY(-3px) scale(1.03, .96)', filter: 'blur(0px)', opacity: 1, offset: .25 },
+    { transform: 'translateY(10px) scale(.55, .25)', filter: 'blur(8px)', opacity: 0 },
+  ];
+  const RISE = [
+    { transform: 'translateY(14px) scale(.35, .2)', filter: 'blur(8px)', opacity: 0 },
+    { transform: 'translateY(-4px) scale(1.08, 1.12)', filter: 'blur(0px)', opacity: 1, offset: .65 },
+    { transform: 'translateY(0) scale(.97, 1.02)', offset: .85 },
+    { transform: 'translateY(0) scale(1, 1)', filter: 'blur(0px)', opacity: 1 },
+  ];
+  function dive(el, rect, then) {
+    if (calm.matches || !el.animate) return then();
+    ripple(rect);
+    const a = el.animate(SINK, { duration: DIVE_MS, easing: 'cubic-bezier(.5, 0, .8, .4)', fill: 'forwards' });
+    diveAnims.push(a);
+    diveTimer = setTimeout(then, DIVE_MS - 40);
+  }
+  function emerge(el, rect) {
+    if (calm.matches || !el.animate) return;
+    ripple(rect);
+    diveAnims.push(el.animate(RISE, { duration: EMERGE_MS, easing: 'cubic-bezier(.2, .8, .3, 1)' }));
   }
   function showAutoBubble() {
     if (!wrap.hidden || bubbleMode === 'min') return;
     if (autoState === 'bubble' || autoState === 'toBubble') return;
-    if (!ghost) bubblePos = autoPos ? { x: autoPos.x, y: autoPos.y } : { x: innerWidth - BUBBLE - 24, y: innerHeight - BUBBLE - 110 };
+    stopFlight();
+    bubblePos = autoPos ? { x: autoPos.x, y: autoPos.y } : { x: innerWidth - BUBBLE - 24, y: innerHeight - BUBBLE - 110 };
     placeBubble();
     bubbleMode = 'auto';
     autoState = 'toBubble';
-    heroAsk.style.visibility = 'hidden';
     chatBubble.hidden = true;
-    if (calm.matches || (!ghost && !onScreen(boxRect()))) { autoState = 'bubble'; return popBubble(); }
-    fly(boxRect, bubbleRect, true).then(() => { if (autoState === 'toBubble') { autoState = 'bubble'; popBubble(); } });
+    const appear = () => {
+      if (autoState !== 'toBubble') return;
+      heroAsk.style.visibility = 'hidden';
+      diveAnims.forEach(a => { if (a.effect && a.effect.target === heroAsk) a.cancel(); });
+      setTimeout(() => {
+        if (autoState !== 'toBubble') return;
+        autoState = 'bubble';
+        chatBubble.hidden = false;
+        emerge(chatBubble, bubbleRect());
+      }, calm.matches ? 0 : GAP_MS);
+    };
+    const r = boxRect();
+    if (r.bottom > 0 && r.top < innerHeight) dive(heroAsk, r, appear); else appear();
   }
   function hideAutoBubble() {
     if (bubbleMode !== 'auto') return;
     if (autoState === 'box' || autoState === 'toBox') return;
-    if (!chatBubble.hidden) autoPos = { x: bubblePos.x, y: bubblePos.y };
+    const wasShown = !chatBubble.hidden;
+    if (wasShown) autoPos = { x: bubblePos.x, y: bubblePos.y };
+    stopFlight();
     bubbleMode = null;
     autoState = 'toBox';
-    chatBubble.hidden = true;
-    const land = () => { if (autoState === 'toBox') { autoState = 'box'; if (wrap.hidden) heroAsk.style.visibility = ''; } };
-    if (calm.matches || (!ghost && !onScreen(boxRect()))) return land();
-    fly(bubbleRect, boxRect, false).then(land);
+    const appear = () => {
+      if (autoState !== 'toBox') return;
+      chatBubble.hidden = true;
+      diveAnims.forEach(a => { if (a.effect && a.effect.target === chatBubble) a.cancel(); });
+      setTimeout(() => {
+        if (autoState !== 'toBox') return;
+        autoState = 'box';
+        if (!wrap.hidden) return;
+        heroAsk.style.visibility = '';
+        emerge(heroAsk, boxRect());
+      }, calm.matches ? 0 : GAP_MS);
+    };
+    if (wasShown) dive(chatBubble, bubbleRect(), appear); else appear();
   }
   if ('IntersectionObserver' in window) {
     // a caixa vira balão quando metade dela já saiu da tela
