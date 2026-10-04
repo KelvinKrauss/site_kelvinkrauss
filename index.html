@@ -1589,11 +1589,20 @@
       heroAsk.style.visibility = '';
       moveInk(heroAsk);
       if (lastFocus) lastFocus.focus({ preventScroll: true });
-      if (!heroOnScreen) showAutoBubble();
+      if (!heroOnScreen) return showAutoBubble();
+      // a janela encolheu até a caixa: a caixa "pousa" com um pulinho e uma onda
+      if (!calm.matches && heroAsk.animate) {
+        ripple(heroAsk.getBoundingClientRect());
+        heroAsk.animate([
+          { opacity: 0, transform: 'scale(1.04, .86)' },
+          { opacity: 1, transform: 'scale(.98, 1.05)', offset: .45 },
+          { transform: 'scale(1.01, .99)', offset: .75 },
+          { opacity: 1, transform: 'scale(1, 1)' },
+        ], { duration: 460, easing: 'cubic-bezier(.2, .8, .3, 1)' });
+      }
     };
     if (calm.matches || !panel.animate) return done();
     stopAnims();
-    heroAsk.style.visibility = '';
     const s = shrinkTo(wrap, panel, originRect());
     running.push(...s.list);
     s.done.then(done, () => {});
@@ -1816,14 +1825,40 @@
   let cvReturn = null;
   const cvPanel = cvWrap.querySelector('.chat');
   let cvAnims = [];
+  // A janela do currículo sai do botão: cresce com uma curva suave (transform, sem recorte), o fundo escurece
+  // junto, e o conteúdo (título e PDF) só aparece no fim, para não ver o PDF esticado nem piscando em branco.
+  function cvFrom(b) {
+    const r = cvPanel.getBoundingClientRect();
+    return 'translate(' + (b.left - r.left) + 'px,' + (b.top - r.top) + 'px) scale(' + (b.width / r.width) + ',' + (b.height / r.height) + ')';
+  }
+  const cvKids = () => [...cvPanel.children];
+  function openCvAnim(b) {
+    cvPanel.style.transformOrigin = '0 0';
+    cvAnims = [
+      cvWrap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out' }),
+      cvPanel.animate([
+        { transform: cvFrom(b), opacity: .4, borderRadius: '999px' },
+        { opacity: 1, offset: .25 },
+        { transform: 'none', opacity: 1, borderRadius: '28px' },
+      ], { duration: 560, easing: 'cubic-bezier(.16, 1, .3, 1)' }),
+      ...cvKids().map((el, i) => el.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 300, delay: 300 + i * 60, easing: 'ease-out', fill: 'backwards' })),
+    ];
+  }
   function closeCv() {
     if (cvWrap.hidden) return;
     const done = () => { cvWrap.hidden = true; cvAnims.forEach(a => a.cancel()); cvAnims = []; if (cvReturn) cvReturn.focus({ preventScroll: true }); };
     if (calm.matches || !cvPanel.animate || !cvReturn) return done();
     cvAnims.forEach(a => a.cancel());
-    const s = shrinkTo(cvWrap, cvPanel, cvReturn.getBoundingClientRect());
-    cvAnims = s.list;
-    s.done.then(done, () => {});
+    const b = cvReturn.getBoundingClientRect();
+    const kids = cvKids().map(el => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, easing: 'ease-in', fill: 'forwards' }));
+    const shrink = cvPanel.animate([
+      { transform: 'none', opacity: 1, borderRadius: '28px' },
+      { transform: cvFrom(b), opacity: .3, borderRadius: '999px' },
+    ], { duration: 380, delay: 80, easing: 'cubic-bezier(.7, 0, .84, 0)', fill: 'forwards' });
+    const fade = cvWrap.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: 160, easing: 'ease-in', fill: 'forwards' });
+    cvAnims = [...kids, shrink, fade];
+    Promise.all([shrink.finished, fade.finished]).then(done, () => {});
   }
   document.querySelectorAll('[data-resume]').forEach(a => a.addEventListener('click', e => {
     if (!bigScreen.matches) return;
@@ -1832,9 +1867,14 @@
     if (!cvFrame.getAttribute('src')) cvFrame.setAttribute('src', a.getAttribute('href') + '#view=FitH');
     cvAnims.forEach(x => x.cancel());
     cvWrap.hidden = false;
-    if (!calm.matches && cvPanel.animate) cvAnims = grow(cvWrap, cvPanel, a.getBoundingClientRect());
+    if (!calm.matches && cvPanel.animate) openCvAnim(a.getBoundingClientRect());
     $('#cv-close').focus({ preventScroll: true });
   }));
+  // carrega o PDF com antecedência (quando a página está ociosa), para ele já estar pronto ao abrir
+  if (bigScreen.matches) (window.requestIdleCallback || (fn => setTimeout(fn, 2500)))(() => {
+    const first = document.querySelector('[data-resume]');
+    if (first && !cvFrame.getAttribute('src')) cvFrame.setAttribute('src', first.getAttribute('href') + '#view=FitH');
+  });
   $('#cv-close').addEventListener('click', closeCv);
   cvWrap.addEventListener('click', e => { if (e.target === cvWrap) closeCv(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !cvWrap.hidden) closeCv(); });
