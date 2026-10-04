@@ -272,6 +272,8 @@
     /* ── Dock ── */
     .dock { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 40; display: flex; align-items: center; gap: 2px; padding: 6px; border-radius: 999px; transform: translateX(-50%); animation: dock-in .7s cubic-bezier(.2, .9, .3, 1.15) .3s backwards; }
     @keyframes dock-in { from { transform: translate(-50%, 160%); } }
+    .dock { transition: transform .45s cubic-bezier(.2, .9, .3, 1.1), opacity .3s; }
+    .dock.away { transform: translate(-50%, 170%); opacity: 0; pointer-events: none; }
     .dock.glass { background: color-mix(in srgb, var(--card-solid) 58%, transparent); }
     .dock a { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 66px; padding: 7px 10px 6px; border-radius: 999px; text-decoration: none; font-size: .7rem; font-weight: 600; line-height: 1.2; color: var(--muted); transition: color .2s; }
     .dock a svg { width: 21px; height: 21px; }
@@ -497,6 +499,31 @@
         </div>
       </section>
 
+      <!-- ── Trajetória ── -->
+      <section class="sec" id="trajetoria">
+        <header><h2 data-en="Journey">Trajetória</h2><p data-en="Work and education">Trabalho e estudo</p></header>
+        <div class="prose">
+          <div class="timeline">
+            <article class="entry now">
+              <div class="entry-top"><h4 data-en="Apprentice · Ociani Transportadora">Jovem Aprendiz · Ociani Transportadora</h4><span class="meta" data-en="Jan 2026 – now">jan 2026 – hoje</span></div>
+              <p data-en="Through the SEST SENAT program. Day to day I support the administrative and accounting team (documents and data entry), repair computers and help my coworkers with IT. In September 2026 I built the company's new website.">Pelo programa do SEST SENAT. No dia a dia apoio o administrativo e a contabilidade (documentos e lançamentos), faço manutenção de computadores e ajudo os colegas com TI. Em setembro de 2026 criei o novo site da empresa.</p>
+            </article>
+            <article class="entry now">
+              <div class="entry-top"><h4 data-en="Systems Analysis and Development · IFSC">Análise e Desenvolvimento de Sistemas · IFSC</h4><span class="meta" data-en="Jul 2026 – Dec 2028">jul 2026 – dez 2028</span></div>
+              <p class="where" data-en="Federal Institute of Santa Catarina. In progress.">Instituto Federal de Santa Catarina. Cursando.</p>
+            </article>
+            <article class="entry">
+              <div class="entry-top"><h4 data-en="Computer Science · IFC">Ciência da Computação · IFC</h4><span class="meta" data-en="Jan 2025 – Jun 2026">jan 2025 – jun 2026</span></div>
+              <p class="where" data-en="Instituto Federal Catarinense. Programming logic, data structures and my first steps in Java. Transferred to IFSC.">Instituto Federal Catarinense. Lógica, estruturas de dados e os primeiros passos em Java. Transferência para o IFSC.</p>
+            </article>
+            <article class="entry">
+              <div class="entry-top"><h4 data-en="Bootcamps · Entra21 and NTT DATA">Bootcamps · Entra21 e NTT DATA</h4><span class="meta">2024 – 2025</span></div>
+              <p class="where" data-en="Entra21 Back-end Java Developer (220 h, 2024) and NTT DATA Java and AI for Beginners (48 h, 2025).">Entra21 Desenvolvedor Back-end Java (220 h, 2024) e NTT DATA Java e IA para Iniciantes (48 h, 2025).</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <!-- ── Projetos ── -->
       <section class="sec" id="projetos">
         <header><h2 data-en="Projects">Projetos</h2><p data-en="The main one first">O principal primeiro</p></header>
@@ -559,31 +586,6 @@
         </div>
       </section>
 
-      <!-- ── Trajetória ── -->
-      <section class="sec" id="trajetoria">
-        <header><h2 data-en="Journey">Trajetória</h2><p data-en="Work and education">Trabalho e estudo</p></header>
-        <div class="prose">
-          <div class="timeline">
-            <article class="entry now">
-              <div class="entry-top"><h4 data-en="Apprentice · Ociani Transportadora">Jovem Aprendiz · Ociani Transportadora</h4><span class="meta" data-en="Jan 2026 – now">jan 2026 – hoje</span></div>
-              <p data-en="Through the SEST SENAT program. Day to day I support the administrative and accounting team (documents and data entry), repair computers and help my coworkers with IT. In September 2026 I built the company's new website.">Pelo programa do SEST SENAT. No dia a dia apoio o administrativo e a contabilidade (documentos e lançamentos), faço manutenção de computadores e ajudo os colegas com TI. Em setembro de 2026 criei o novo site da empresa.</p>
-            </article>
-            <article class="entry now">
-              <div class="entry-top"><h4 data-en="Systems Analysis and Development · IFSC">Análise e Desenvolvimento de Sistemas · IFSC</h4><span class="meta" data-en="Jul 2026 – Dec 2028">jul 2026 – dez 2028</span></div>
-              <p class="where" data-en="Federal Institute of Santa Catarina. In progress.">Instituto Federal de Santa Catarina. Cursando.</p>
-            </article>
-            <article class="entry">
-              <div class="entry-top"><h4 data-en="Computer Science · IFC">Ciência da Computação · IFC</h4><span class="meta" data-en="Jan 2025 – Jun 2026">jan 2025 – jun 2026</span></div>
-              <p class="where" data-en="Instituto Federal Catarinense. Programming logic, data structures and my first steps in Java. Transferred to IFSC.">Instituto Federal Catarinense. Lógica, estruturas de dados e os primeiros passos em Java. Transferência para o IFSC.</p>
-            </article>
-            <article class="entry">
-              <div class="entry-top"><h4 data-en="Bootcamps · Entra21 and NTT DATA">Bootcamps · Entra21 e NTT DATA</h4><span class="meta">2024 – 2025</span></div>
-              <p class="where" data-en="Entra21 Back-end Java Developer (220 h, 2024) and NTT DATA Java and AI for Beginners (48 h, 2025).">Entra21 Desenvolvedor Back-end Java (220 h, 2024) e NTT DATA Java e IA para Iniciantes (48 h, 2025).</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
       <!-- ── Habilidades ── -->
       <section class="sec" id="habilidades">
         <header><h2 data-en="Skills">Habilidades</h2><p data-en="Split by how much I've used them">Separadas pelo quanto já usei</p></header>
@@ -624,9 +626,9 @@
 <nav class="dock glass" data-glass="52" data-blur="9" id="dock" aria-label="Navegação" data-en-aria="Navigation">
   <span class="dock-lens" id="dock-lens" aria-hidden="true"></span>
   <a href="#sobre"><svg><use href="#i-smile"/></svg><span data-en="About">Sobre</span></a>
-  <a href="#projetos"><svg><use href="#i-case"/></svg><span data-en="Projects">Projetos</span></a>
   <a href="#trajetoria"><svg><use href="#i-route"/></svg><span data-en="Journey">Trajetória</span></a>
-  <a href="#habilidades"><svg><use href="#i-layers"/></svg><span>Skills</span></a>
+  <a href="#projetos"><svg><use href="#i-case"/></svg><span data-en="Projects">Projetos</span></a>
+  <a href="#habilidades"><svg><use href="#i-layers"/></svg><span data-en="Skills">Habilidades</span></a>
   <a href="#contato"><svg><use href="#i-mail"/></svg><span data-en="Contact">Contato</span></a>
 </nav>
 
@@ -1216,6 +1218,7 @@
   }
   let lastInput = performance.now();
   function track(clientX, clientY) {
+    refreshBox(); // the box can move without a scroll/resize (e.g. language switch changes the text above it)
     if (!near(clientX, clientY)) { inside = false; return; }
     if (!inside) { inside = true; pointer.started = false; }
     updatePointer(clientX, clientY);
@@ -1808,6 +1811,7 @@
     // a caixa vira balão quando metade dela já saiu da tela
     new IntersectionObserver(([en]) => {
       heroOnScreen = en.isIntersecting && en.intersectionRatio >= 0.5;
+      dockAway();
       if (heroOnScreen) hideAutoBubble(); else showAutoBubble();
     }, { threshold: [0, 0.5, 1] }).observe(heroAsk);
   }
@@ -1887,25 +1891,35 @@
   cvWrap.addEventListener('click', e => { if (e.target === cvWrap) closeCv(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !cvWrap.hidden) closeCv(); });
 
-  /* ── Dock: marca a seção visível ── */
+  /* ── Dock: marca a(s) seção(ões) no meio da tela. Em telas largas duas seções ficam lado a lado
+     (Sobre + Trajetória, Habilidades + Contato): as duas acendem e a lente cobre as duas. ── */
   const dock = $('#dock'), lens = $('#dock-lens');
   const dockLinks = [...dock.querySelectorAll('a')];
-  function moveLens(a) {
-    if (!a) { lens.style.opacity = 0; return; }
+  const dockSecs = dockLinks.map(a => document.querySelector(a.getAttribute('href')));
+  let dockTick = 0;
+  function updateDock() {
+    dockTick = 0;
+    const mid = innerHeight * .45;
+    const lit = dockSecs.map(s => { if (!s) return false; const r = s.getBoundingClientRect(); return r.top < mid && r.bottom > mid; });
+    dockLinks.forEach((a, i) => a.classList.toggle('on', lit[i]));
+    const on = dockLinks.filter((a, i) => lit[i]);
+    if (!on.length) { lens.style.opacity = 0; return; }
+    const first = on[0], last = on[on.length - 1];
     lens.style.opacity = 1;
-    lens.style.width = a.offsetWidth + 'px';
-    lens.style.transform = 'translateX(' + a.offsetLeft + 'px)';
+    lens.style.width = (last.offsetLeft + last.offsetWidth - first.offsetLeft) + 'px';
+    lens.style.transform = 'translateX(' + first.offsetLeft + 'px)';
   }
-  if ('IntersectionObserver' in window) {
-    const secIO = new IntersectionObserver(entries => {
-      entries.forEach(en => {
-        if (!en.isIntersecting) return;
-        dockLinks.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id));
-        moveLens(dockLinks.find(a => a.classList.contains('on')));
-      });
-    }, { rootMargin: '-40% 0px -55% 0px' });
-    document.querySelectorAll('.hero, .sec').forEach(sec => secIO.observe(sec));
-  }
+  const queueDock = () => { if (!dockTick) dockTick = requestAnimationFrame(updateDock); };
+  addEventListener('scroll', queueDock, { passive: true });
+  addEventListener('resize', queueDock);
+  $('#lang-btn').addEventListener('click', () => setTimeout(updateDock, 420)); // labels change width
+  updateDock();
+  // No celular, a barra cobria a caixa de IA na primeira tela: ela só aparece depois que a caixa sai de vista
+  const phone = matchMedia('(max-width: 700px)');
+  function dockAway() { dock.classList.toggle('away', phone.matches && heroOnScreen); }
+  addEventListener('scroll', dockAway, { passive: true });
+  phone.addEventListener ? phone.addEventListener('change', dockAway) : phone.addListener(dockAway);
+  dockAway();
 
   /* ── Liquid glass: refração real no Chromium ──
      Para cada .glass[data-glass], gera um mapa de deslocamento do tamanho do elemento e usa como filtro SVG
