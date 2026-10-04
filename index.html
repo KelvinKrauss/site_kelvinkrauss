@@ -117,6 +117,7 @@
     .themes .sw[aria-checked="true"] i { transform: scale(1.12); box-shadow: inset 0 0 0 1px rgba(128, 128, 128, .45), 0 0 0 2px var(--bg), 0 0 0 3.5px var(--ink); }
     .themes .sw:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 1px; }
     .themes .sw[data-theme="escuro"]  { --sw-bg: #0b0c10; --sw-ac: #6aa5ff; }
+    .themes .sw[data-theme="original"] i { background: linear-gradient(135deg, #0b0c10 0 22%, #14161c 22% 37%, #1d2029 37% 52%, #6aa5ff 52%); }
     .themes .sw[data-theme="ardosia"] { --sw-bg: #1d2532; --sw-ac: #7cc7ff; }
     .themes .sw[data-theme="ameixa"]  { --sw-bg: #211924; --sw-ac: #f2a6c9; }
     .themes .sw[data-theme="nevoa"]   { --sw-bg: #c9ccd1; --sw-ac: #2c5fc9; }
@@ -386,11 +387,12 @@
   (function () {
     // i = the three ink colors used with the accent in the background echo
     const T = {
-      escuro:  { bg: [11, 12, 16],    card: [22, 24, 30],    ink: [241, 242, 246], text: [201, 204, 214], muted: [143, 147, 163], line: [255, 255, 255, .1],  accent: [106, 165, 255], ok: [74, 222, 128],  i: [[168, 85, 247], [236, 72, 153], [20, 184, 166]], light: 0 },
-      ardosia: { bg: [29, 37, 50],    card: [39, 49, 65],    ink: [238, 242, 248], text: [201, 210, 224], muted: [141, 153, 173], line: [255, 255, 255, .1],  accent: [124, 199, 255], ok: [111, 227, 176], i: [[143, 155, 255], [95, 224, 200], [199, 160, 255]], light: 0 },
-      ameixa:  { bg: [33, 25, 36],    card: [44, 34, 48],    ink: [245, 238, 246], text: [217, 203, 221], muted: [161, 143, 167], line: [255, 230, 255, .1],  accent: [242, 166, 201], ok: [134, 223, 184], i: [[193, 140, 255], [255, 162, 124], [127, 214, 194]], light: 0 },
-      nevoa:   { bg: [201, 204, 209], card: [215, 218, 222], ink: [21, 23, 27],    text: [43, 46, 52],    muted: [86, 91, 100],   line: [20, 22, 28, .13],    accent: [44, 95, 201],   ok: [29, 122, 67],   i: [[124, 58, 237], [219, 39, 119], [13, 148, 136]], light: 1 }
+      escuro:  { bg: [11, 12, 16],    card: [22, 24, 30],    ink: [241, 242, 246], text: [201, 204, 214], muted: [143, 147, 163], line: [255, 255, 255, .1],  accent: [106, 165, 255], ok: [74, 222, 128],  i: [[168, 85, 247], [236, 72, 153], [20, 184, 166]], light: 0, dither: 1 },
+      ardosia: { bg: [29, 37, 50],    card: [39, 49, 65],    ink: [238, 242, 248], text: [201, 210, 224], muted: [141, 153, 173], line: [255, 255, 255, .1],  accent: [124, 199, 255], ok: [111, 227, 176], i: [[143, 155, 255], [95, 224, 200], [199, 160, 255]], light: 0, dither: 1 },
+      ameixa:  { bg: [33, 25, 36],    card: [44, 34, 48],    ink: [245, 238, 246], text: [217, 203, 221], muted: [161, 143, 167], line: [255, 230, 255, .1],  accent: [242, 166, 201], ok: [134, 223, 184], i: [[193, 140, 255], [255, 162, 124], [127, 214, 194]], light: 0, dither: 1 },
+      nevoa:   { bg: [201, 204, 209], card: [215, 218, 222], ink: [21, 23, 27],    text: [43, 46, 52],    muted: [86, 91, 100],   line: [20, 22, 28, .13],    accent: [44, 95, 201],   ok: [29, 122, 67],   i: [[124, 58, 237], [219, 39, 119], [13, 148, 136]], light: 1, dither: 1 }
     };
+    T.original = Object.assign({}, T.escuro, { dither: 0 }); // Escuro sem dithering, para comparar
     const num = (a, b, k) => a + (b - a) * k;
     const mixAny = (a, b, k) => Array.isArray(a) ? a.map((v, n) => mixAny(v, b[n], k)) : num(a, b, k);
     const rgb = c => 'rgb(' + c.slice(0, 3).map(Math.round).join(',') + ')';
@@ -406,6 +408,7 @@
         set('--bg', rgb(p.bg)); set('--card-solid', rgb(p.card));
         set('--ink', rgb(p.ink)); set('--text', rgb(p.text)); set('--muted', rgb(p.muted));
         set('--line', rgba(p.line)); set('--accent', rgb(p.accent)); set('--ok', rgb(p.ok));
+        set('--dither', f3(p.dither));
         set('--i1', rgb(p.i[0])); set('--i2', rgb(p.i[1])); set('--i3', rgb(p.i[2]));
         set('--glass-tint', 'rgba(255, 255, 255, ' + f3(num(.06, .3, L)) + ')');
         set('--glass-tint-hover', 'rgba(255, 255, 255, ' + f3(num(.11, .45, L)) + ')');
@@ -467,6 +470,7 @@
       <div class="top-right">
         <div class="themes glass" data-glass="30" id="themes" role="radiogroup" aria-label="Tema do site" data-en-aria="Site theme">
           <button type="button" class="sw" data-theme="escuro" role="radio" aria-checked="false" title="Escuro" data-en-title="Dark" aria-label="Tema Escuro" data-en-aria="Dark theme"><i></i></button>
+          <button type="button" class="sw" data-theme="original" role="radio" aria-checked="false" title="Escuro original (sem dithering)" data-en-title="Original dark (no dithering)" aria-label="Tema Escuro original, sem dithering" data-en-aria="Original dark theme, no dithering"><i></i></button>
           <button type="button" class="sw" data-theme="ardosia" role="radio" aria-checked="false" title="Ardósia" data-en-title="Slate" aria-label="Tema Ardósia" data-en-aria="Slate theme"><i></i></button>
           <button type="button" class="sw" data-theme="ameixa" role="radio" aria-checked="false" title="Ameixa" data-en-title="Plum" aria-label="Tema Ameixa" data-en-aria="Plum theme"><i></i></button>
           <button type="button" class="sw" data-theme="nevoa" role="radio" aria-checked="false" title="Névoa" data-en-title="Mist" aria-label="Tema Névoa" data-en-aria="Mist theme"><i></i></button>
@@ -2037,14 +2041,60 @@
 
   /* ── Fundo: eco da tinta ──
      Um campo de ruído em baixa resolução (64x40) vira manchas nas cores da tinta do chat, só nas bordas
-     da tela; o navegador amplia com suavização, o que dá o borrado. Move-se devagar e para com a aba oculta. */
+     da tela. A ampliação é feita na placa de vídeo (WebGL): suavização bicúbica com conta em ponto flutuante
+     e um ruído de ±1 nível antes da cor final (dithering), que tira as faixas (color banding) dos degradês
+     escuros. Sem WebGL, o navegador amplia num canvas 2D como antes. Move-se devagar e para com a aba oculta. */
   (function inkEcho() {
     const cv = $('#ink-echo');
     if (!cv || !cv.getContext) return;
     const LW = 64, LH = 40;
     const low = document.createElement('canvas'); low.width = LW; low.height = LH;
     const lc = low.getContext('2d'), img = lc.createImageData(LW, LH), d = img.data;
-    const ctx = cv.getContext('2d');
+    let gl = cv.getContext('webgl', { alpha: false, antialias: false, depth: false, stencil: false, premultipliedAlpha: false });
+    const ctx = gl ? null : cv.getContext('2d');
+    let glProg = null, uDither = null, uRes = null;
+    function setupGL() {
+      const VS = 'attribute vec2 p; void main() { gl_Position = vec4(p, 0.0, 1.0); }';
+      const FS = `precision highp float;
+        uniform sampler2D tex; uniform vec2 texSize, res; uniform float dither;
+        // B-spline bicúbico com 4 leituras bilineares: bem mais macio que a ampliação bilinear simples
+        vec4 w(float v) { vec4 n = vec4(1.0, 2.0, 3.0, 4.0) - v, s = n * n * n; float x = s.x, y = s.y - 4.0 * s.x, z = s.z - 4.0 * s.y + 6.0 * s.x; return vec4(x, y, z, 6.0 - x - y - z) / 6.0; }
+        vec4 bicubic(vec2 uv) {
+          uv = uv * texSize - 0.5; vec2 f = fract(uv); uv -= f;
+          vec4 xc = w(f.x), yc = w(f.y), c = uv.xxyy + vec2(-0.5, 1.5).xyxy;
+          vec4 s = vec4(xc.xz + xc.yw, yc.xz + yc.yw), o = (c + vec4(xc.yw, yc.yw) / s) / texSize.xxyy;
+          float sx = s.x / (s.x + s.y), sy = s.z / (s.z + s.w);
+          return mix(mix(texture2D(tex, o.yw), texture2D(tex, o.xw), sx), mix(texture2D(tex, o.yz), texture2D(tex, o.xz), sx), sy);
+        }
+        float h(vec2 q) { return fract(sin(dot(q, vec2(12.9898, 78.233))) * 43758.5453); }
+        void main() {
+          vec2 uv = vec2(gl_FragCoord.x / res.x, 1.0 - gl_FragCoord.y / res.y);
+          vec3 col = bicubic(uv).rgb;
+          vec2 q = floor(gl_FragCoord.xy);
+          // ruído triangular de -1 a +1 nível por canal: esconde os degraus de 8 bits
+          vec3 n = vec3(h(q), h(q + 17.13), h(q + 41.71)) + vec3(h(q + 7.37), h(q + 29.93), h(q + 3.19)) - 1.0;
+          gl_FragColor = vec4(col + n * dither / 255.0, 1.0);
+        }`;
+      const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null; };
+      const vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS);
+      if (!vs || !fs) return false;
+      glProg = gl.createProgram(); gl.attachShader(glProg, vs); gl.attachShader(glProg, fs); gl.linkProgram(glProg);
+      if (!gl.getProgramParameter(glProg, gl.LINK_STATUS)) return false;
+      gl.useProgram(glProg);
+      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW); // um triângulo cobre a tela
+      const loc = gl.getAttribLocation(glProg, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.uniform2f(gl.getUniformLocation(glProg, 'texSize'), LW, LH);
+      uRes = gl.getUniformLocation(glProg, 'res'); uDither = gl.getUniformLocation(glProg, 'dither');
+      return true;
+    }
+    if (gl && !setupGL()) gl = null;
+    if (!gl && ctx === null) return; // o canvas já virou WebGL mas o shader falhou: fica só a cor de fundo da página
+    cv.addEventListener('webglcontextlost', e => e.preventDefault());
+    cv.addEventListener('webglcontextrestored', () => { if (setupGL()) { size(); draw(performance.now()); } });
     // ruído de valor 3D (semente fixa)
     const P = new Uint8Array(512);
     let seed = 1981;
@@ -2060,17 +2110,21 @@
     }
     const parse = v => { v = v.trim(); if (v[0] === '#') return [1, 3, 5].map(i => parseInt(v.slice(i, i + 2), 16)); return (v.match(/\d+/g) || [0, 0, 0]).slice(0, 3).map(Number); };
     const mix = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
-    let bg, light, cols;
+    let bg, light, cols, dither = 1;
     function readTheme() {
       const cs = getComputedStyle(root);
       bg = parse(cs.getPropertyValue('--bg'));
       light = (bg[0] + bg[1] + bg[2]) / 3 > 128;
       cols = ['--accent', '--i1', '--i2', '--i3'].map(n => parse(cs.getPropertyValue(n)));
+      const dv = parseFloat(cs.getPropertyValue('--dither'));
+      dither = isNaN(dv) ? 1 : dv;
     }
     function size() {
-      const dpr = Math.min(devicePixelRatio || 1, 1.5);
-      const W = Math.round(innerWidth * dpr / 2), H = Math.round(innerHeight * dpr / 2); // meia resolução basta: é borrado
+      // WebGL: resolução cheia (o ruído do dithering precisa de 1 pixel de tela); 2D: metade basta, é borrado
+      const dpr = Math.min(devicePixelRatio || 1, gl ? 2 : 1.5), k = gl ? 1 : .5;
+      const W = Math.round(innerWidth * dpr * k), H = Math.round(innerHeight * dpr * k);
       if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+      if (gl) { gl.viewport(0, 0, W, H); gl.uniform2f(uRes, W, H); }
     }
     function draw(time) {
       const t = time / 1000, strength = light ? .42 : .55;
@@ -2082,6 +2136,13 @@
         const k = Math.min(1, Math.max(0, n - .35) * 1.9 * edge * strength);
         const o = mix(bg, col, k), i = (y * LW + x) * 4;
         d[i] = o[0]; d[i + 1] = o[1]; d[i + 2] = o[2]; d[i + 3] = 255;
+      }
+      if (gl) {
+        if (gl.isContextLost()) return;
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, LW, LH, 0, gl.RGBA, gl.UNSIGNED_BYTE, d);
+        gl.uniform1f(uDither, dither);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        return;
       }
       lc.putImageData(img, 0, 0);
       ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
