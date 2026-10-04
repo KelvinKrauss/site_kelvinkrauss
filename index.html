@@ -6,12 +6,11 @@
   <title>Kelvin Krauss · Desenvolvedor</title>
   <meta name="description" content="Kelvin Krauss, estudante de Análise e Desenvolvimento de Sistemas no IFSC e jovem aprendiz na Ociani Transportadora. Criou o novo site da Ociani, com cotação de frete e rastreamento integrados ao sistema SSW.">
   <meta name="theme-color" content="#0b0c10">
-  <link rel="icon" href="images/foto.jpg">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2232%22%20fill%3D%22%230b0c10%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2241%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22%23f1f2f6%22%20text-anchor%3D%22middle%22%3EKK%3C%2Ftext%3E%3C%2Fsvg%3E">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://kelvinkrauss.me/">
   <meta property="og:title" content="Kelvin Krauss · Desenvolvedor">
   <meta property="og:description" content="Kelvin Krauss, estudante de Análise e Desenvolvimento de Sistemas no IFSC e jovem aprendiz na Ociani Transportadora. Criou o novo site da Ociani, com cotação de frete e rastreamento integrados ao sistema SSW.">
-  <meta property="og:image" content="https://kelvinkrauss.me/images/foto.jpg">
   <meta name="twitter:card" content="summary">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,7 +103,7 @@
     /* ── Top row ── */
     .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: calc(20px + env(safe-area-inset-top, 0px)); }
     .me { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); line-height: 1.2; }
-    .me img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px var(--card-solid), var(--glass-shadow); }
+    .monogram { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; flex: none; font: 600 .9rem/1 var(--font); letter-spacing: -.02em; color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); box-shadow: inset 0 0 0 1px var(--line), inset 0 1px 0 var(--rim-lo); }
     .me strong { display: block; font-size: 1rem; }
     .me small { display: block; color: var(--muted); font-size: .82rem; }
     .top-right { display: flex; align-items: center; gap: 8px; }
@@ -325,7 +324,8 @@
     #chat-wrap .rz[data-rz="bl"] { left: 0; bottom: 0; width: 26px; height: 26px; cursor: nesw-resize; }
     #chat-wrap.resizing, #chat-wrap.resizing * { user-select: none; -webkit-user-select: none; }
     #chat-wrap.dragging .chat { box-shadow: inset 0 1px 0 var(--rim-hi), inset 0 0 0 1px var(--line), 0 40px 100px rgba(0, 0, 0, .4), var(--shadow-lg); }
-    .chat-head img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+    .chat-head .head-orb { position: relative; width: 36px; height: 36px; flex: none; }
+    .chat-head .head-orb .orb { inset: 0; }
     .chat-head div { flex: 1; min-width: 0; }
     .chat-head strong { display: block; }
     .chat-head small { color: var(--muted); font-size: .8rem; }
@@ -432,7 +432,7 @@
   <div class="wrap">
     <div class="top">
       <a class="me" href="#topo" id="topo">
-        <img src="images/foto.jpg" alt="" width="42" height="42">
+        <span class="monogram" aria-hidden="true">KK</span>
         <span><strong>Kelvin Krauss</strong><small data-en="Developer · Blumenau, Brazil">Desenvolvedor · Blumenau/SC</small></span>
       </a>
       <div class="top-right">
@@ -646,7 +646,7 @@
   <div class="chat" role="dialog" aria-modal="false" aria-labelledby="chat-title">
     <span class="rz" data-rz="l" aria-hidden="true"></span><span class="rz" data-rz="r" aria-hidden="true"></span><span class="rz" data-rz="b" aria-hidden="true"></span><span class="rz" data-rz="bl" aria-hidden="true"></span><span class="rz" data-rz="br" aria-hidden="true"></span>
     <div class="chat-head">
-      <img src="images/foto.jpg" alt="" width="36" height="36">
+      <span class="head-orb" aria-hidden="true"><span class="orb"></span></span>
       <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume · drag the top or the edges">IA que conhece meu currículo · arraste o topo ou as bordas</small></div>
       <button class="x" type="button" id="chat-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
     </div>
