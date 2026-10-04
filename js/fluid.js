@@ -361,10 +361,17 @@
   }
 
   const dpr = window.devicePixelRatio || 1;
-  // Simulation area, in CSS pixels: the screen for the question box, the window itself for the chat.
+  // Simulation area, in CSS pixels. Chat: the window itself. Question box: an area of BOX_AREA x the screen,
+  // centered on the box (never smaller than the box); the drops grow with this number
+  // (1 = as big as on a full-screen canvas, which was too big; the box alone was too small).
+  const BOX_AREA = 0.5;
   let screenMode = canvas.clientHeight <= 150;
   let rect = canvas.getBoundingClientRect();
-  const area = () => screenMode ? { left: 0, top: 0, width: innerWidth, height: innerHeight } : rect;
+  const boxArea = () => {
+    const w = Math.max(innerWidth * BOX_AREA, rect.width + 48), h = Math.max(innerHeight * BOX_AREA, rect.height + 48);
+    return { left: rect.left + rect.width / 2 - w / 2, top: rect.top + rect.height / 2 - h / 2, width: w, height: h };
+  };
+  const area = () => screenMode ? boxArea() : rect;
   let simW = 1, simH = 1; // the area in device pixels
   const aspectRatio = () => simW / simH;
   function getResolution(resolution) {
@@ -403,7 +410,8 @@
     if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
     rect = canvas.getBoundingClientRect();
     // chat: the canvas' own size (its on-screen box changes during the open/close animation)
-    const aw = screenMode ? Math.max(1, Math.floor(innerWidth * dpr)) : w, ah = screenMode ? Math.max(1, Math.floor(innerHeight * dpr)) : h;
+    const b = screenMode && boxArea();
+    const aw = screenMode ? Math.max(1, Math.floor(b.width * dpr)) : w, ah = screenMode ? Math.max(1, Math.floor(b.height * dpr)) : h;
     if (aw === simW && ah === simH) return false;
     simW = aw; simH = ah;
     return true;
