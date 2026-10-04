@@ -648,7 +648,6 @@
     <div class="chat-head">
       <img src="images/foto.jpg" alt="" width="36" height="36">
       <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume · drag the top or the edges">IA que conhece meu currículo · arraste o topo ou as bordas</small></div>
-      <button class="x" type="button" id="chat-min" aria-label="Minimizar" data-en-aria="Minimize" title="Minimizar" data-en-title="Minimize"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 12h12"/></svg></button>
       <button class="x" type="button" id="chat-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
     </div>
     <div class="msgs" id="msgs" aria-live="polite"></div>
@@ -1666,7 +1665,6 @@
     if (question) ask(question);
     $('#chat-input').focus({ preventScroll: true });
   }
-  $('#chat-min').addEventListener('click', minimizeChat);
   chatBubble.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
     e.preventDefault();
