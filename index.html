@@ -111,12 +111,12 @@
     .top-right { display: flex; align-items: center; gap: 8px; }
     .shade { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 13px; border-radius: 999px; color: var(--ink); cursor: pointer; }
     .shade svg { width: 15px; height: 15px; flex: none; opacity: .75; }
-    .shade input { -webkit-appearance: none; appearance: none; width: 104px; height: 6px; margin: 0; border-radius: 999px; cursor: pointer; background: linear-gradient(90deg, #0b0c10, #eceef2); box-shadow: inset 0 0 0 1px var(--line); }
+    .shade input { -webkit-appearance: none; appearance: none; width: 46px; height: 6px; margin: 0; border-radius: 999px; cursor: pointer; background: linear-gradient(90deg, #0b0c10, #eceef2); box-shadow: inset 0 0 0 1px var(--line); }
     .shade input::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 2px solid var(--card-solid); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
     .shade input::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--card-solid); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
     .shade input:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 6px; }
     :root.shading *, :root.shading { transition: none !important; }
-    @media (max-width: 480px) { .shade { gap: 6px; padding: 0 10px; } .shade input { width: 64px; } .me strong { font-size: .92rem; } }
+    @media (max-width: 480px) { .shade { gap: 6px; padding: 0 10px; } .shade input { width: 40px; } .me strong { font-size: .92rem; } }
 
     /* ── Hero ── */
     .hero { padding-block: clamp(48px, 9vh, 110px) clamp(72px, 11vh, 120px); }
@@ -370,7 +370,7 @@
       if (meta) meta.content = rgb(bg);
     };
     let saved = 0;
-    try { saved = localStorage.getItem('kk-shade') || 0; } catch (e) {}
+    try { saved = +localStorage.getItem('kk-shade') >= 50 ? 100 : 0; } catch (e) {}
     window.applyShade(saved);
   })();
 </script>
@@ -414,7 +414,7 @@
       <div class="top-right">
         <label class="shade glass" data-glass="30" title="Claro ou escuro" data-en-title="Light or dark">
           <svg aria-hidden="true"><use href="#i-moon"/></svg>
-          <input id="shade" type="range" min="0" max="100" step="1" value="0" aria-label="Brilho do site: escuro a claro" data-en-aria="Site brightness: dark to light">
+          <input id="shade" type="range" min="0" max="100" step="100" value="0" aria-label="Tema: escuro ou claro" data-en-aria="Theme: dark or light">
           <svg aria-hidden="true"><use href="#i-sun"/></svg>
         </label>
         <a class="pill glass" data-glass="32" href="images/curriculo.pdf" target="_blank" rel="noopener" data-resume><svg><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></a>
@@ -1302,12 +1302,30 @@
     });
   });
 
-  /* ── Brilho: slider contínuo de escuro a claro ── */
+  /* ── Tema: slider de 2 níveis (escuro / claro), escuro por padrão; troca com um fade de 350 ms ── */
   const shade = $('#shade');
-  try { shade.value = store.get('kk-shade') || 0; } catch (e) {}
-  shade.addEventListener('input', () => { root.classList.add('shading'); window.applyShade(shade.value); });
-  shade.addEventListener('change', () => { root.classList.remove('shading'); store.set('kk-shade', shade.value); });
-  shade.addEventListener('pointerup', () => root.classList.remove('shading'));
+  let shadeNow = +store.get('kk-shade') >= 50 ? 100 : 0, shadeAnim = 0;
+  shade.value = shadeNow;
+  function goShade(target) {
+    cancelAnimationFrame(shadeAnim);
+    const from = shadeNow, t0 = performance.now(), ms = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 350;
+    root.classList.add('shading');
+    const step = now => {
+      const k = ms ? Math.min(1, (now - t0) / ms) : 1, e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      shadeNow = from + (target - from) * e;
+      window.applyShade(shadeNow);
+      if (k < 1) shadeAnim = requestAnimationFrame(step);
+      else { root.classList.remove('shading'); shade.dispatchEvent(new Event('shade-done')); }
+    };
+    shadeAnim = requestAnimationFrame(step);
+    store.set('kk-shade', String(target));
+  }
+  shade.addEventListener('input', () => goShade(+shade.value));
+  shade.closest('.shade').addEventListener('click', e => {
+    if (e.target === shade) return; // the slider itself handles its own input
+    shade.value = +shade.value ? 0 : 100;
+    goShade(+shade.value);
+  });
 
   /* ── Copiar e-mail ── */
   $('#copy-email').addEventListener('click', e => {
@@ -1946,7 +1964,7 @@
     addEventListener('resize', later);
     if ('ResizeObserver' in window) new ResizeObserver(later).observe(document.body);
     const shadeInput = $('#shade');
-    if (shadeInput) shadeInput.addEventListener('input', later);
+    if (shadeInput) { shadeInput.addEventListener('input', later); shadeInput.addEventListener('shade-done', later); }
   })();
 
   applyLang(lang);
