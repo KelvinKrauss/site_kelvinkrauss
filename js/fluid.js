@@ -26,8 +26,9 @@
 (function fluid() {
   const canvas = document.getElementById('fluid');
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  // The same settings as aaabadcode.com. Theirs fill the screen; here they fill the box or the chat window,
-  // so the drops, swirls and speed keep the same proportions at a smaller size. Only the ink lasts longer:
+  // The same settings as aaabadcode.com, whose fluid fills the screen. In the chat they fill the window
+  // (same proportions at a smaller size, following its resizes); the question box is too small for that,
+  // so there the simulation is the size of the screen and the box shows its part of it. Only the ink lasts longer:
   // DENSITY_DISSIPATION 0.5 -> 0.36 keeps it visible about 2 s more (exp(-d*t): 10% left at 4.6 s -> 6.4 s).
   const config = {
     SIM_RESOLUTION: 128,
@@ -140,7 +141,21 @@
     varying highp vec2 vUv; uniform sampler2D uTexture; uniform float value;
     void main () { gl_FragColor = value * texture2D(uTexture, vUv); }`));
 
-  const displayProgram = createProgram(baseVertex, frag(`
+  // uRect = the canvas' place inside the simulation area (x, y from the bottom-left, width, height)
+  const displayVertex = compileShader(gl.VERTEX_SHADER, `
+    precision highp float;
+    attribute vec2 aPosition;
+    varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB;
+    uniform vec2 texelSize; uniform vec4 uRect;
+    void main () {
+      vUv = uRect.xy + (aPosition * 0.5 + 0.5) * uRect.zw;
+      vL = vUv - vec2(texelSize.x, 0.0);
+      vR = vUv + vec2(texelSize.x, 0.0);
+      vT = vUv + vec2(0.0, texelSize.y);
+      vB = vUv - vec2(0.0, texelSize.y);
+      gl_Position = vec4(aPosition, 0.0, 1.0);
+    }`);
+  const displayProgram = createProgram(displayVertex, frag(`
     precision highp float; precision highp sampler2D;
     varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB;
     uniform sampler2D uTexture; uniform vec2 texelSize;
@@ -346,12 +361,17 @@
   }
 
   const dpr = window.devicePixelRatio || 1;
-  const aspectRatio = () => canvas.width / canvas.height;
+  // Simulation area, in CSS pixels: the screen for the question box, the window itself for the chat.
+  let screenMode = canvas.clientHeight <= 150;
+  let rect = canvas.getBoundingClientRect();
+  const area = () => screenMode ? { left: 0, top: 0, width: innerWidth, height: innerHeight } : rect;
+  let simW = 1, simH = 1; // the area in device pixels
+  const aspectRatio = () => simW / simH;
   function getResolution(resolution) {
     let aspect = aspectRatio();
     if (aspect < 1) aspect = 1 / aspect;
     const min = Math.round(resolution), max = Math.round(resolution * aspect);
-    return canvas.width > canvas.height ? { width: max, height: min } : { width: min, height: max };
+    return simW > simH ? { width: max, height: min } : { width: min, height: max };
   }
 
   let dye, velocity, divergence, curl, pressure;
@@ -360,7 +380,7 @@
     const simRes = getResolution(config.SIM_RESOLUTION);
     // the reference draws 1440 dye pixels over a ~900 px screen (1.6 per pixel); same density here,
     // without building a texture far bigger than the window
-    const dyeRes = getResolution(Math.min(config.DYE_RESOLUTION, Math.ceil(Math.min(canvas.width, canvas.height) * 1.6)));
+    const dyeRes = getResolution(Math.min(config.DYE_RESOLUTION, Math.ceil(Math.min(simW, simH) * 1.6)));
     const filtering = supportLinearFiltering ? gl.LINEAR : gl.NEAREST;
     const rgba = [formatRGBA.internalFormat, formatRGBA.format, halfFloatTexType, filtering];
     const rg = [formatRG.internalFormat, formatRG.format, halfFloatTexType, filtering];
@@ -377,10 +397,15 @@
     curl = createFBO(simRes.width, simRes.height, ...r);
     pressure = createDoubleFBO(simRes.width, simRes.height, ...r);
   }
+  // true when the simulation area changed size (the canvas pixels follow the canvas either way)
   function resizeCanvas() {
     const w = Math.max(1, Math.floor(canvas.clientWidth * dpr)), h = Math.max(1, Math.floor(canvas.clientHeight * dpr));
-    if (canvas.width === w && canvas.height === h) return false;
-    canvas.width = w; canvas.height = h;
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    rect = canvas.getBoundingClientRect();
+    // chat: the canvas' own size (its on-screen box changes during the open/close animation)
+    const aw = screenMode ? Math.max(1, Math.floor(innerWidth * dpr)) : w, ah = screenMode ? Math.max(1, Math.floor(innerHeight * dpr)) : h;
+    if (aw === simW && ah === simH) return false;
+    simW = aw; simH = ah;
     return true;
   }
 
@@ -480,7 +505,10 @@
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
     displayProgram.bind();
-    gl.uniform2f(displayProgram.uniforms.texelSize, 1 / gl.drawingBufferWidth, 1 / gl.drawingBufferHeight);
+    const a = area();
+    gl.uniform2f(displayProgram.uniforms.texelSize, 1 / simW, 1 / simH);
+    if (screenMode) gl.uniform4f(displayProgram.uniforms.uRect, (rect.left - a.left) / a.width, 1 - (rect.bottom - a.top) / a.height, rect.width / a.width, rect.height / a.height);
+    else gl.uniform4f(displayProgram.uniforms.uRect, 0, 0, 1, 1);
     gl.uniform1i(displayProgram.uniforms.uTexture, dye.read.attach(0));
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -490,8 +518,8 @@
 
   // ── Input: the same handling as the reference, measured inside the window (box or chat) ──
   const pointer = { texcoordX: 0, texcoordY: 0, prevTexcoordX: 0, prevTexcoordY: 0, deltaX: 0, deltaY: 0, down: false, moved: false, color: generateColor() };
-  let rect = canvas.getBoundingClientRect();
-  const toX = clientX => (clientX - rect.left) / rect.width, toY = clientY => 1 - (clientY - rect.top) / rect.height;
+  const toX = clientX => { const a = area(); return (clientX - a.left) / a.width; };
+  const toY = clientY => { const a = area(); return 1 - (clientY - a.top) / a.height; };
   const over = (x, y, pad) => x > rect.left - pad && x < rect.right + pad && y > rect.top - pad && y < rect.bottom + pad;
   function correctDeltaX(delta) { const a = aspectRatio(); if (a < 1) delta *= a; return delta; }
   function correctDeltaY(delta) { const a = aspectRatio(); if (a > 1) delta /= a; return delta; }
@@ -551,14 +579,16 @@
   setInterval(() => {
     if (!visible || document.hidden || introT <= 1.4 || performance.now() - lastInput < 2500) return;
     const dir = Math.random() < 0.5 ? -1 : 1;
-    splat(0.15 + Math.random() * 0.7, 0.2 + Math.random() * 0.6, dir * (60 + Math.random() * 50), (Math.random() - 0.5) * 30, generateColor());
+    rect = canvas.getBoundingClientRect();
+    const x = toX(rect.left + rect.width * (0.15 + Math.random() * 0.7)), y = toY(rect.top + rect.height * (0.2 + Math.random() * 0.6));
+    splat(x, y, dir * (60 + Math.random() * 50), (Math.random() - 0.5) * 30, generateColor());
     lastInput = performance.now();
   }, 3200);
 
   // Called by the page when the canvas moves between the question box and the chat window.
   // Called by the page when the canvas moves between the question box and the chat window: fresh ink.
   let fresh = false;
-  window.fluidRelayout = function () { fresh = true; introT = 0; inside = false; lastInput = performance.now(); };
+  window.fluidRelayout = function () { screenMode = canvas.clientHeight <= 150; fresh = true; introT = 0; inside = false; lastInput = performance.now(); };
   window.fluidRefresh = function () { rect = canvas.getBoundingClientRect(); lastInput = performance.now(); };
 
   resizeCanvas();
