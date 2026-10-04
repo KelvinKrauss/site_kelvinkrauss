@@ -197,6 +197,27 @@
   .shot-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
   .shot-bar span { margin-left: 10px; font: 400 .74rem var(--mono); color: var(--muted); }
   .shot img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: top left; }
+/* before/after: the old site is on top, cut at the handle (--pos) */
+.cmp { --pos: 50%; position: relative; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.cmp img { display: block; aspect-ratio: 16 / 10; pointer-events: none; }
+.cmp-before { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
+.cmp-handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, .18), 0 0 18px rgba(0, 0, 0, .35); pointer-events: none; }
+.cmp-handle span { position: absolute; top: 50%; left: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; display: grid; place-items: center;
+  color: #14161c; background: rgba(255, 255, 255, .92); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+  transition: transform .25s cubic-bezier(.2, .9, .3, 1.4); }
+.cmp-handle svg { width: 20px; height: 20px; }
+.cmp:hover .cmp-handle span, .cmp.dragging .cmp-handle span { transform: scale(1.1); }
+.cmp-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; -webkit-appearance: none; appearance: none; }
+/* a tall invisible thumb: on phones the handle can be grabbed anywhere along the line */
+.cmp-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 48px; height: 2000px; }
+.cmp-range::-moz-range-thumb { width: 48px; height: 2000px; border: 0; }
+.cmp:has(.cmp-range:focus-visible) .cmp-handle span { outline: 2.5px solid var(--accent); outline-offset: 3px; }
+.cmp-tag { position: absolute; top: 12px; padding: 4px 11px; border-radius: 999px; font: 600 .74rem var(--mono); letter-spacing: .04em; color: #fff;
+  background: rgba(10, 12, 16, .62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); pointer-events: none; transition: opacity .25s; }
+.cmp-tag.before { left: 12px; }
+.cmp-tag.after { right: 12px; }
+.cmp.at-start .cmp-tag.before, .cmp.at-end .cmp-tag.after { opacity: 0; }
+.compare figcaption { padding: 9px 14px 10px; font-size: .82rem; color: var(--muted); background: var(--card-solid); border-top: 1px solid var(--line); }
   .facts { display: flex; flex-wrap: wrap; gap: 6px 22px; font: 400 .85rem/1.5 var(--mono); color: var(--muted); }
   .facts b { color: var(--ink); font-weight: 500; }
   .lessons { list-style: none !important; padding: 0 !important; gap: 16px !important; }

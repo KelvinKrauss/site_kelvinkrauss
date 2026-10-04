@@ -231,9 +231,19 @@
           </button>
           <div class="more-body" id="ociani-more" inert>
           <div class="more-inner">
-          <figure class="shot" style="margin-inline:0">
+          <figure class="shot compare" style="margin-inline:0">
             <div class="shot-bar"><i></i><i></i><i></i><span>ociani.com.br</span></div>
-            <img src="images/ociani.jpg" alt="Página inicial do site da Ociani Transportadora" width="1440" height="900" loading="lazy">
+            <div class="cmp" id="cmp">
+              <img src="images/ociani.jpg" alt="Site novo da Ociani Transportadora, no ar desde outubro de 2026" data-en-alt="The new Ociani Transportadora website, live since October 2026" width="1440" height="900" loading="lazy">
+              <div class="cmp-before">
+                <img src="images/ociani-antigo.jpg" alt="Site antigo da Ociani Transportadora" data-en-alt="The old Ociani Transportadora website" width="1440" height="900" loading="lazy">
+              </div>
+              <span class="cmp-tag before" data-en="Before">Antes</span>
+              <span class="cmp-tag after" data-en="After">Depois</span>
+              <div class="cmp-handle" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6"/></svg></span></div>
+              <input class="cmp-range" type="range" min="0" max="100" step="0.1" value="50" aria-label="Comparar o site antigo com o novo" data-en-aria="Compare the old website with the new one">
+            </div>
+            <figcaption data-en="Drag to compare the old website with the one I built.">Arraste para comparar o site antigo com o que eu fiz.</figcaption>
           </figure>
           <p data-en="The new website replaced the old one and went live on October 2, 2026. I presented it to the company before launch and adjusted what the team asked for.">O site novo substituiu o antigo e entrou no ar em 2 de outubro de 2026. Apresentei para a empresa antes do lançamento e ajustei o que a equipe pediu.</p>
 

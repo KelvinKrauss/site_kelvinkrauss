@@ -51,6 +51,10 @@
       if (el.dataset.ptTitle === undefined) el.dataset.ptTitle = el.title;
       el.title = lang === 'en' ? el.dataset.enTitle : el.dataset.ptTitle;
     });
+    document.querySelectorAll('[data-en-alt]').forEach(el => {
+      if (el.dataset.ptAlt === undefined) el.dataset.ptAlt = el.alt;
+      el.alt = lang === 'en' ? el.dataset.enAlt : el.dataset.ptAlt;
+    });
     document.querySelectorAll('[data-en-href]').forEach(el => {
       if (el.dataset.ptHref === undefined) el.dataset.ptHref = el.getAttribute('href');
       el.setAttribute('href', lang === 'en' ? el.dataset.enHref : el.dataset.ptHref);
@@ -659,10 +663,38 @@
     if (open) {
       moreBody.removeAttribute('inert');
       moreBody.querySelectorAll('img[loading=lazy]').forEach(img => { img.loading = 'eager'; });
+      if (!cmpShown) { cmpShown = true; setTimeout(cmpHint, 650); }
     } else {
       moreBody.setAttribute('inert', '');
     }
   });
+
+  /* ── Antes e depois do site da Ociani: o site antigo fica por cima, cortado na alça ── */
+  const cmp = $('#cmp'), cmpRange = cmp.querySelector('.cmp-range');
+  let cmpShown = false, cmpAnim = 0;
+  function cmpSet(v) {
+    cmp.style.setProperty('--pos', v + '%');
+    cmp.classList.toggle('at-start', v < 8);
+    cmp.classList.toggle('at-end', v > 92);
+  }
+  cmpRange.addEventListener('input', () => { cancelAnimationFrame(cmpAnim); cmpSet(+cmpRange.value); });
+  cmpRange.addEventListener('pointerdown', () => { cancelAnimationFrame(cmpAnim); cmp.classList.add('dragging'); });
+  addEventListener('pointerup', () => cmp.classList.remove('dragging'));
+  // na primeira vez que os detalhes abrem, a alça passeia sozinha para mostrar que dá para arrastar
+  function cmpHint() {
+    if (calm.matches) return;
+    const keys = [[0, 50], [.32, 78], [.68, 24], [1, 50]], ms = 1900, t0 = performance.now();
+    const ease = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    const step = now => {
+      const k = Math.min(1, (now - t0) / ms);
+      let i = 0; while (i < keys.length - 2 && k > keys[i + 1][0]) i++;
+      const [ka, va] = keys[i], [kb, vb] = keys[i + 1];
+      const v = va + (vb - va) * ease((k - ka) / (kb - ka));
+      cmpRange.value = v; cmpSet(v);
+      if (k < 1) cmpAnim = requestAnimationFrame(step);
+    };
+    cmpAnim = requestAnimationFrame(step);
+  }
 
   /* ── Currículo: abre dentro do site no computador; no celular, nova aba (PDF em iframe não funciona bem) ── */
   const cvWrap = $('#cv-wrap'), cvFrame = $('#cv-frame');
