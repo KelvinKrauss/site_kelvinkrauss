@@ -26,7 +26,8 @@
 (function fluid() {
   const canvas = document.getElementById('fluid');
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  // The same settings as aaabadcode.com (their fluid is a full-screen canvas). Only the ink lasts longer:
+  // The same settings as aaabadcode.com. Theirs fill the screen; here they fill the box or the chat window,
+  // so the drops, swirls and speed keep the same proportions at a smaller size. Only the ink lasts longer:
   // DENSITY_DISSIPATION 0.5 -> 0.36 keeps it visible about 2 s more (exp(-d*t): 10% left at 4.6 s -> 6.4 s).
   const config = {
     SIM_RESOLUTION: 128,
@@ -139,22 +140,7 @@
     varying highp vec2 vUv; uniform sampler2D uTexture; uniform float value;
     void main () { gl_FragColor = value * texture2D(uTexture, vUv); }`));
 
-  // Our canvas covers only the box (or the chat), so the display pass maps it onto its part of the screen:
-  // uRect = where the canvas is, in screen texture coordinates (x, y from the bottom-left, width, height).
-  const displayVertex = compileShader(gl.VERTEX_SHADER, `
-    precision highp float;
-    attribute vec2 aPosition;
-    varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB;
-    uniform vec2 texelSize; uniform vec4 uRect;
-    void main () {
-      vUv = uRect.xy + (aPosition * 0.5 + 0.5) * uRect.zw;
-      vL = vUv - vec2(texelSize.x, 0.0);
-      vR = vUv + vec2(texelSize.x, 0.0);
-      vT = vUv + vec2(0.0, texelSize.y);
-      vB = vUv - vec2(0.0, texelSize.y);
-      gl_Position = vec4(aPosition, 0.0, 1.0);
-    }`);
-  const displayProgram = createProgram(displayVertex, frag(`
+  const displayProgram = createProgram(baseVertex, frag(`
     precision highp float; precision highp sampler2D;
     varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB;
     uniform sampler2D uTexture; uniform vec2 texelSize;
@@ -172,6 +158,11 @@
       float a = max(c.r, max(c.g, c.b));
       gl_FragColor = vec4(c, a);
     }`));
+
+  const copyProgram = createProgram(baseVertex, frag(`
+    precision mediump float; precision mediump sampler2D;
+    varying highp vec2 vUv; uniform sampler2D uTexture;
+    void main () { gl_FragColor = texture2D(uTexture, vUv); }`));
 
   const splatProgram = createProgram(baseVertex, frag(`
     precision highp float; precision highp sampler2D;
@@ -333,46 +324,64 @@
     let b = createFBO(w, h, internalFormat, format, type, param);
     return {
       width: w, height: h, texelSizeX: a.texelSizeX, texelSizeY: a.texelSizeY,
-      get read() { return a; }, get write() { return b; },
+      get read() { return a; }, set read(v) { a = v; },
+      get write() { return b; }, set write(v) { b = v; },
       swap() { const t = a; a = b; b = t; },
     };
   }
+  // new size, same content (stretched): used while the chat window is being resized
+  function resizeFBO(target, w, h, internalFormat, format, type, param) {
+    const next = createFBO(w, h, internalFormat, format, type, param);
+    copyProgram.bind();
+    gl.uniform1i(copyProgram.uniforms.uTexture, target.attach(0));
+    blit(next);
+    return next;
+  }
+  function resizeDoubleFBO(target, w, h, internalFormat, format, type, param) {
+    if (target.width === w && target.height === h) return target;
+    target.read = resizeFBO(target.read, w, h, internalFormat, format, type, param);
+    target.write = createFBO(w, h, internalFormat, format, type, param);
+    target.width = w; target.height = h; target.texelSizeX = 1 / w; target.texelSizeY = 1 / h;
+    return target;
+  }
 
-  // The simulation is the size of the screen (like the reference's full-screen canvas); the box and the
-  // chat window are windows onto it, so the ink moves exactly the same way and only shows inside them.
   const dpr = window.devicePixelRatio || 1;
-  let screenW = 0, screenH = 0;
-  const screenAspect = () => screenW / screenH;
+  const aspectRatio = () => canvas.width / canvas.height;
   function getResolution(resolution) {
-    let aspect = screenAspect();
+    let aspect = aspectRatio();
     if (aspect < 1) aspect = 1 / aspect;
     const min = Math.round(resolution), max = Math.round(resolution * aspect);
-    return screenW > screenH ? { width: max, height: min } : { width: min, height: max };
+    return canvas.width > canvas.height ? { width: max, height: min } : { width: min, height: max };
   }
 
   let dye, velocity, divergence, curl, pressure;
-  function initFramebuffers() {
+  // keep = stretch the current ink to the new size (resizing); otherwise start empty (box <-> chat)
+  function initFramebuffers(keep) {
     const simRes = getResolution(config.SIM_RESOLUTION);
-    const dyeRes = getResolution(config.DYE_RESOLUTION);
+    // the reference draws 1440 dye pixels over a ~900 px screen (1.6 per pixel); same density here,
+    // without building a texture far bigger than the window
+    const dyeRes = getResolution(Math.min(config.DYE_RESOLUTION, Math.ceil(Math.min(canvas.width, canvas.height) * 1.6)));
     const filtering = supportLinearFiltering ? gl.LINEAR : gl.NEAREST;
+    const rgba = [formatRGBA.internalFormat, formatRGBA.format, halfFloatTexType, filtering];
+    const rg = [formatRG.internalFormat, formatRG.format, halfFloatTexType, filtering];
+    const r = [formatR.internalFormat, formatR.format, halfFloatTexType, gl.NEAREST];
     gl.disable(gl.BLEND);
-    dye = createDoubleFBO(dyeRes.width, dyeRes.height, formatRGBA.internalFormat, formatRGBA.format, halfFloatTexType, filtering);
-    velocity = createDoubleFBO(simRes.width, simRes.height, formatRG.internalFormat, formatRG.format, halfFloatTexType, filtering);
-    divergence = createFBO(simRes.width, simRes.height, formatR.internalFormat, formatR.format, halfFloatTexType, gl.NEAREST);
-    curl = createFBO(simRes.width, simRes.height, formatR.internalFormat, formatR.format, halfFloatTexType, gl.NEAREST);
-    pressure = createDoubleFBO(simRes.width, simRes.height, formatR.internalFormat, formatR.format, halfFloatTexType, gl.NEAREST);
+    if (keep && dye) {
+      dye = resizeDoubleFBO(dye, dyeRes.width, dyeRes.height, ...rgba);
+      velocity = resizeDoubleFBO(velocity, simRes.width, simRes.height, ...rg);
+    } else {
+      dye = createDoubleFBO(dyeRes.width, dyeRes.height, ...rgba);
+      velocity = createDoubleFBO(simRes.width, simRes.height, ...rg);
+    }
+    divergence = createFBO(simRes.width, simRes.height, ...r);
+    curl = createFBO(simRes.width, simRes.height, ...r);
+    pressure = createDoubleFBO(simRes.width, simRes.height, ...r);
   }
-  // the screen changed size: new simulation (the reference does the same)
-  function resizeScreen() {
-    const w = Math.floor(innerWidth * dpr), h = Math.floor(innerHeight * dpr);
-    if (w === screenW && h === screenH) return false;
-    screenW = w; screenH = h;
-    return true;
-  }
-  // the canvas itself only needs pixels for the area it covers
   function resizeCanvas() {
     const w = Math.max(1, Math.floor(canvas.clientWidth * dpr)), h = Math.max(1, Math.floor(canvas.clientHeight * dpr));
-    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    if (canvas.width === w && canvas.height === h) return false;
+    canvas.width = w; canvas.height = h;
+    return true;
   }
 
   function HSVtoRGB(h, s, v) {
@@ -386,14 +395,14 @@
   }
 
   function correctRadius(radius) {
-    const aspect = screenAspect();
+    const aspect = aspectRatio();
     if (aspect > 1) radius *= aspect;
     return radius;
   }
   function splat(x, y, dx, dy, color) {
     splatProgram.bind();
     gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read.attach(0));
-    gl.uniform1f(splatProgram.uniforms.aspectRatio, screenAspect());
+    gl.uniform1f(splatProgram.uniforms.aspectRatio, aspectRatio());
     gl.uniform2f(splatProgram.uniforms.point, x, y);
     gl.uniform3f(splatProgram.uniforms.color, dx, dy, 0);
     gl.uniform1f(splatProgram.uniforms.radius, correctRadius(config.SPLAT_RADIUS / 100));
@@ -468,12 +477,10 @@
   }
 
   function render() {
-    const r = canvas.getBoundingClientRect();
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
     displayProgram.bind();
-    gl.uniform2f(displayProgram.uniforms.texelSize, 1 / screenW, 1 / screenH);
-    gl.uniform4f(displayProgram.uniforms.uRect, r.left / innerWidth, 1 - r.bottom / innerHeight, r.width / innerWidth, r.height / innerHeight);
+    gl.uniform2f(displayProgram.uniforms.texelSize, 1 / gl.drawingBufferWidth, 1 / gl.drawingBufferHeight);
     gl.uniform1i(displayProgram.uniforms.uTexture, dye.read.attach(0));
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -481,11 +488,13 @@
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
   }
 
-  // ── Input: the whole screen, the same way as the reference ──
+  // ── Input: the same handling as the reference, measured inside the window (box or chat) ──
   const pointer = { texcoordX: 0, texcoordY: 0, prevTexcoordX: 0, prevTexcoordY: 0, deltaX: 0, deltaY: 0, down: false, moved: false, color: generateColor() };
-  const toX = clientX => (clientX * dpr) / screenW, toY = clientY => 1 - (clientY * dpr) / screenH;
-  function correctDeltaX(delta) { const a = screenAspect(); if (a < 1) delta *= a; return delta; }
-  function correctDeltaY(delta) { const a = screenAspect(); if (a > 1) delta /= a; return delta; }
+  let rect = canvas.getBoundingClientRect();
+  const toX = clientX => (clientX - rect.left) / rect.width, toY = clientY => 1 - (clientY - rect.top) / rect.height;
+  const over = (x, y, pad) => x > rect.left - pad && x < rect.right + pad && y > rect.top - pad && y < rect.bottom + pad;
+  function correctDeltaX(delta) { const a = aspectRatio(); if (a < 1) delta *= a; return delta; }
+  function correctDeltaY(delta) { const a = aspectRatio(); if (a > 1) delta /= a; return delta; }
   function pointerDown(clientX, clientY) {
     pointer.down = true; pointer.moved = false;
     pointer.texcoordX = pointer.prevTexcoordX = toX(clientX);
@@ -500,15 +509,20 @@
     pointer.deltaY = correctDeltaY(pointer.texcoordY - pointer.prevTexcoordY);
     pointer.moved = Math.abs(pointer.deltaX) > 0 || Math.abs(pointer.deltaY) > 0;
   }
-  let lastInput = performance.now(), started = false;
-  // the first move only places the pointer (no jump from the corner), like the reference
-  window.addEventListener('mousemove', e => {
-    if (!started) { started = true; pointerDown(e.clientX, e.clientY); pointer.down = false; }
-    else pointerMove(e.clientX, e.clientY);
+  let lastInput = performance.now(), inside = false;
+  // entering the window only places the pointer, so the ink doesn't jump from where the mouse left
+  function track(clientX, clientY) {
+    rect = canvas.getBoundingClientRect();
+    if (!over(clientX, clientY, 24)) { inside = false; return; }
+    if (!inside) { inside = true; pointerDown(clientX, clientY); pointer.down = false; }
+    else pointerMove(clientX, clientY);
     lastInput = performance.now();
-  }, { passive: true });
-  // a click drops a bigger, brighter burst of ink
+  }
+  window.addEventListener('mousemove', e => track(e.clientX, e.clientY), { passive: true });
+  // a click inside the window drops a bigger, brighter burst of ink, like the reference
   window.addEventListener('mousedown', e => {
+    rect = canvas.getBoundingClientRect();
+    if (!over(e.clientX, e.clientY, 0)) return;
     pointerDown(e.clientX, e.clientY);
     const c = generateColor();
     c.r *= 10; c.g *= 10; c.b *= 10;
@@ -516,8 +530,8 @@
     lastInput = performance.now();
   });
   window.addEventListener('mouseup', () => { pointer.down = false; });
-  window.addEventListener('touchstart', e => { const t = e.targetTouches[0]; if (t) { pointerDown(t.clientX, t.clientY); started = true; lastInput = performance.now(); } }, { passive: true });
-  window.addEventListener('touchmove', e => { const t = e.targetTouches[0]; if (t) { pointerMove(t.clientX, t.clientY); lastInput = performance.now(); } }, { passive: true });
+  window.addEventListener('touchstart', e => { const t = e.targetTouches[0]; inside = false; if (t) track(t.clientX, t.clientY); }, { passive: true });
+  window.addEventListener('touchmove', e => { const t = e.targetTouches[0]; if (t) track(t.clientX, t.clientY); }, { passive: true });
   window.addEventListener('touchend', () => { pointer.down = false; });
 
   // Kept from before: an opening sweep along the box, and a soft stir every few seconds while nobody is
@@ -526,29 +540,29 @@
   let introT = 0;
   function intro(dt) {
     if (introT > 1.4) return;
-    const r = canvas.getBoundingClientRect();
+    rect = canvas.getBoundingClientRect();
     const first = introT === 0;
     introT += dt;
-    const [x, y] = boxStroke(Math.min(introT / 1.4, 1), r);
+    const [x, y] = boxStroke(Math.min(introT / 1.4, 1), rect);
     if (first) { pointerDown(x, y); pointer.down = false; } else pointerMove(x, y);
   }
   let visible = true;
   if ('IntersectionObserver' in window) new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(canvas);
   setInterval(() => {
     if (!visible || document.hidden || introT <= 1.4 || performance.now() - lastInput < 2500) return;
-    const r = canvas.getBoundingClientRect(), dir = Math.random() < 0.5 ? -1 : 1;
-    const x = toX(r.left + r.width * (0.15 + Math.random() * 0.7)), y = toY(r.top + r.height * (0.2 + Math.random() * 0.6));
-    splat(x, y, dir * (40 + Math.random() * 40), (Math.random() - 0.5) * 20, generateColor());
+    const dir = Math.random() < 0.5 ? -1 : 1;
+    splat(0.15 + Math.random() * 0.7, 0.2 + Math.random() * 0.6, dir * (60 + Math.random() * 50), (Math.random() - 0.5) * 30, generateColor());
     lastInput = performance.now();
   }, 3200);
 
   // Called by the page when the canvas moves between the question box and the chat window.
-  window.fluidRelayout = function () { resizeCanvas(); introT = 0; lastInput = performance.now(); };
-  window.fluidRefresh = function () { lastInput = performance.now(); };
+  // Called by the page when the canvas moves between the question box and the chat window: fresh ink.
+  let fresh = false;
+  window.fluidRelayout = function () { fresh = true; introT = 0; inside = false; lastInput = performance.now(); };
+  window.fluidRefresh = function () { rect = canvas.getBoundingClientRect(); lastInput = performance.now(); };
 
-  resizeScreen();
   resizeCanvas();
-  initFramebuffers();
+  initFramebuffers(false);
   let last = performance.now(), colorTimer = 0;
   function frame() {
     const now = performance.now();
@@ -556,8 +570,8 @@
     last = now;
     // nothing on screen to show, or nothing moving for a while: skip the work
     if (!visible || document.hidden || (now - lastInput > 12000 && introT > 1.4)) { requestAnimationFrame(frame); return; }
-    if (resizeScreen()) initFramebuffers();
-    resizeCanvas();
+    // resizing the chat window stretches the ink with it; moving between box and chat starts over
+    if (resizeCanvas() || fresh) { initFramebuffers(!fresh); fresh = false; }
     colorTimer += dt * config.COLOR_UPDATE_SPEED;
     if (colorTimer >= 1) { colorTimer %= 1; pointer.color = generateColor(); }
     intro(dt);
