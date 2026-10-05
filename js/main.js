@@ -918,7 +918,7 @@
     if (gl && !setupGL()) gl = null;
     if (!gl && ctx === null) return; // o canvas já virou WebGL mas o shader falhou: fica só a cor de fundo da página
     cv.addEventListener('webglcontextlost', e => e.preventDefault());
-    cv.addEventListener('webglcontextrestored', () => { if (setupGL()) { size(); draw(performance.now()); } });
+    cv.addEventListener('webglcontextrestored', () => { if (setupGL()) { size(); draw(); } });
     // ruído de valor 3D (semente fixa)
     const P = new Uint8Array(512);
     let seed = 1981;
@@ -934,7 +934,7 @@
     }
     const parse = v => { v = v.trim(); if (v[0] === '#') return [1, 3, 5].map(i => parseInt(v.slice(i, i + 2), 16)); return (v.match(/\d+/g) || [0, 0, 0]).slice(0, 3).map(Number); };
     const mix = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
-    let bg, light, cols, dither = 2;
+    let bg, light, cols, dither = 2, speed = 1;
     function readTheme() {
       const cs = getComputedStyle(root);
       bg = parse(cs.getPropertyValue('--bg'));
@@ -942,6 +942,8 @@
       cols = ['--accent', '--i1', '--i2', '--i3'].map(n => parse(cs.getPropertyValue(n)));
       const dv = parseFloat(cs.getPropertyValue('--dither'));
       dither = isNaN(dv) ? 2 : dv;
+      const sv = parseFloat(cs.getPropertyValue('--echo-speed'));
+      speed = isNaN(sv) ? 1 : sv;
     }
     function size() {
       // WebGL: resolução cheia (o ruído do dithering precisa de 1 pixel de tela); 2D: metade basta, é borrado
@@ -950,8 +952,8 @@
       if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
       if (gl) { gl.viewport(0, 0, W, H); gl.uniform2f(uRes, W, H); }
     }
-    function draw(time) {
-      const t = time / 1000, strength = light ? .42 : .55;
+    function draw() {
+      const t = clock, strength = light ? .42 : .55;
       for (let y = 0; y < LH; y++) for (let x = 0; x < LW; x++) {
         const u = x / LW, v = y / LH;
         const edge = Math.min(1, Math.pow(Math.hypot((u - .5) / .5, (v - .5) / .5) / 1.15, 2.4));
@@ -972,15 +974,22 @@
       ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(low, 0, 0, cv.width, cv.height);
     }
-    readTheme(); size(); draw(performance.now());
+    // clock in seconds, advanced at the theme's speed
+    let clock = performance.now() / 1000;
+    readTheme(); size(); draw();
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let last = 0;
+    let last = 0, prev = performance.now();
     (function loop(now) {
-      if (!still && !document.hidden && now - last > 50) { last = now; draw(now); } // ~20 fps: movimento lento
+      const step = Math.min(now - prev, 100); prev = now;
+      if (!still && !document.hidden) {
+        clock += step / 1000 * speed;
+        // ~20 fps is enough for the slow normal speed; faster speeds get more frames so they stay smooth
+        if (now - last > Math.max(16, 50 / speed)) { last = now; draw(); }
+      }
       requestAnimationFrame(loop);
     })(performance.now());
-    addEventListener('resize', () => { size(); draw(performance.now()); });
-    document.addEventListener('theme-done', () => { readTheme(); draw(performance.now()); });
+    addEventListener('resize', () => { size(); draw(); });
+    document.addEventListener('theme-done', () => { readTheme(); draw(); });
     // durante o fade de tema, acompanha a cor de fundo
     new MutationObserver(() => readTheme()).observe(root, { attributes: true, attributeFilter: ['style'] });
   })();

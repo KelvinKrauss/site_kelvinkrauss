@@ -54,11 +54,15 @@
   (function () {
     // i = the three ink colors used with the accent in the background echo
     const T = {
-      escuro:  { bg: [11, 12, 16],    card: [22, 24, 30],    ink: [241, 242, 246], text: [201, 204, 214], muted: [143, 147, 163], line: [255, 255, 255, .1],  accent: [106, 165, 255], ok: [74, 222, 128],  i: [[168, 85, 247], [236, 72, 153], [20, 184, 166]], light: 0, dither: 2 },
-      ardosia: { bg: [29, 37, 50],    card: [39, 49, 65],    ink: [238, 242, 248], text: [201, 210, 224], muted: [141, 153, 173], line: [255, 255, 255, .1],  accent: [124, 199, 255], ok: [111, 227, 176], i: [[143, 155, 255], [95, 224, 200], [199, 160, 255]], light: 0, dither: 2 },
-      ameixa:  { bg: [33, 25, 36],    card: [44, 34, 48],    ink: [245, 238, 246], text: [217, 203, 221], muted: [161, 143, 167], line: [255, 230, 255, .1],  accent: [242, 166, 201], ok: [134, 223, 184], i: [[193, 140, 255], [255, 162, 124], [127, 214, 194]], light: 0, dither: 2 },
-      nevoa:   { bg: [201, 204, 209], card: [215, 218, 222], ink: [21, 23, 27],    text: [43, 46, 52],    muted: [86, 91, 100],   line: [20, 22, 28, .13],    accent: [44, 95, 201],   ok: [29, 122, 67],   i: [[124, 58, 237], [219, 39, 119], [13, 148, 136]], light: 1, dither: 2 }
+      escuro:  { bg: [11, 12, 16],    card: [22, 24, 30],    ink: [241, 242, 246], text: [201, 204, 214], muted: [143, 147, 163], line: [255, 255, 255, .1],  accent: [106, 165, 255], ok: [74, 222, 128],  i: [[168, 85, 247], [236, 72, 153], [20, 184, 166]], light: 0, dither: 2, speed: 1 },
+      ardosia: { bg: [29, 37, 50],    card: [39, 49, 65],    ink: [238, 242, 248], text: [201, 210, 224], muted: [141, 153, 173], line: [255, 255, 255, .1],  accent: [124, 199, 255], ok: [111, 227, 176], i: [[143, 155, 255], [95, 224, 200], [199, 160, 255]], light: 0, dither: 2, speed: 1 },
+      ameixa:  { bg: [33, 25, 36],    card: [44, 34, 48],    ink: [245, 238, 246], text: [217, 203, 221], muted: [161, 143, 167], line: [255, 230, 255, .1],  accent: [242, 166, 201], ok: [134, 223, 184], i: [[193, 140, 255], [255, 162, 124], [127, 214, 194]], light: 0, dither: 2, speed: 1 },
+      nevoa:   { bg: [201, 204, 209], card: [215, 218, 222], ink: [21, 23, 27],    text: [43, 46, 52],    muted: [86, 91, 100],   line: [20, 22, 28, .13],    accent: [44, 95, 201],   ok: [29, 122, 67],   i: [[124, 58, 237], [219, 39, 119], [13, 148, 136]], light: 1, dither: 2, speed: 1 }
     };
+    // TEMPORARY: Escuro with a faster background, to choose the speed
+    T.vel3 = Object.assign({}, T.escuro, { speed: 3 });
+    T.vel6 = Object.assign({}, T.escuro, { speed: 6 });
+    T.vel12 = Object.assign({}, T.escuro, { speed: 12 });
     const num = (a, b, k) => a + (b - a) * k;
     const mixAny = (a, b, k) => Array.isArray(a) ? a.map((v, n) => mixAny(v, b[n], k)) : num(a, b, k);
     const rgb = c => 'rgb(' + c.slice(0, 3).map(Math.round).join(',') + ')';
@@ -75,6 +79,7 @@
         set('--ink', rgb(p.ink)); set('--text', rgb(p.text)); set('--muted', rgb(p.muted));
         set('--line', rgba(p.line)); set('--accent', rgb(p.accent)); set('--ok', rgb(p.ok));
         set('--dither', f3(p.dither));
+        set('--echo-speed', f3(p.speed));
         set('--i1', rgb(p.i[0])); set('--i2', rgb(p.i[1])); set('--i3', rgb(p.i[2]));
         set('--glass-tint', 'rgba(255, 255, 255, ' + f3(num(.06, .3, L)) + ')');
         set('--glass-tint-hover', 'rgba(255, 255, 255, ' + f3(num(.11, .45, L)) + ')');
@@ -136,6 +141,9 @@
       <div class="top-right">
         <div class="themes glass" data-glass="30" id="themes" role="radiogroup" aria-label="Tema do site" data-en-aria="Site theme">
           <button type="button" class="sw" data-theme="escuro" role="radio" aria-checked="false" title="Escuro" data-en-title="Dark" aria-label="Tema Escuro" data-en-aria="Dark theme"><i></i></button>
+          <button type="button" class="sw sw-speed" data-theme="vel3" role="radio" aria-checked="false" title="Escuro, fundo 3× mais rápido" data-en-title="Dark, background 3× faster" aria-label="Tema Escuro com fundo 3 vezes mais rápido" data-en-aria="Dark theme with a 3 times faster background"><i>3×</i></button>
+          <button type="button" class="sw sw-speed" data-theme="vel6" role="radio" aria-checked="false" title="Escuro, fundo 6× mais rápido" data-en-title="Dark, background 6× faster" aria-label="Tema Escuro com fundo 6 vezes mais rápido" data-en-aria="Dark theme with a 6 times faster background"><i>6×</i></button>
+          <button type="button" class="sw sw-speed" data-theme="vel12" role="radio" aria-checked="false" title="Escuro, fundo 12× mais rápido" data-en-title="Dark, background 12× faster" aria-label="Tema Escuro com fundo 12 vezes mais rápido" data-en-aria="Dark theme with a 12 times faster background"><i>12×</i></button>
           <button type="button" class="sw" data-theme="ardosia" role="radio" aria-checked="false" title="Ardósia" data-en-title="Slate" aria-label="Tema Ardósia" data-en-aria="Slate theme"><i></i></button>
           <button type="button" class="sw" data-theme="ameixa" role="radio" aria-checked="false" title="Ameixa" data-en-title="Plum" aria-label="Tema Ameixa" data-en-aria="Plum theme"><i></i></button>
           <button type="button" class="sw" data-theme="nevoa" role="radio" aria-checked="false" title="Névoa" data-en-title="Mist" aria-label="Tema Névoa" data-en-aria="Mist theme"><i></i></button>
