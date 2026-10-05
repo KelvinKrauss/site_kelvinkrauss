@@ -99,9 +99,6 @@
   .themes .sw[aria-checked="true"] i { transform: scale(1.12); box-shadow: inset 0 0 0 1px rgba(128, 128, 128, .45), 0 0 0 2px var(--bg), 0 0 0 3.5px var(--ink); }
   .themes .sw:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 1px; }
   .themes .sw[data-theme="escuro"]  { --sw-bg: #0b0c10; --sw-ac: #6aa5ff; }
-  /* TEMPORARY: background speed test themes */
-  .themes .sw.sw-speed { --sw-bg: #0b0c10; --sw-ac: #6aa5ff; }
-  .themes .sw.sw-speed i { display: grid; place-items: center; font: 700 7px/1 var(--font); letter-spacing: -.02em; color: #fff; text-shadow: 0 0 2px #000, 0 0 3px #000; }
   .themes .sw[data-theme="ardosia"] { --sw-bg: #1d2532; --sw-ac: #7cc7ff; }
   .themes .sw[data-theme="ameixa"]  { --sw-bg: #211924; --sw-ac: #f2a6c9; }
   .themes .sw[data-theme="nevoa"]   { --sw-bg: #c9ccd1; --sw-ac: #2c5fc9; }

@@ -934,7 +934,7 @@
     }
     const parse = v => { v = v.trim(); if (v[0] === '#') return [1, 3, 5].map(i => parseInt(v.slice(i, i + 2), 16)); return (v.match(/\d+/g) || [0, 0, 0]).slice(0, 3).map(Number); };
     const mix = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
-    let bg, light, cols, dither = 2, speed = 1;
+    let bg, light, cols, dither = 2, speed = 3;
     function readTheme() {
       const cs = getComputedStyle(root);
       bg = parse(cs.getPropertyValue('--bg'));
@@ -943,7 +943,7 @@
       const dv = parseFloat(cs.getPropertyValue('--dither'));
       dither = isNaN(dv) ? 2 : dv;
       const sv = parseFloat(cs.getPropertyValue('--echo-speed'));
-      speed = isNaN(sv) ? 1 : sv;
+      speed = isNaN(sv) ? 3 : sv;
     }
     function size() {
       // WebGL: resolução cheia (o ruído do dithering precisa de 1 pixel de tela); 2D: metade basta, é borrado
@@ -983,7 +983,7 @@
       const step = Math.min(now - prev, 100); prev = now;
       if (!still && !document.hidden) {
         clock += step / 1000 * speed;
-        // ~20 fps is enough for the slow normal speed; faster speeds get more frames so they stay smooth
+        // more frames for faster speeds so they stay smooth (at 3x: one every ~17 ms)
         if (now - last > Math.max(16, 50 / speed)) { last = now; draw(); }
       }
       requestAnimationFrame(loop);
