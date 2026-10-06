@@ -16,6 +16,7 @@
       hintsLabel: 'Por exemplo:',
       wait: 'Pensando...',
       offline: 'Não consegui responder agora. Tente de novo em instantes ou fale direto com o Kelvin: kelvin.krauss.br@gmail.com',
+      busy: 'Foram muitas perguntas seguidas. Espere um minuto e tente de novo, ou fale direto com o Kelvin: kelvin.krauss.br@gmail.com',
       go: { ociani: 'Ver o projeto da Ociani', projetos: 'Ver os projetos', trajetoria: 'Ver a trajetória', habilidades: 'Ver as habilidades', contato: 'Ver o contato', curriculo: 'Abrir o currículo' },
       copied: 'Copiado!', copy: 'Copiar',
     },
@@ -25,6 +26,7 @@
       hintsLabel: 'For example:',
       wait: 'Thinking...',
       offline: "I couldn't answer right now. Try again in a moment or reach Kelvin directly: kelvin.krauss.br@gmail.com",
+      busy: "That was a lot of questions in a row. Wait a minute and try again, or reach Kelvin directly: kelvin.krauss.br@gmail.com",
       go: { ociani: 'See the Ociani project', projetos: 'See the projects', trajetoria: 'See the journey', habilidades: 'See the skills', contato: 'See the contact', curriculo: 'Open the resume' },
       copied: 'Copied!', copy: 'Copy',
     },
@@ -71,7 +73,8 @@
     btn.textContent = lang === 'en' ? 'PT' : 'EN';
     btn.setAttribute('aria-label', lang === 'en' ? 'Ler em português' : 'Read in English');
     renderHints();
-    resetChat();
+    // a conversation already going on stays; an empty chat greets again in the new language
+    if (!history.length) resetChat();
   }
   $('#lang-btn').addEventListener('click', () => {
     const swap = () => { applyLang(lang === 'en' ? 'pt' : 'en'); store.set('kk-lang', lang); };
@@ -87,7 +90,12 @@
   const themes = $('#themes'), swatches = [...themes.querySelectorAll('.sw')];
   const phoneThemes = matchMedia('(max-width: 560px)');
   let themeAnim = 0;
-  const markTheme = name => swatches.forEach(b => b.setAttribute('aria-checked', String(b.dataset.theme === name)));
+  // one Tab stop for the whole group (the current color); the arrow keys move between colors
+  const markTheme = name => swatches.forEach(b => {
+    const on = b.dataset.theme === name;
+    b.setAttribute('aria-checked', String(on));
+    b.tabIndex = on ? 0 : -1;
+  });
   markTheme(kkTheme.current);
   function goTheme(name) {
     cancelAnimationFrame(themeAnim);
@@ -247,7 +255,7 @@
       const type = res.headers.get('content-type') || '';
       if (!res.ok || type.includes('json') || !res.body) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || res.status);
+        throw Object.assign(new Error(data.error || res.status), { status: res.status });
       }
       // a resposta chega em pedaços: o balão aparece no primeiro pedaço e vai crescendo
       const reader = res.body.getReader(), dec = new TextDecoder();
@@ -276,7 +284,7 @@
       wait.remove();
       if (live) live.remove();
       history.pop();
-      bubble(TXT[lang].offline, 'ai');
+      bubble(err && err.status === 429 ? TXT[lang].busy : TXT[lang].offline, 'ai');
     } finally {
       $('#chat-send').disabled = false;
     }

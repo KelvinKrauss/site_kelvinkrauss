@@ -122,6 +122,12 @@
     box-shadow: 0 22px 40px -18px rgba(0, 0, 0, .35); opacity: 0; animation: now-lift 6s ease-in-out infinite; will-change: opacity; }
   @keyframes now-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -8px, 0); } }
   @keyframes now-lift { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+  /* Firefox rounds a straight up/down move to whole pixels (it stepped there); a rotation too small to
+     see makes it draw the in-between positions. Firefox only: Chrome is already smooth. */
+  @supports (-moz-appearance: none) {
+    @keyframes now-float-ff { 0%, 100% { transform: translate3d(0, 0, 0) rotate(.02deg); } 50% { transform: translate3d(0, -8px, 0) rotate(.02deg); } }
+    .now-card { animation-name: now-float-ff; }
+  }
   @media (prefers-reduced-motion: reduce) { .now-card, .now-card::after { animation: none; } }
   .now-head { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font-size: .9rem; color: var(--muted); }
   .now-head strong { color: var(--ink); font-size: 1rem; }
@@ -300,6 +306,8 @@
 .node.eureka { flex-direction: row; align-items: baseline; gap: 8px; box-shadow: none; border: 1px dashed color-mix(in srgb, var(--muted) 45%, transparent); background: transparent; }
 .arch .link { flex: 0 0 18px; height: 2px; background: color-mix(in srgb, var(--accent) 55%, var(--line)); position: relative; }
 .arch .link::after { content: ""; position: absolute; right: -1px; top: -3px; border: 4px solid transparent; border-left-color: color-mix(in srgb, var(--accent) 55%, var(--line)); border-right: 0; }
+/* entry titles (jobs, studies, other projects): h3 under the section's h2, styled as before */
+.prose .entry-top h3, .entry-top h3 { margin: 0; font-size: 1.15rem; font-weight: 600; line-height: inherit; letter-spacing: -.02em; }
 .card h3 a, .card h4 a { text-decoration: none; }
   .card h3 a:hover, .card h4 a:hover { color: var(--accent); }
   .card p { color: var(--text); }
@@ -461,3 +469,8 @@
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
+
+/* keyboard users: first Tab stop jumps over the header straight to the content */
+.skip { position: fixed; left: 16px; top: -64px; z-index: 200; padding: 10px 16px; border-radius: 12px; font-weight: 600; color: var(--bg); background: var(--accent); text-decoration: none; transition: top .2s; }
+.skip:focus { top: 12px; outline: 2.5px solid var(--ink); outline-offset: 2px; }
+.hero:focus { outline: none; }

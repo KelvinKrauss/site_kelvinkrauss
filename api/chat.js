@@ -21,6 +21,25 @@ REGRAS:
 
 const MAX_TURNS = 20;      // mensagens guardadas na conversa
 const MAX_CHARS = 1000;    // tamanho máximo de cada mensagem
+const TIMEOUT_MS = 25000;  // o Gemini não respondeu nesse tempo: desiste
+
+// Só o próprio site pode usar o assistente (o navegador sempre manda o Origin num POST).
+// Inclui as prévias da Vercel deste projeto e o localhost do `vercel dev`.
+const ALLOWED_ORIGIN = /^(https:\/\/(www\.)?kelvinkrauss\.me|https:\/\/kelvinkrauss[a-z0-9-]*\.vercel\.app|http:\/\/localhost(:\d+)?)$/;
+
+// Limite de perguntas por visitante, para ninguém gastar a cota do Gemini em massa.
+// Fica na memória da função: cada instância conta separado, então é uma proteção básica, não exata.
+const LIMITS = [{ windowMs: 60 * 1000, max: 10 }, { windowMs: 60 * 60 * 1000, max: 60 }];
+const hits = new Map();
+function tooMany(ip) {
+  const now = Date.now(), longest = LIMITS[LIMITS.length - 1].windowMs;
+  const list = (hits.get(ip) || []).filter(t => now - t < longest);
+  const blocked = LIMITS.some(l => list.filter(t => now - t < l.windowMs).length >= l.max);
+  if (!blocked) list.push(now);
+  hits.set(ip, list);
+  if (hits.size > 5000) hits.clear(); // não deixa a memória crescer sem fim
+  return blocked;
+}
 
 // Aceita só o formato que o site manda: [{ role: 'user' | 'model', parts: [{ text }] }]
 function cleanHistory(history) {
@@ -40,6 +59,14 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
+  if (!ALLOWED_ORIGIN.test(req.headers.origin || '')) {
+    return res.status(403).json({ error: 'Origem não permitida.' });
+  }
+  const ip = String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '').split(',')[0].trim();
+  if (tooMany(ip)) {
+    res.setHeader('Retry-After', '60');
+    return res.status(429).json({ error: 'Muitas perguntas seguidas. Espere um pouco.' });
+  }
   try {
     const history = cleanHistory(req.body && req.body.history);
     if (!history) {
@@ -52,22 +79,29 @@ export default async function handler(req, res) {
 
     // streamGenerateContent + alt=sse: o Gemini manda a resposta em pedaços, e cada pedaço é repassado
     // ao navegador assim que chega, para o texto aparecer enquanto é escrito.
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:streamGenerateContent?alt=sse&key=${apiKey}`;
+    // A chave vai no cabeçalho, não na URL (URLs podem acabar em logs).
+    const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:streamGenerateContent?alt=sse';
+    const abort = new AbortController();
+    const timer = setTimeout(() => abort.abort(), TIMEOUT_MS);
 
     const geminiRes = await fetch(GEMINI_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      signal: abort.signal,
       body: JSON.stringify({
         system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents: history,
         generationConfig: { maxOutputTokens: 600, temperature: 0.5 }
       })
-    });
+    }).catch(err => { clearTimeout(timer); throw err; });
 
     if (!geminiRes.ok || !geminiRes.body) {
-      let message = 'Erro ' + geminiRes.status;
-      try { message = (await geminiRes.json()).error?.message || message; } catch {}
-      return res.status(500).json({ error: message });
+      clearTimeout(timer);
+      // o detalhe fica no log da Vercel; o visitante recebe uma mensagem genérica
+      let detail = '';
+      try { detail = (await geminiRes.json()).error?.message || ''; } catch {}
+      console.error('Gemini', geminiRes.status, detail);
+      return res.status(502).json({ error: 'O assistente não conseguiu responder agora.' });
     }
 
     res.writeHead(200, {
@@ -95,9 +129,11 @@ export default async function handler(req, res) {
       lines.forEach(flushLine);
     }
     flushLine(buffer.trim());
+    clearTimeout(timer);
     return res.end(); // resposta vazia: o site mostra a mensagem de erro dele
   } catch (err) {
+    console.error('chat', err && err.name, err && err.message);
     if (res.headersSent) return res.end();
-    return res.status(500).json({ error: 'Falha na comunicação com o Google.' });
+    return res.status(502).json({ error: 'O assistente não conseguiu responder agora.' });
   }
 }
