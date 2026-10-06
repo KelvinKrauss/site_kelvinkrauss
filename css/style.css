@@ -243,6 +243,34 @@
   .card:hover { transform: translateY(-2px); background: color-mix(in srgb, var(--ink) 5%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 16%, transparent), inset 0 1px 0 var(--rim-lo), var(--shadow-lg); }
   .card.featured { gap: 16px; padding: 26px 28px; background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 9%, transparent), color-mix(in srgb, var(--ink) 2%, transparent) 45%); }
   .card.featured:hover { transform: none; }
+  /* Ociani: text, features and buttons on the left, the real site on the right */
+  .case-top { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 28px; align-items: start; }
+  .case-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .prose ul.feats { display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .prose .feats li::marker { content: none; }
+  .feat { position: relative; display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px 6px 9px; border-radius: 10px; font-size: .86rem; line-height: 1.3; color: var(--ink);
+    background: color-mix(in srgb, var(--ink) 5%, transparent); box-shadow: inset 0 0 0 1px var(--line); cursor: default; outline: none; }
+  .feat svg { width: 16px; height: 16px; flex: none; color: var(--accent); }
+  .feat .ssw { font: 500 .62rem var(--mono); color: var(--accent); padding: 1px 5px; border-radius: 5px; background: color-mix(in srgb, var(--accent) 14%, transparent); }
+  .feat:focus-visible { box-shadow: inset 0 0 0 1px var(--line), 0 0 0 2px var(--accent); }
+  /* one-line explanation on hover / focus */
+  .feat::after { content: attr(data-tip); position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 20; width: max-content; max-width: min(260px, 70vw); padding: 7px 10px; border-radius: 9px;
+    font-size: .78rem; line-height: 1.4; color: var(--text); background: var(--card-solid); box-shadow: 0 0 0 1px var(--line), var(--shadow-lg);
+    opacity: 0; transform: translateY(4px); transition: opacity .18s, transform .18s; pointer-events: none; }
+  .feat:hover::after, .feat:focus::after { opacity: 1; transform: none; }
+  .case-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .pill.visit { background: var(--accent); color: var(--bg); font-weight: 600; transition: transform .25s cubic-bezier(.2, .9, .3, 1.4), filter .2s; }
+  .pill.visit:hover { transform: translateY(-1px); filter: brightness(1.08); }
+  .pill.visit:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 3px; }
+  .case-shot { display: block; margin: 4px 0 0; text-decoration: none; transition: transform .45s cubic-bezier(.2, .8, .3, 1), box-shadow .45s; }
+  .case-shot img { aspect-ratio: 16 / 10; }
+  .case-shot:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, var(--line)), var(--shadow-lg); }
+  .case-shot:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 3px; }
+  @media (max-width: 860px) { .case-top { grid-template-columns: 1fr; gap: 20px; } }
+  /* the hidden explanations must never widen the page: clipped sideways, and left out on touch screens (no hover there) */
+  .card.featured { overflow-x: clip; }
+  @media (hover: none) { .feat::after { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .feat::after, .case-shot, .pill.visit { transition: none; } }
   /* project previews: float above the card on hover (mouse) or keyboard focus; phones don't show them */
 .peek { display: none; }
 @media (hover: hover) and (pointer: fine) {

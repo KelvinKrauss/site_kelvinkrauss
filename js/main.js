@@ -51,6 +51,10 @@
       if (el.dataset.ptTitle === undefined) el.dataset.ptTitle = el.title;
       el.title = lang === 'en' ? el.dataset.enTitle : el.dataset.ptTitle;
     });
+    document.querySelectorAll('[data-en-tip]').forEach(el => {
+      if (el.dataset.ptTip === undefined) el.dataset.ptTip = el.dataset.tip;
+      el.dataset.tip = lang === 'en' ? el.dataset.enTip : el.dataset.ptTip;
+    });
     document.querySelectorAll('[data-en-alt]').forEach(el => {
       if (el.dataset.ptAlt === undefined) el.dataset.ptAlt = el.alt;
       el.alt = lang === 'en' ? el.dataset.enAlt : el.dataset.ptAlt;

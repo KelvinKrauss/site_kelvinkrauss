@@ -114,6 +114,12 @@
     <symbol id="i-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2M15 18H9M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></symbol>
     <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></symbol>
     <symbol id="i-coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M6 2v2M10 2v2M14 2v2"/></symbol>
+    <symbol id="i-calc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h8"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 4-6 2v14l6-2 6 2 6-2V4l-6 2-6-2ZM9 4v14M15 6v14"/></symbol>
+    <symbol id="i-news" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13v16H6a2 2 0 0 1-2-2V4ZM17 8h3v10a2 2 0 0 1-2 2"/><path d="M8 8h5M8 12h5M8 16h3"/></symbol>
     <symbol id="i-boxes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
     <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
@@ -219,17 +225,36 @@
         <header><h2 data-en="Projects">Projetos</h2></header>
         <div class="prose">
           <article class="card featured" id="ociani">
-          <div class="case-head">
-            <span class="badge" data-en="Live · since Oct 2, 2026">No ar · desde 02/10/2026</span>
-            <span class="meta" data-en="Professional project">Projeto profissional</span>
-            <h3><a href="https://www.ociani.com.br/" target="_blank" rel="noopener" data-en="Ociani Transportadora website ↗">Site da Ociani Transportadora ↗</a></h3>
+          <div class="case-top">
+            <div class="case-main">
+              <div class="case-head">
+                <span class="badge" data-en="Live · since Oct 2, 2026">No ar · desde 02/10/2026</span>
+                <span class="meta" data-en="Professional project · built from scratch">Projeto profissional · feito do zero</span>
+                <h3><a href="https://www.ociani.com.br/" target="_blank" rel="noopener" data-en="Ociani Transportadora website ↗">Site da Ociani Transportadora ↗</a></h3>
+              </div>
+              <p data-en="The new website of the company where I work, connected to the SSW logistics system.">Novo site institucional da empresa onde trabalho, integrado ao sistema SSW.</p>
+              <ul class="feats" aria-label="O que o site faz" data-en-aria="What the website does">
+                <li class="feat" tabindex="0" data-tip="Cotação na hora para clientes cadastrados e pedido de cotação para quem ainda não é cliente." data-en-tip="Instant quotes for registered customers, and a quote request for people who aren't customers yet."><svg aria-hidden="true"><use href="#i-calc"/></svg><span data-en="Quotes">Cotação</span><span class="ssw">SSW</span></li>
+                <li class="feat" tabindex="0" data-tip="Pedido de coleta enviado direto para o sistema da transportadora." data-en-tip="Pickup requests sent straight to the company's logistics system."><svg aria-hidden="true"><use href="#i-box"/></svg><span data-en="Pickups">Coleta</span><span class="ssw">SSW</span></li>
+                <li class="feat" tabindex="0" data-tip="Consulta de cotação e rastreamento de entregas." data-en-tip="Quote lookup and delivery tracking."><svg aria-hidden="true"><use href="#i-search"/></svg><span data-en="Tracking">Rastreamento</span><span class="ssw">SSW</span></li>
+                <li class="feat" tabindex="0" data-tip="Atalhos do dia a dia para quem já é cliente." data-en-tip="Day-to-day shortcuts for existing customers."><svg aria-hidden="true"><use href="#i-user"/></svg><span data-en="Customer Area">Área do Cliente</span></li>
+                <li class="feat" tabindex="0" data-tip="Mapa interativo com as regiões atendidas." data-en-tip="An interactive map of the regions the company serves."><svg aria-hidden="true"><use href="#i-map"/></svg><span data-en="Coverage map">Mapa</span></li>
+                <li class="feat" tabindex="0" data-tip="A equipe publica notícias num painel Sanity, sem mexer no código." data-en-tip="The team publishes news in a Sanity panel, without touching code."><svg aria-hidden="true"><use href="#i-news"/></svg><span data-en="News">Notícias</span></li>
+              </ul>
+              <div class="facts"><span><b>144</b> commits</span><span>Astro · TypeScript · Cloudflare · Sanity</span></div>
+              <div class="case-actions">
+                <a class="pill visit" href="https://www.ociani.com.br/" target="_blank" rel="noopener"><span data-en="Visit the website">Visitar o site</span><svg aria-hidden="true"><use href="#i-out"/></svg></a>
+                <button class="pill glass more-btn" data-glass="30" type="button" aria-expanded="false" aria-controls="ociani-more" id="ociani-toggle">
+                  <span class="when-closed" data-en="See project details">Ver detalhes do projeto</span><span class="when-open" data-en="Hide details">Ocultar detalhes</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+              </div>
+            </div>
+            <a class="shot case-shot" href="https://www.ociani.com.br/" target="_blank" rel="noopener" aria-label="Abrir o site da Ociani" data-en-aria="Open the Ociani website">
+              <span class="shot-bar"><i></i><i></i><i></i><span>ociani.com.br</span></span>
+              <img src="images/ociani.jpg" alt="Página inicial do site da Ociani Transportadora" data-en-alt="Home page of the Ociani Transportadora website" width="1440" height="900" loading="lazy">
+            </a>
           </div>
-          <div class="facts"><span><b>144</b> commits</span><span>Astro · TypeScript · Cloudflare · Sanity</span></div>
-          <p data-en="The new website of the company where I work, with freight quotes, pickups and delivery tracking connected to the SSW logistics system.">Novo site institucional da empresa onde trabalho, com cotação de frete, coleta e rastreamento integrados ao sistema SSW.</p>
-          <button class="pill glass more-btn" data-glass="30" type="button" aria-expanded="false" aria-controls="ociani-more" id="ociani-toggle">
-            <span class="when-closed" data-en="See project details">Ver detalhes do projeto</span><span class="when-open" data-en="Hide details">Ocultar detalhes</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
           <div class="more-body" id="ociani-more" inert>
           <div class="more-inner">
           <figure class="shot compare" style="margin-inline:0">
