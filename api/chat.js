@@ -104,8 +104,8 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents: history,
-        // temperature: 0 = sempre a mesma resposta, 2 = bem solto. 0.8 soa natural sem começar a inventar.
-        generationConfig: { maxOutputTokens: 600, temperature: 0.8, topP: 0.95 }
+        // temperature: 0 = sempre a mesma resposta, 2 = bem solto. 0.7 soa natural; em 0.8 já inventava detalhes.
+        generationConfig: { maxOutputTokens: 600, temperature: 0.7, topP: 0.95 }
       })
     }).catch(err => { clearTimeout(timer); throw err; });
 
