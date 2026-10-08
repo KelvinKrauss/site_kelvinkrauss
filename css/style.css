@@ -474,3 +474,6 @@
 .skip { position: fixed; left: 16px; top: -64px; z-index: 200; padding: 10px 16px; border-radius: 12px; font-weight: 600; color: var(--bg); background: var(--accent); text-decoration: none; transition: top .2s; }
 .skip:focus { top: 12px; outline: 2.5px solid var(--ink); outline-offset: 2px; }
 .hero:focus { outline: none; }
+
+/* the resume viewer opens on top of everything, including an open chat window and the chat bubble */
+#cv-wrap { z-index: 62; }

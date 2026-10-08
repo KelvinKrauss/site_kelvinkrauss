@@ -151,35 +151,44 @@
   }
   // O assistente termina algumas respostas com marcações como [[ociani]] (regra no api/chat.js).
   // Elas viram botões e nunca aparecem no texto, nem pela metade enquanto a resposta chega.
-  const GO_KEYS = ['ociani', 'projetos', 'trajetoria', 'habilidades', 'contato', 'curriculo'];
+  // [[abrir_curriculo]] is not a button: when the visitor asks to see the resume, the site opens it by itself.
+  const GO_KEYS = ['ociani', 'projetos', 'trajetoria', 'habilidades', 'contato', 'curriculo', 'abrir_curriculo'];
   function splitReply(raw, final) {
     const keys = [];
-    let text = raw.replace(/\[\[\s*([a-zà-ú]+)\s*\]\]/gi, (m, k) => {
+    let text = raw.replace(/\[\[\s*([a-zà-ú_]+)\s*\]\]/gi, (m, k) => {
       k = k.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
       if (GO_KEYS.includes(k) && !keys.includes(k)) keys.push(k);
       return '';
     });
     if (!final) text = text.replace(/\[\[?[^\]\n]*\]?$/, ''); // marcação ainda chegando
-    return { text: text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim(), keys: keys.slice(0, 2) };
+    const open = keys.includes('abrir_curriculo');
+    let buttons = keys.filter(k => k !== 'abrir_curriculo');
+    if (open && !buttons.includes('curriculo')) buttons.unshift('curriculo'); // the button stays, to reopen it (and on phones)
+    return { text: text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim(), keys: buttons.slice(0, 2), open };
   }
   function addGoButtons(div, keys) {
-    if (!keys.length) return;
+    if (!keys.length) return null;
     const row = document.createElement('div');
     row.className = 'go-row';
     keys.forEach((k, i) => {
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'go'; b.textContent = TXT[lang].go[k];
+      b.type = 'button'; b.className = 'go'; b.dataset.key = k; b.textContent = TXT[lang].go[k];
       b.style.animationDelay = (i * 80) + 'ms';
-      b.addEventListener('click', () => goTo(k));
+      b.addEventListener('click', () => goTo(k, b));
       row.appendChild(b);
     });
     div.after(row);
     msgs.scrollTop = msgs.scrollHeight;
+    return row;
   }
   // Leva até a parte do site: a página rola até lá, o chat encolhe para o balão no canto e um anel
-  // de luz contorna o destino.
-  function goTo(key) {
-    if (key === 'curriculo') { const a = document.querySelector('[data-resume]'); if (a) a.click(); return; }
+  // de luz contorna o destino. O currículo abre no visualizador, crescendo a partir do botão do chat.
+  function goTo(key, from) {
+    if (key === 'curriculo') {
+      const a = document.querySelector('[data-resume]');
+      if (a && !openCv(a, from)) window.open(a.href, '_blank', 'noopener'); // celular: nova aba
+      return;
+    }
     const el = document.getElementById(key === 'ociani' ? 'ociani' : key);
     if (!el) return;
     const smooth = !calm.matches;
@@ -278,7 +287,13 @@
       if (!live) live = bubble('', 'ai');
       live.classList.remove('streaming');
       live.innerHTML = fmt(out.text);
-      addGoButtons(live, out.keys);
+      const row = addGoButtons(live, out.keys);
+      // "abre o currículo": on a computer the viewer opens by itself, growing out of the chat button
+      // (on phones a new tab can't open without a tap, so the button is there)
+      if (out.open) {
+        const b = row && row.querySelector('[data-key="curriculo"]'), a = document.querySelector('[data-resume]');
+        if (a && b) setTimeout(() => { if (b.isConnected) openCv(a, b); }, 550);
+      }
       if (!chatBubble.hidden) chatBubble.classList.add('unread');
     } catch (err) {
       wait.remove();
@@ -749,17 +764,21 @@
     cvAnims = [...kids, shrink, fade];
     Promise.all([shrink.finished, fade.finished]).then(done, () => {});
   }
-  document.querySelectorAll('[data-resume]').forEach(a => a.addEventListener('click', e => {
-    if (!bigScreen.matches) return;
-    e.preventDefault();
-    cvReturn = a;
+  // Opens the PDF of link `a` in the viewer, growing out of `from` (the clicked button, or the chat's
+  // "Abrir o currículo" button). Returns false on phones, where the PDF opens in a new tab instead.
+  function openCv(a, from) {
+    if (!bigScreen.matches) return false;
+    from = from || a;
+    cvReturn = from;
     const want = a.getAttribute('href') + '#view=FitH';
     if (cvFrame.getAttribute('src') !== want) cvFrame.setAttribute('src', want);
     cvAnims.forEach(x => x.cancel());
     cvWrap.hidden = false;
-    if (!calm.matches && cvPanel.animate) openCvAnim(a.getBoundingClientRect());
+    if (!calm.matches && cvPanel.animate) openCvAnim(from.getBoundingClientRect());
     $('#cv-close').focus({ preventScroll: true });
-  }));
+    return true;
+  }
+  document.querySelectorAll('[data-resume]').forEach(a => a.addEventListener('click', e => { if (openCv(a)) e.preventDefault(); }));
   // carrega o PDF com antecedência (quando a página está ociosa), para ele já estar pronto ao abrir
   if (bigScreen.matches) (window.requestIdleCallback || (fn => setTimeout(fn, 2500)))(() => {
     const first = document.querySelector('[data-resume]');
