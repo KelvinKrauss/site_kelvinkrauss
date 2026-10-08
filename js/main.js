@@ -11,7 +11,7 @@
 
   const TXT = {
     pt: {
-      hello: 'Oi! Sou o assistente do Kelvin. Pode perguntar sobre projetos, estudos ou como falar com ele.',
+      hello: 'Oi! Eu sou a IA do portfólio do Kelvin. Pode me perguntar o que quiser sobre ele: projetos, estudos, o que ele anda aprendendo ou como chamar ele para uma conversa.',
       sugg: ['O que ele fez no site da Ociani?', 'Quais tecnologias ele usa?', 'Ele aceita trabalho remoto?'],
       hintsLabel: 'Por exemplo:',
       wait: 'Pensando...',
@@ -21,7 +21,7 @@
       copied: 'Copiado!', copy: 'Copiar',
     },
     en: {
-      hello: "Hi! I'm Kelvin's assistant. Ask about his projects, studies or how to reach him.",
+      hello: "Hi! I'm the AI on Kelvin's portfolio. Ask me anything about him: his projects, his studies, what he's learning lately or how to get in touch.",
       sugg: ['What did he build for Ociani?', 'Which technologies does he use?', 'Is he open to remote work?'],
       hintsLabel: 'For example:',
       wait: 'Thinking...',
