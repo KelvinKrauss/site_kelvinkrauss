@@ -30,6 +30,7 @@
         failed: 'Não consegui enviar o recado agora. Você pode mandar direto pelo WhatsApp (já com a mensagem pronta) ou por e-mail:',
         limit: 'Já chegaram vários recados daqui há pouco. Se for urgente, fale direto pelo WhatsApp ou e-mail:',
       },
+      translating: 'Traduzindo para',
       trFail: 'Não consegui traduzir o site agora. Tente de novo em instantes.',
       trBusy: 'Já traduzi o site várias vezes daqui há pouco. Espere um pouco e tente de novo.',
       copied: 'Copiado!', copy: 'Copiar',
@@ -54,6 +55,7 @@
         failed: "I couldn't send the message right now. You can send it on WhatsApp (already written for you) or by e-mail:",
         limit: 'Several messages were sent from here a moment ago. If it is urgent, reach him on WhatsApp or by e-mail:',
       },
+      translating: 'Translating to',
       trFail: "I couldn't translate the site right now. Please try again in a moment.",
       trBusy: 'The site was translated several times from here a moment ago. Wait a bit and try again.',
       copied: 'Copied!', copy: 'Copy',
@@ -65,6 +67,7 @@
   function applyLang(next) {
     lang = next;
     translatedTo = null; // switching PT/EN also undoes a translation made by the chat
+    if (typeof hideTrPill === 'function') hideTrPill();
     root.lang = lang === 'en' ? 'en' : 'pt-BR';
     document.querySelectorAll('[data-en]').forEach(el => {
       if (el.dataset.pt === undefined) el.dataset.pt = el.innerHTML;
@@ -313,6 +316,8 @@
     }));
     segs.push({ kind: 'hint', i: -1, src: TXT.pt.hintsLabel });
     TXT.pt.sugg.forEach((q, i) => segs.push({ kind: 'hint', i, src: q }));
+    // the indicator's own words, so it speaks the visitor's language too
+    segs.push({ kind: 'ui', key: 'auto', src: 'Tradução automática' }, { kind: 'ui', key: 'orig', src: 'Ver original' });
     return segs;
   }
   // Only simple formatting tags survive; links and classes are copied from the ORIGINAL, never taken from the AI.
@@ -341,6 +346,35 @@
     return out.innerHTML;
   }
   const textOnly = s => s.replace(/<[^>]*>/g, '').trim();
+  // the pill above the dock: "Traduzindo para italiano…" while it works, then "Traduzione automatica · italiano"
+  // with a button back to the original. It makes clear that the translation is automatic and temporary.
+  const trPill = $('#tr-pill'), trText = trPill.querySelector('.tr-text'), trOrig = trPill.querySelector('.tr-orig');
+  let trPillAnim = null;
+  function showTrPill(loading, text, button) {
+    const wasHidden = trPill.hidden;
+    trPill.classList.toggle('loading', loading);
+    trText.textContent = text;
+    trOrig.textContent = button || '';
+    trPill.hidden = false;
+    if (trPillAnim) trPillAnim.cancel();
+    if (calm.matches || !trPill.animate) return;
+    trPillAnim = wasHidden
+      ? trPill.animate([{ opacity: 0, transform: 'translate(-50%, 14px) scale(.92)' }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 420, easing: 'cubic-bezier(.2, .9, .3, 1.2)' })
+      : trPill.animate([{ transform: 'translateX(-50%) scale(.96)' }, { transform: 'translateX(-50%) scale(1.03)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 380, easing: 'ease-out' });
+  }
+  function hideTrPill() {
+    if (trPill.hidden) return;
+    if (trPillAnim) trPillAnim.cancel();
+    if (calm.matches || !trPill.animate) { trPill.hidden = true; return; }
+    trPillAnim = trPill.animate([{ opacity: 1, transform: 'translate(-50%, 0)' }, { opacity: 0, transform: 'translate(-50%, 14px) scale(.94)' }], { duration: 260, easing: 'ease-in' });
+    trPillAnim.finished.then(() => { trPill.hidden = true; }, () => {});
+  }
+  trOrig.addEventListener('click', () => setSiteLang(lang));
+  // the language's name written in that same language ("italiano", "日本語"), when the browser knows it
+  const langName = (code, fallback) => {
+    try { const n = new Intl.DisplayNames([code], { type: 'language' }).of(code); if (n && n !== code) return n; } catch (e) {}
+    return fallback;
+  };
   function fadePage(change) {
     const page = $('.page');
     page.classList.remove('translating');
@@ -364,6 +398,7 @@
     if (!result || !result.items || result.items.length !== segs.length) {
       const page = $('.page');
       page.classList.add('translating'); // a soft pulse while it translates
+      showTrPill(true, TXT[lang].translating + ' ' + target + '…');
       try {
         const res = await fetch('/api/translate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lang: target, segments: segs.map(s => s.src) }) });
         if (!res.ok) throw Object.assign(new Error('translate'), { status: res.status });
@@ -373,19 +408,22 @@
         try { sessionStorage.setItem('kk-tr:' + key, JSON.stringify(result)); } catch (e) {}
       } catch (err) {
         page.classList.remove('translating');
+        hideTrPill();
         bubble(err.status === 429 ? TXT[lang].trBusy : TXT[lang].trFail, 'ai');
         return;
       }
     }
     fadePage(() => {
-      const hints = { label: '', sugg: [] };
+      const hints = { label: '', sugg: [] }, ui = {};
       segs.forEach((s, i) => {
         const t = (result.items[i] || '').trim() || s.src;
         if (s.kind === 'html') s.el.innerHTML = safeHtml(t, s.src);
         else if (s.kind === 'attr') { if (s.attr === 'data-tip') s.el.dataset.tip = textOnly(t); else s.el.setAttribute(s.attr, textOnly(t)); }
+        else if (s.kind === 'ui') ui[s.key] = textOnly(t);
         else if (s.i < 0) hints.label = textOnly(t);
         else hints.sugg[s.i] = textOnly(t);
       });
+      showTrPill(false, ui.auto + ' · ' + langName(result.code || '', target), ui.orig);
       renderHints(hints);
       translatedTo = result.code || key;
       if (result.code) root.lang = result.code;

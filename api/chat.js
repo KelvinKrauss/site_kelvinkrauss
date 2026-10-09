@@ -154,7 +154,8 @@ export default async function handler(req, res) {
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': 'no-cache, no-transform',
       'X-Accel-Buffering': 'no',
-      'X-Model': model
+      'X-Model': model,
+      'X-Model-Tried': tried || '' // models skipped before this one (diagnosis only)
     });
     const reader = geminiRes.body.getReader();
     const decoder = new TextDecoder();

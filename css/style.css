@@ -500,3 +500,24 @@ a.go { text-decoration: none; }
 .page.translating { animation: tr-pulse 1.4s ease-in-out infinite; }
 @keyframes tr-pulse { 50% { opacity: .55; } }
 @media (prefers-reduced-motion: reduce) { .page.translating { animation: none; opacity: .7; } }
+
+/* ── Automatic translation indicator ──
+   Floats just above the navigation bar while the site shows a translation made by the chat. */
+.tr-pill { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); z-index: 41; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px); padding: 7px 7px 7px 14px; border-radius: 999px;
+  background: color-mix(in srgb, var(--card-solid) 72%, transparent); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, var(--line)), inset 0 1px 0 var(--rim-lo), var(--glass-shadow);
+  transition: bottom .45s cubic-bezier(.2, .9, .3, 1.1); }
+.dock.away ~ .tr-pill { bottom: calc(18px + env(safe-area-inset-bottom, 0px)); }
+.tr-pill .tr-ico { width: 17px; height: 17px; flex: none; color: var(--accent); }
+.tr-pill.loading .tr-ico { animation: tr-spin 1.6s linear infinite; }
+@keyframes tr-spin { to { transform: rotate(1turn); } }
+.tr-pill .tr-text { min-width: 0; font-size: .86rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tr-pill .tr-orig { flex: none; border: 0; cursor: pointer; padding: 7px 13px; border-radius: 999px; font: 600 .82rem var(--font);
+  color: var(--bg); background: var(--accent); transition: transform .25s cubic-bezier(.2, .9, .3, 1.4), filter .2s; }
+.tr-pill .tr-orig:hover { transform: translateY(-1px); filter: brightness(1.08); }
+.tr-pill .tr-orig:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 3px; }
+.tr-pill.loading .tr-orig { display: none; }
+@media (prefers-reduced-motion: reduce) { .tr-pill, .tr-pill .tr-orig { transition: none; } .tr-pill.loading .tr-ico { animation: none; } }
+/* narrow screens: the text wraps to two lines instead of being cut */
+@media (max-width: 480px) { .tr-pill { width: calc(100vw - 32px); border-radius: 20px; padding: 8px 8px 8px 12px; } .tr-pill .tr-text { flex: 1; white-space: normal; line-height: 1.25; font-size: .8rem; } }
