@@ -132,7 +132,7 @@ export default async function handler(req, res) {
     const abort = new AbortController();
     const timer = setTimeout(() => abort.abort(), TIMEOUT_MS);
 
-    const { res: geminiRes, model, failed } = await callGemini({
+    const { res: geminiRes, model, failed, tried } = await callGemini({
       apiKey,
       stream: true,
       signal: abort.signal,
@@ -147,7 +147,7 @@ export default async function handler(req, res) {
     if (failed) {
       clearTimeout(timer);
       // o detalhe fica no log da Vercel (em _gemini.js); o visitante recebe uma mensagem genérica
-      return res.status(502).json({ error: 'O assistente não conseguiu responder agora.' });
+      return res.status(502).json({ error: 'O assistente não conseguiu responder agora.', tried });
     }
 
     res.writeHead(200, {

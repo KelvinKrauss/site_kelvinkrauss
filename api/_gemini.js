@@ -13,6 +13,7 @@ export const FAST_MODELS = [process.env.GEMINI_FAST_MODEL, 'gemini-3.1-flash-lit
 // stream: true usa streamGenerateContent (SSE); false, generateContent (resposta inteira)
 export async function callGemini({ apiKey, body, stream = false, signal, models = MODELS }) {
   let last = null;
+  const tried = []; // "model:status" of each failed attempt (no secrets), returned so a 502 can be diagnosed
   for (const model of [...new Set(models)]) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:${stream ? 'streamGenerateContent?alt=sse' : 'generateContent'}`;
     const res = await fetch(url, {
@@ -25,9 +26,10 @@ export async function callGemini({ apiKey, body, stream = false, signal, models 
     let detail = '';
     try { detail = (await res.json()).error?.message || ''; } catch {}
     console.error('Gemini', model, res.status, detail.slice(0, 200));
+    tried.push(model + ':' + res.status);
     last = { res, model };
     // a request problem that is not about the model (bad key, malformed body) would fail on every model
     if (!FALLBACK_STATUS.has(res.status) || (res.status === 400 && !/model|not found|not supported/i.test(detail))) break;
   }
-  return { res: last && last.res, model: last && last.model, failed: true };
+  return { res: last && last.res, model: last && last.model, failed: true, tried: tried.join(',') };
 }
