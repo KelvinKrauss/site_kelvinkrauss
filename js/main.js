@@ -172,7 +172,7 @@
     div.className = 'msg ' + who;
     div.innerHTML = fmt(text);
     msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
+    kickFit(); // the window grows / scrolls smoothly to show it
     return div;
   }
   /* ── Ações do assistente ──
@@ -240,7 +240,7 @@
       row.appendChild(b);
     });
     div.after(row);
-    msgs.scrollTop = msgs.scrollHeight;
+    kickFit(); // the window grows / scrolls smoothly to show it
     return row;
   }
   function runButton(key, b) {
@@ -332,7 +332,7 @@
       }
     });
     msgs.appendChild(card);
-    msgs.scrollTop = msgs.scrollHeight;
+    kickFit(); // the window grows / scrolls smoothly to show it
     setTimeout(() => fld('name').focus({ preventScroll: true }), 300);
   }
   // Leva até a parte do site: a página rola até lá, o chat encolhe para o balão no canto e um anel
@@ -404,6 +404,7 @@
     text = (text || '').trim();
     if (!text) return;
     $('#sugg').innerHTML = '';
+    stick = true; // a new question: follow the answer
     bubble(text, 'me');
     history.push({ role: 'user', parts: [{ text }] });
     const wait = bubble(TXT[lang].wait, 'ai wait');
@@ -429,9 +430,9 @@
         const shown = splitReply(raw, false).text;
         if (!shown) continue;
         if (!live) { wait.remove(); live = bubble('', 'ai streaming'); }
-        const nearEnd = msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 40;
+
         live.innerHTML = fmt(shown);
-        if (nearEnd) msgs.scrollTop = msgs.scrollHeight;
+
       }
       raw += dec.decode();
       const out = splitReply(raw, true);
@@ -544,15 +545,69 @@
   // Redimensionar pelas bordas e cantos de baixo. Durante o arraste a tinta fica parada no tamanho antigo
   // (redimensionar o canvas a cada quadro apagaria a tinta) e é redesenhada quando a pessoa solta.
   let chatSize = null;
-  const MIN_W = 300, MIN_H = 360;
+  const MIN_W = 300, MIN_H = 360, MIN_FIT = 290;
+  // autoFit: the window follows the conversation's height. It stops when the person resizes the height by hand.
+  let autoFit = true;
   function applySize() {
     if (!chatSize) return;
     const maxW = innerWidth - 16, maxH = innerHeight - 16;
     chatSize.w = clamp(chatSize.w, Math.min(MIN_W, maxW), maxW);
-    chatSize.h = clamp(chatSize.h, Math.min(MIN_H, maxH), maxH);
+    chatSize.h = clamp(chatSize.h, Math.min(autoFit ? MIN_FIT : MIN_H, maxH), maxH);
     panel.style.width = Math.round(chatSize.w) + 'px';
     panel.style.height = Math.round(chatSize.h) + 'px';
   }
+
+  /* ── A janela cresce com a conversa ──
+     A altura "persegue" a altura que o conteúdo pede, um pouco a cada quadro (fica macio mesmo com a
+     resposta chegando em pedaços). Cresce para cima: o campo de digitar fica parado onde está.
+     Quando chega no topo da tela, a rolagem acompanha o texto, também suave; se a pessoa rolar para
+     cima para reler, ela não é puxada de volta. */
+  let fitLoop = 0, stick = true;
+  const fitBlocked = () => wrap.hidden || wrap.classList.contains('dragging') || wrap.classList.contains('resizing')
+    || running.some(a => a.playState === 'running');
+  // the height the conversation asks for, up to the whole screen (minus a margin)
+  function wantedHeight() {
+    const natural = panel.offsetHeight - msgs.clientHeight + msgs.scrollHeight;
+    const maxH = innerHeight - 16;
+    return clamp(natural, Math.min(MIN_FIT, maxH), maxH);
+  }
+  // grows upward (the input stays put); once it touches the top of the screen, it keeps growing downward
+  const topFor = (bottom, h) => clamp(bottom - h, 8, Math.max(8, innerHeight - 8 - h));
+  function fitStep() {
+    fitLoop = 0;
+    if (wrap.hidden) return;
+    let busy = false;
+    if (autoFit && !fitBlocked() && chatPos) {
+      const cur = panel.offsetHeight, bottom = chatPos.y + cur;
+      const target = wantedHeight(), diff = target - cur;
+      if (Math.abs(diff) > .5) {
+        const h = calm.matches ? target : cur + diff * .2;
+        chatSize = { w: panel.offsetWidth, h };
+        panel.style.height = h + 'px';
+        chatPos.y = topFor(bottom, h);
+        panel.style.top = chatPos.y + 'px';
+        busy = true;
+      }
+    }
+    if (stick) {
+      const gap = msgs.scrollHeight - msgs.clientHeight - msgs.scrollTop;
+      if (gap > .5) { msgs.scrollTop += calm.matches ? gap : Math.max(1, gap * .25); busy = true; }
+    }
+    if (busy) fitLoop = requestAnimationFrame(fitStep);
+    else if (window.fluidRefresh) window.fluidRefresh();
+  }
+  const kickFit = () => { if (!fitLoop) fitLoop = requestAnimationFrame(fitStep); };
+  // Only a real gesture of the person stops the following (our own smooth scrolling must not);
+  // getting back near the end turns it on again.
+  const unstick = () => { stick = false; };
+  msgs.addEventListener('wheel', e => { if (e.deltaY < 0) unstick(); }, { passive: true });
+  msgs.addEventListener('touchmove', unstick, { passive: true });
+  msgs.addEventListener('pointerdown', e => { if (e.target === msgs) unstick(); }); // the scrollbar
+  msgs.addEventListener('keydown', e => { if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) unstick(); });
+  msgs.addEventListener('scroll', () => { if (msgs.scrollHeight - msgs.clientHeight - msgs.scrollTop < 24) stick = true; }, { passive: true });
+  // any change in the conversation (new message, text arriving, buttons, the message form, suggestions)
+  new MutationObserver(kickFit).observe(msgs, { childList: true, subtree: true, characterData: true });
+  new MutationObserver(kickFit).observe($('#sugg'), { childList: true });
   panel.querySelectorAll('[data-rz]').forEach(handle => handle.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
     e.preventDefault();
@@ -567,7 +622,7 @@
       chatSize = { w: start.w, h: start.h };
       if (dir.includes('r')) chatSize.w = start.w + dx;
       if (dir.includes('l')) chatSize.w = start.w - dx;
-      if (dir.includes('b')) chatSize.h = start.h + dy;
+      if (dir.includes('b')) { chatSize.h = start.h + dy; autoFit = false; } // the person chose the height
       applySize();
       if (dir.includes('l')) chatPos.x = start.right - chatSize.w;
       placeChat();
@@ -600,12 +655,19 @@
     if (!chatSize && innerWidth >= 700) chatSize = { w: o.width, h: Math.min(580, Math.max(380, o.bottom - 70)) }; // abaixo da barra do topo
     wrap.hidden = false;
     applySize();
+    // opens just as tall as the conversation needs (then grows with it), with the input over the box
+    if (autoFit) {
+      const want = wantedHeight();
+      chatSize = { w: chatSize ? chatSize.w : panel.offsetWidth, h: want };
+      applySize();
+    }
     placeChat();
+    stick = true;
     moveInk(panel);
     heroAsk.style.visibility = 'hidden';
     if (!calm.matches && panel.animate) running.push(...grow(wrap, panel, o));
     if (question) ask(question);
-    $('#chat-input').focus({ preventScroll: true });
+    $('#chat-input').focus({ preventScroll: true }); stick = true; setTimeout(kickFit, 700); // fits again once the opening animation is over
   }
   function closeChat() {
     if (wrap.hidden) return;
@@ -697,7 +759,7 @@
     stopAnims();
     if (!calm.matches && panel.animate) running.push(...grow(wrap, panel, b));
     if (question) ask(question);
-    $('#chat-input').focus({ preventScroll: true });
+    $('#chat-input').focus({ preventScroll: true }); stick = true; setTimeout(kickFit, 700); // fits again once the opening animation is over
   }
   chatBubble.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
