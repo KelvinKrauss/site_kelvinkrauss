@@ -477,3 +477,21 @@
 
 /* the resume viewer opens on top of everything, including an open chat window and the chat bubble */
 #cv-wrap { z-index: 62; }
+
+/* ── Chat actions ── */
+a.go { text-decoration: none; }
+.go:disabled { opacity: .6; cursor: default; }
+/* message for Kelvin: a small form inside the chat, sent only after "Enviar" */
+.msg-card { align-self: stretch; display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 16px;
+  background: color-mix(in srgb, var(--card-solid) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, var(--line)); animation: go-in .45s cubic-bezier(.2, .9, .3, 1.15) both; }
+.msg-card .mc-title { color: var(--ink); font-size: .95rem; margin-bottom: 2px; }
+.msg-card label { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+.msg-card input, .msg-card textarea { width: 100%; padding: 9px 11px; border-radius: 10px; border: 0; font: 400 .9rem/1.45 var(--font); color: var(--ink);
+  background: color-mix(in srgb, var(--bg) 70%, transparent); box-shadow: inset 0 0 0 1px var(--line); resize: vertical; }
+.msg-card input:focus, .msg-card textarea:focus { outline: none; box-shadow: inset 0 0 0 1.5px var(--accent); }
+.msg-card .mc-note { margin: 2px 0 0; min-height: 1.2em; font-size: .8rem; color: var(--muted); }
+.msg-card .mc-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.msg-card .mc-cancel { border: 0; background: transparent; color: var(--muted); font: 500 .85rem var(--font); cursor: pointer; padding: 8px 6px; }
+.msg-card .mc-cancel:hover { color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .msg-card { animation: none; } }

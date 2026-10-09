@@ -12,22 +12,46 @@
   const TXT = {
     pt: {
       hello: 'Oi! Eu sou a IA do portfólio do Kelvin. Pode me perguntar o que quiser sobre ele: projetos, estudos, o que ele anda aprendendo ou como chamar ele para uma conversa.',
-      sugg: ['O que ele fez no site da Ociani?', 'Quais tecnologias ele usa?', 'Ele aceita trabalho remoto?'],
+      sugg: ['O que ele fez no site da Ociani?', 'Tenho uma vaga: ele se encaixa?', 'Quero falar com ele'],
       hintsLabel: 'Por exemplo:',
       wait: 'Pensando...',
       offline: 'Não consegui responder agora. Tente de novo em instantes ou fale direto com o Kelvin: kelvin.krauss.br@gmail.com',
       busy: 'Foram muitas perguntas seguidas. Espere um minuto e tente de novo, ou fale direto com o Kelvin: kelvin.krauss.br@gmail.com',
-      go: { ociani: 'Ver o projeto da Ociani', projetos: 'Ver os projetos', trajetoria: 'Ver a trajetória', habilidades: 'Ver as habilidades', contato: 'Ver o contato', curriculo: 'Abrir o currículo' },
+      go: {
+        ociani: 'Ver o projeto da Ociani', projetos: 'Ver os projetos', trajetoria: 'Ver a trajetória', habilidades: 'Ver as habilidades',
+        contato: 'Ver o contato', curriculo: 'Abrir o currículo', antes_depois: 'Ver o antes e depois', whatsapp: 'Falar no WhatsApp',
+        email: 'Mandar e-mail', linkedin: 'Abrir o LinkedIn', github: 'Ver o GitHub', codigo: 'Ver o código', copiar_email: 'Copiar o e-mail',
+      },
+      card: {
+        title: 'Recado para o Kelvin', name: 'Seu nome', contact: 'Seu e-mail ou WhatsApp', message: 'Mensagem',
+        placeholder: 'Escreva o que quiser contar para ele', send: 'Enviar para o Kelvin', cancel: 'Cancelar',
+        missing: 'Preencha nome, contato e a mensagem.', sending: 'Enviando...',
+        sent: 'Pronto, o recado chegou para o Kelvin! Ele costuma responder rápido. Enquanto isso, quer ver mais alguma coisa?',
+        failed: 'Não consegui enviar o recado agora. Você pode mandar direto pelo WhatsApp (já com a mensagem pronta) ou por e-mail:',
+        limit: 'Já chegaram vários recados daqui há pouco. Se for urgente, fale direto pelo WhatsApp ou e-mail:',
+      },
       copied: 'Copiado!', copy: 'Copiar',
     },
     en: {
       hello: "Hi! I'm the AI on Kelvin's portfolio. Ask me anything about him: his projects, his studies, what he's learning lately or how to get in touch.",
-      sugg: ['What did he build for Ociani?', 'Which technologies does he use?', 'Is he open to remote work?'],
+      sugg: ['What did he build for Ociani?', 'I have a job opening: is he a fit?', 'I want to talk to him'],
       hintsLabel: 'For example:',
       wait: 'Thinking...',
       offline: "I couldn't answer right now. Try again in a moment or reach Kelvin directly: kelvin.krauss.br@gmail.com",
       busy: "That was a lot of questions in a row. Wait a minute and try again, or reach Kelvin directly: kelvin.krauss.br@gmail.com",
-      go: { ociani: 'See the Ociani project', projetos: 'See the projects', trajetoria: 'See the journey', habilidades: 'See the skills', contato: 'See the contact', curriculo: 'Open the resume' },
+      go: {
+        ociani: 'See the Ociani project', projetos: 'See the projects', trajetoria: 'See the journey', habilidades: 'See the skills',
+        contato: 'See the contact', curriculo: 'Open the resume', antes_depois: 'See the before and after', whatsapp: 'Talk on WhatsApp',
+        email: 'Send an e-mail', linkedin: 'Open LinkedIn', github: 'See GitHub', codigo: 'See the code', copiar_email: 'Copy the e-mail',
+      },
+      card: {
+        title: 'Message for Kelvin', name: 'Your name', contact: 'Your e-mail or WhatsApp', message: 'Message',
+        placeholder: 'Write whatever you want to tell him', send: 'Send to Kelvin', cancel: 'Cancel',
+        missing: 'Please fill in your name, contact and the message.', sending: 'Sending...',
+        sent: "Done, Kelvin got your message! He usually replies quickly. Meanwhile, anything else you'd like to see?",
+        failed: "I couldn't send the message right now. You can send it on WhatsApp (already written for you) or by e-mail:",
+        limit: 'Several messages were sent from here a moment ago. If it is urgent, reach him on WhatsApp or by e-mail:',
+      },
       copied: 'Copied!', copy: 'Copy',
     },
   };
@@ -149,41 +173,169 @@
     msgs.scrollTop = msgs.scrollHeight;
     return div;
   }
-  // O assistente termina algumas respostas com marcações como [[ociani]] (regra no api/chat.js).
-  // Elas viram botões e nunca aparecem no texto, nem pela metade enquanto a resposta chega.
-  // [[abrir_curriculo]] is not a button: when the visitor asks to see the resume, the site opens it by itself.
-  const GO_KEYS = ['ociani', 'projetos', 'trajetoria', 'habilidades', 'contato', 'curriculo', 'abrir_curriculo'];
+  /* ── Ações do assistente ──
+     A IA termina algumas respostas com marcações como [[ociani]] ou [[whatsapp:vaga de dev]] (a lista e
+     as regras estão no api/chat.js). Segurança:
+     - o site só aceita as ações desta lista; qualquer outra marcação é ignorada;
+     - links, número e e-mail ficam aqui no código, nunca vêm da resposta da IA (o texto depois de ":"
+       só vira texto de mensagem ou assunto, e é limpo e cortado);
+     - o que sai do site (WhatsApp, e-mail, LinkedIn, GitHub) é um botão: precisa do clique do visitante;
+     - só acontece sozinho o que mexe na própria página: tema, idioma, abrir o currículo, o formulário de recado. */
+  const CONTACT = {
+    email: 'kelvin.krauss.br@gmail.com', wa: '5547999104771',
+    linkedin: 'https://www.linkedin.com/in/kelvin-krauss-04b7622b8/', github: 'https://github.com/KelvinKrauss',
+  };
+  const REPOS = {
+    banco: 'https://github.com/KelvinKrauss/Aplicativo-de-Controle-de-Transacoes-Financeiras-com-Java',
+    catalogo: 'https://github.com/KelvinKrauss/Catalogo-e-Simulacao-de-pedido-persistente-em-h2database',
+    portfolio: 'https://github.com/KelvinKrauss/site_kelvinkrauss',
+  };
+  const BUTTONS = ['ociani', 'projetos', 'trajetoria', 'habilidades', 'contato', 'curriculo', 'antes_depois', 'whatsapp', 'email', 'linkedin', 'github', 'codigo', 'copiar_email'];
+  const AUTO = ['abrir_curriculo', 'tema', 'idioma', 'mensagem'];
+  const THEME_ALIAS = { escuro: 'escuro', dark: 'escuro', ardosia: 'ardosia', slate: 'ardosia', azul: 'ardosia', ameixa: 'ameixa', plum: 'ameixa', roxo: 'ameixa', nevoa: 'nevoa', claro: 'nevoa', light: 'nevoa', mist: 'nevoa' };
+  const plain = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+  const cleanParam = p => (p || '').replace(/[\u0000-\u001f<>[\]{}]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
   function splitReply(raw, final) {
-    const keys = [];
-    let text = raw.replace(/\[\[\s*([a-zà-ú_]+)\s*\]\]/gi, (m, k) => {
-      k = k.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-      if (GO_KEYS.includes(k) && !keys.includes(k)) keys.push(k);
+    const acts = [], chips = [], auto = [];
+    let text = raw.replace(/\[\[\s*([a-zà-ú_]+)\s*(?::([^\]\n]*))?\]\]/gi, (m, k, p) => {
+      k = plain(k); p = cleanParam(p);
+      if (k === 'pergunta') { if (p && chips.length < 2) chips.push(p); }
+      else if (AUTO.includes(k)) { if (!auto.some(a => a.k === k)) auto.push({ k, p }); }
+      else if (BUTTONS.includes(k) && !acts.some(a => a.k === k)) acts.push({ k, p });
       return '';
     });
     if (!final) text = text.replace(/\[\[?[^\]\n]*\]?$/, ''); // marcação ainda chegando
-    const open = keys.includes('abrir_curriculo');
-    let buttons = keys.filter(k => k !== 'abrir_curriculo');
-    if (open && !buttons.includes('curriculo')) buttons.unshift('curriculo'); // the button stays, to reopen it (and on phones)
-    return { text: text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim(), keys: buttons.slice(0, 2), open };
+    // the resume opens by itself; its button stays, to reopen it (and to open it on phones)
+    if (auto.some(a => a.k === 'abrir_curriculo') && !acts.some(a => a.k === 'curriculo')) acts.unshift({ k: 'curriculo', p: '' });
+    return { text: text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim(), acts: acts.slice(0, 3), chips, auto };
   }
-  function addGoButtons(div, keys) {
-    if (!keys.length) return null;
+  function waText(subject) {
+    return lang === 'en'
+      ? 'Hi Kelvin! I saw your portfolio and ' + (subject ? 'would like to talk about ' + subject + '.' : 'would like to talk with you.')
+      : 'Oi, Kelvin! Vi seu portfólio e ' + (subject ? 'queria conversar sobre ' + subject + '.' : 'queria conversar com você.');
+  }
+  // the address of each link button: always built here, from CONTACT / REPOS
+  function actionHref({ k, p }) {
+    if (k === 'whatsapp') return 'https://wa.me/' + CONTACT.wa + '?text=' + encodeURIComponent(waText(p));
+    if (k === 'email') return 'mailto:' + CONTACT.email + '?subject=' + encodeURIComponent(p || (lang === 'en' ? 'Reaching out from your portfolio' : 'Contato pelo portfólio'));
+    if (k === 'linkedin') return CONTACT.linkedin;
+    if (k === 'github') return CONTACT.github;
+    if (k === 'codigo') return REPOS[plain(p)] || CONTACT.github;
+    return null;
+  }
+  function addGoButtons(div, acts) {
+    if (!acts.length) return null;
     const row = document.createElement('div');
     row.className = 'go-row';
-    keys.forEach((k, i) => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.className = 'go'; b.dataset.key = k; b.textContent = TXT[lang].go[k];
+    acts.forEach((act, i) => {
+      const href = actionHref(act);
+      const b = document.createElement(href ? 'a' : 'button');
+      if (href) { b.href = href; if (!href.startsWith('mailto:')) { b.target = '_blank'; b.rel = 'noopener'; } }
+      else b.type = 'button';
+      b.className = 'go'; b.dataset.key = act.k; b.textContent = TXT[lang].go[act.k];
       b.style.animationDelay = (i * 80) + 'ms';
-      b.addEventListener('click', () => goTo(k, b));
+      if (!href) b.addEventListener('click', () => runButton(act.k, b));
       row.appendChild(b);
     });
     div.after(row);
     msgs.scrollTop = msgs.scrollHeight;
     return row;
   }
+  function runButton(key, b) {
+    if (key === 'copiar_email') {
+      const ok = () => { b.textContent = TXT[lang].copied; setTimeout(() => { b.textContent = TXT[lang].go.copiar_email; }, 1800); };
+      if (navigator.clipboard) navigator.clipboard.writeText(CONTACT.email).then(ok, () => { b.textContent = CONTACT.email; });
+      else b.textContent = CONTACT.email;
+      return;
+    }
+    if (key === 'antes_depois') return goTo('ociani', b, showBeforeAfter);
+    goTo(key, b);
+  }
+  // opens the Ociani details (if closed) and brings the before/after slider into view, with its sweep
+  function showBeforeAfter() {
+    if (moreBtn.getAttribute('aria-expanded') !== 'true') moreBtn.click(); else cmpHint();
+    setTimeout(() => $('#cmp').scrollIntoView({ behavior: calm.matches ? 'auto' : 'smooth', block: 'center' }), 420);
+  }
+  // actions that only touch this page, run as soon as the answer is complete
+  function runAuto(auto, row) {
+    auto.forEach(({ k, p }) => {
+      if (k === 'abrir_curriculo') {
+        const b = row && row.querySelector('[data-key="curriculo"]'), a = document.querySelector('[data-resume]');
+        if (a && b) setTimeout(() => { if (b.isConnected) openCv(a, b); }, 550);
+      } else if (k === 'tema') {
+        const name = THEME_ALIAS[plain(p)];
+        if (name && name !== kkTheme.current) setTimeout(() => goTheme(name), 350);
+      } else if (k === 'idioma') {
+        const want = /^(en|english|ingles)$/.test(plain(p)) ? 'en' : /^(pt|portugues|portuguese)$/.test(plain(p)) ? 'pt' : null;
+        if (want && want !== lang) setTimeout(() => $('#lang-btn').click(), 350);
+      } else if (k === 'mensagem') {
+        messageCard(p);
+      }
+    });
+  }
+  // follow-up questions suggested by the AI, in the suggestions row above the input
+  function showChips(chips) {
+    const sugg = $('#sugg');
+    sugg.innerHTML = '';
+    chips.forEach(q => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = q;
+      b.addEventListener('click', () => ask(q));
+      sugg.appendChild(b);
+    });
+  }
+  /* Recado para o Kelvin: um formulário dentro do chat. Só envia quando o visitante confirma. */
+  let cardSeq = 0;
+  function messageCard(draft) {
+    msgs.querySelectorAll('.msg-card').forEach(c => c.remove()); // one at a time
+    const t = TXT[lang].card, id = 'mc' + (++cardSeq);
+    const card = document.createElement('form');
+    card.className = 'msg-card';
+    card.noValidate = true;
+    card.innerHTML =
+      '<strong class="mc-title"></strong>' +
+      '<label for="' + id + '-n"></label><input id="' + id + '-n" name="name" autocomplete="name" maxlength="80" required>' +
+      '<label for="' + id + '-c"></label><input id="' + id + '-c" name="contact" autocomplete="email" maxlength="120" required>' +
+      '<label for="' + id + '-m"></label><textarea id="' + id + '-m" name="message" rows="4" maxlength="2000" required></textarea>' +
+      '<p class="mc-note" role="status"></p>' +
+      '<div class="mc-actions"><button type="submit" class="go mc-send"></button><button type="button" class="mc-cancel"></button></div>';
+    card.querySelector('.mc-title').textContent = t.title;
+    const labels = card.querySelectorAll('label');
+    labels[0].textContent = t.name; labels[1].textContent = t.contact; labels[2].textContent = t.message;
+    const fld = n => card.elements.namedItem(n);
+    fld('message').value = draft || '';
+    fld('message').placeholder = t.placeholder;
+    card.querySelector('.mc-send').textContent = t.send;
+    card.querySelector('.mc-cancel').textContent = t.cancel;
+    const note = card.querySelector('.mc-note');
+    card.querySelector('.mc-cancel').addEventListener('click', () => card.remove());
+    card.addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = fld('name').value.trim(), contact = fld('contact').value.trim(), message = fld('message').value.trim();
+      if (!name || !contact || message.length < 5) { note.textContent = t.missing; return; }
+      const send = card.querySelector('.mc-send');
+      send.disabled = true; note.textContent = t.sending;
+      try {
+        const res = await fetch('/api/message', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, contact, message, lang }) });
+        if (!res.ok) throw Object.assign(new Error('send'), { status: res.status });
+        card.remove();
+        bubble(t.sent, 'ai');
+      } catch (err) {
+        card.remove();
+        // not configured yet or failed: the visitor still has WhatsApp and e-mail, with the message ready
+        const fail = bubble(err.status === 429 ? t.limit : t.failed, 'ai');
+        addGoButtons(fail, [{ k: 'whatsapp', p: '' }, { k: 'email', p: '' }]);
+        const wa = fail.nextElementSibling && fail.nextElementSibling.querySelector('[data-key="whatsapp"]');
+        if (wa) wa.href = 'https://wa.me/' + CONTACT.wa + '?text=' + encodeURIComponent(waText('') + '\n\n' + message + '\n\n' + name);
+      }
+    });
+    msgs.appendChild(card);
+    msgs.scrollTop = msgs.scrollHeight;
+    setTimeout(() => fld('name').focus({ preventScroll: true }), 300);
+  }
   // Leva até a parte do site: a página rola até lá, o chat encolhe para o balão no canto e um anel
   // de luz contorna o destino. O currículo abre no visualizador, crescendo a partir do botão do chat.
-  function goTo(key, from) {
+  function goTo(key, from, then) {
     if (key === 'curriculo') {
       const a = document.querySelector('[data-resume]');
       if (a && !openCv(a, from)) window.open(a.href, '_blank', 'noopener'); // celular: nova aba
@@ -200,7 +352,7 @@
       if (fired) return; fired = true;
       removeEventListener('scrollend', arrived);
       closeChat();
-      setTimeout(() => spotlight(el), smooth ? 260 : 0);
+      setTimeout(() => { spotlight(el); if (then) then(); }, smooth ? 260 : 0);
     };
     if (!smooth || Math.abs(top - scrollY) < 4) return arrived();
     addEventListener('scrollend', arrived, { once: true });
@@ -287,13 +439,9 @@
       if (!live) live = bubble('', 'ai');
       live.classList.remove('streaming');
       live.innerHTML = fmt(out.text);
-      const row = addGoButtons(live, out.keys);
-      // "abre o currículo": on a computer the viewer opens by itself, growing out of the chat button
-      // (on phones a new tab can't open without a tap, so the button is there)
-      if (out.open) {
-        const b = row && row.querySelector('[data-key="curriculo"]'), a = document.querySelector('[data-resume]');
-        if (a && b) setTimeout(() => { if (b.isConnected) openCv(a, b); }, 550);
-      }
+      const row = addGoButtons(live, out.acts);
+      runAuto(out.auto, row);
+      showChips(out.chips);
       if (!chatBubble.hidden) chatBubble.classList.add('unread');
     } catch (err) {
       wait.remove();
