@@ -163,7 +163,9 @@
   /* ── Assistente ── */
   let history = [];
   const msgs = $('#msgs');
+  // escapes everything first; then only bold (**x**) and list items ("* x" / "- x" at the start of a line)
   const fmt = text => text.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+    .replace(/^[ \t]*[*-][ \t]+/gm, '• ')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
   function bubble(text, who) {
     const div = document.createElement('div');
