@@ -30,6 +30,8 @@
         failed: 'Não consegui enviar o recado agora. Você pode mandar direto pelo WhatsApp (já com a mensagem pronta) ou por e-mail:',
         limit: 'Já chegaram vários recados daqui há pouco. Se for urgente, fale direto pelo WhatsApp ou e-mail:',
       },
+      trFail: 'Não consegui traduzir o site agora. Tente de novo em instantes.',
+      trBusy: 'Já traduzi o site várias vezes daqui há pouco. Espere um pouco e tente de novo.',
       copied: 'Copiado!', copy: 'Copiar',
     },
     en: {
@@ -52,6 +54,8 @@
         failed: "I couldn't send the message right now. You can send it on WhatsApp (already written for you) or by e-mail:",
         limit: 'Several messages were sent from here a moment ago. If it is urgent, reach him on WhatsApp or by e-mail:',
       },
+      trFail: "I couldn't translate the site right now. Please try again in a moment.",
+      trBusy: 'The site was translated several times from here a moment ago. Wait a bit and try again.',
       copied: 'Copied!', copy: 'Copy',
     },
   };
@@ -60,6 +64,7 @@
   let lang = store.get('kk-lang') === 'en' ? 'en' : 'pt';
   function applyLang(next) {
     lang = next;
+    translatedTo = null; // switching PT/EN also undoes a translation made by the chat
     root.lang = lang === 'en' ? 'en' : 'pt-BR';
     document.querySelectorAll('[data-en]').forEach(el => {
       if (el.dataset.pt === undefined) el.dataset.pt = el.innerHTML;
@@ -101,7 +106,8 @@
     if (!history.length) resetChat();
   }
   $('#lang-btn').addEventListener('click', () => {
-    const swap = () => { applyLang(lang === 'en' ? 'pt' : 'en'); store.set('kk-lang', lang); };
+    // with the site translated by the chat, the button goes back to the original language first
+    const swap = () => { applyLang(translatedTo ? lang : lang === 'en' ? 'pt' : 'en'); store.set('kk-lang', lang); };
     const page = $('.page');
     if (!page.animate || matchMedia('(prefers-reduced-motion: reduce)').matches) return swap();
     page.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(4px)' }], { duration: 140, easing: 'ease-in' }).finished.then(() => {
@@ -195,7 +201,7 @@
     portfolio: 'https://github.com/KelvinKrauss/site_kelvinkrauss',
   };
   const BUTTONS = ['ociani', 'projetos', 'trajetoria', 'habilidades', 'contato', 'curriculo', 'antes_depois', 'whatsapp', 'email', 'linkedin', 'github', 'codigo', 'copiar_email'];
-  const AUTO = ['abrir_curriculo', 'tema', 'idioma', 'mensagem', 'ir', 'rolar'];
+  const AUTO = ['abrir_curriculo', 'tema', 'idioma', 'mensagem', 'ir', 'rolar', 'traduzir'];
   const SECTIONS = ['sobre', 'trajetoria', 'projetos', 'ociani', 'habilidades', 'contato'];
   const THEME_ALIAS = { escuro: 'escuro', dark: 'escuro', ardosia: 'ardosia', slate: 'ardosia', azul: 'ardosia', ameixa: 'ameixa', plum: 'ameixa', roxo: 'ameixa', nevoa: 'nevoa', claro: 'nevoa', light: 'nevoa', mist: 'nevoa' };
   const plain = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
@@ -270,9 +276,12 @@
       } else if (k === 'tema') {
         const name = THEME_ALIAS[plain(p)];
         if (name && name !== kkTheme.current) setTimeout(() => goTheme(name), 350);
-      } else if (k === 'idioma') {
-        const want = /^(en|english|ingles)$/.test(plain(p)) ? 'en' : /^(pt|portugues|portuguese)$/.test(plain(p)) ? 'pt' : null;
-        if (want && want !== lang) setTimeout(() => $('#lang-btn').click(), 350);
+      } else if (k === 'idioma' || k === 'traduzir') {
+        const pk = plain(p);
+        const want = /^(en|en-us|english|ingles)$/.test(pk) ? 'en'
+          : /^(pt|pt-br|portugues|portuguese|portugues do brasil|portugues brasileiro)$/.test(pk) ? 'pt' : null;
+        if (want) setTimeout(() => setSiteLang(want), 350);
+        else if (k === 'traduzir' && p) setTimeout(() => translateSite(p), 300);
       } else if (k === 'mensagem') {
         messageCard(p);
       } else if (k === 'ir') {
@@ -280,10 +289,109 @@
         const sec = plain(p);
         if (SECTIONS.includes(sec)) setTimeout(() => goTo(sec), 600);
       } else if (k === 'rolar') {
-        const end = /^(fim|final|embaixo|baixo|bottom|end|rodape)$/.test(plain(p));
-        const top = /^(topo|inicio|cima|comeco|top|start)$/.test(plain(p));
-        if (end || top) setTimeout(() => scrollTo({ top: end ? document.documentElement.scrollHeight : 0, behavior: calm.matches ? 'auto' : 'smooth' }), 500);
+        const pk = plain(p), behavior = calm.matches ? 'auto' : 'smooth';
+        if (/^(fim|final|embaixo|bottom|end|rodape)$/.test(pk)) setTimeout(() => scrollTo({ top: document.documentElement.scrollHeight, behavior }), 500);
+        else if (/^(topo|inicio|comeco|top|start)$/.test(pk)) setTimeout(() => scrollTo({ top: 0, behavior }), 500);
+        else if (/^(baixo|down|desce|descer)$/.test(pk)) setTimeout(() => scrollBy({ top: innerHeight * .8, behavior }), 500);
+        else if (/^(cima|up|sobe|subir)$/.test(pk)) setTimeout(() => scrollBy({ top: -innerHeight * .8, behavior }), 500);
       }
+    });
+  }
+  /* ── Traduzir o site inteiro para qualquer idioma (pedido pelo chat: "traduz o site pra italiano") ──
+     Junta todos os textos que têm original em português (o HTML dos elementos [data-en] e os atributos
+     traduzíveis), manda para /api/translate e troca na página com o mesmo fade da troca PT/EN.
+     O HTML que volta da IA é limpo antes de ir para a página (safeHtml). O botão de idioma, ou
+     "volta pro português", desfaz. A tradução fica guardada na aba: pedir de novo é instantâneo. */
+  let translatedTo = null;
+  const TR_ATTRS = [['data-en-ph', 'ptPh', 'placeholder'], ['data-en-title', 'ptTitle', 'title'], ['data-en-alt', 'ptAlt', 'alt'],
+    ['data-en-aria', 'ptAria', 'aria-label'], ['data-en-tip', 'ptTip', 'data-tip']];
+  function collectSegments() {
+    const segs = [];
+    document.querySelectorAll('[data-en]').forEach(el => segs.push({ el, kind: 'html', src: el.dataset.pt !== undefined ? el.dataset.pt : el.innerHTML }));
+    TR_ATTRS.forEach(([sel, key, attr]) => document.querySelectorAll('[' + sel + ']').forEach(el => {
+      if (el.dataset[key]) segs.push({ el, kind: 'attr', attr, src: el.dataset[key] });
+    }));
+    segs.push({ kind: 'hint', i: -1, src: TXT.pt.hintsLabel });
+    TXT.pt.sugg.forEach((q, i) => segs.push({ kind: 'hint', i, src: q }));
+    return segs;
+  }
+  // Only simple formatting tags survive; links and classes are copied from the ORIGINAL, never taken from the AI.
+  const SAFE_TAGS = new Set(['STRONG', 'EM', 'B', 'I', 'BR', 'CODE', 'SPAN', 'A']);
+  function safeHtml(translated, original) {
+    const src = document.createElement('template'); src.innerHTML = original;
+    const links = [...src.content.querySelectorAll('a')];
+    const classes = new Set([...src.content.querySelectorAll('[class]')].map(e => e.getAttribute('class')));
+    const out = document.createElement('template'); out.innerHTML = translated; // template content is inert: nothing loads or runs
+    let li = 0;
+    const clean = node => [...node.childNodes].forEach(n => {
+      if (n.nodeType === 3) return;
+      if (n.nodeType !== 1) { n.remove(); return; }
+      if (!SAFE_TAGS.has(n.tagName)) { n.replaceWith(document.createTextNode(n.textContent)); return; }
+      const cls = n.getAttribute('class');
+      [...n.attributes].forEach(a => n.removeAttribute(a.name));
+      if (cls && classes.has(cls)) n.setAttribute('class', cls);
+      if (n.tagName === 'A') {
+        const o = links[li++];
+        if (!o) { n.replaceWith(document.createTextNode(n.textContent)); return; }
+        ['href', 'target', 'rel'].forEach(a => { if (o.hasAttribute(a)) n.setAttribute(a, o.getAttribute(a)); });
+      }
+      clean(n);
+    });
+    clean(out.content);
+    return out.innerHTML;
+  }
+  const textOnly = s => s.replace(/<[^>]*>/g, '').trim();
+  function fadePage(change) {
+    const page = $('.page');
+    page.classList.remove('translating');
+    if (!page.animate || calm.matches) return change();
+    page.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(4px)' }], { duration: 160, easing: 'ease-in' }).finished.then(() => {
+      change();
+      page.animate([{ opacity: 0, transform: 'translateY(-4px)' }, { opacity: 1, transform: 'none' }], { duration: 280, easing: 'ease-out' });
+    });
+  }
+  // back to Portuguese or English (also undoes a translation)
+  function setSiteLang(want) {
+    if (want === lang && !translatedTo) return;
+    fadePage(() => { applyLang(want); store.set('kk-lang', lang); });
+  }
+  const trCache = {};
+  async function translateSite(target) {
+    const key = plain(target);
+    const segs = collectSegments();
+    let result = trCache[key];
+    if (!result) { try { result = JSON.parse(sessionStorage.getItem('kk-tr:' + key) || 'null'); } catch (e) {} }
+    if (!result || !result.items || result.items.length !== segs.length) {
+      const page = $('.page');
+      page.classList.add('translating'); // a soft pulse while it translates
+      try {
+        const res = await fetch('/api/translate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lang: target, segments: segs.map(s => s.src) }) });
+        if (!res.ok) throw Object.assign(new Error('translate'), { status: res.status });
+        result = await res.json();
+        if (!result.items || result.items.length !== segs.length) throw new Error('count');
+        trCache[key] = result;
+        try { sessionStorage.setItem('kk-tr:' + key, JSON.stringify(result)); } catch (e) {}
+      } catch (err) {
+        page.classList.remove('translating');
+        bubble(err.status === 429 ? TXT[lang].trBusy : TXT[lang].trFail, 'ai');
+        return;
+      }
+    }
+    fadePage(() => {
+      const hints = { label: '', sugg: [] };
+      segs.forEach((s, i) => {
+        const t = (result.items[i] || '').trim() || s.src;
+        if (s.kind === 'html') s.el.innerHTML = safeHtml(t, s.src);
+        else if (s.kind === 'attr') { if (s.attr === 'data-tip') s.el.dataset.tip = textOnly(t); else s.el.setAttribute(s.attr, textOnly(t)); }
+        else if (s.i < 0) hints.label = textOnly(t);
+        else hints.sugg[s.i] = textOnly(t);
+      });
+      renderHints(hints);
+      translatedTo = result.code || key;
+      if (result.code) root.lang = result.code;
+      const btn = $('#lang-btn');
+      btn.textContent = lang === 'en' ? 'EN' : 'PT';
+      btn.setAttribute('aria-label', lang === 'en' ? 'Back to English' : 'Voltar para o português');
     });
   }
   // follow-up questions suggested by the AI, in the suggestions row above the input
@@ -385,13 +493,14 @@
       { opacity: 0, transform: 'scale(1.01)' },
     ], { duration: 1900, easing: 'cubic-bezier(.2, .8, .3, 1)' }).finished.then(() => ring.remove(), () => ring.remove());
   }
-  function renderHints() {
+  // custom = { label, sugg } when the site is translated by the chat
+  function renderHints(custom) {
     const box = $('#ask-hints');
     box.innerHTML = '';
     const label = document.createElement('span');
-    label.textContent = TXT[lang].hintsLabel;
+    label.textContent = (custom && custom.label) || TXT[lang].hintsLabel;
     box.appendChild(label);
-    TXT[lang].sugg.forEach(q => {
+    ((custom && custom.sugg.length) ? custom.sugg : TXT[lang].sugg).forEach(q => {
       const b = document.createElement('button');
       b.type = 'button'; b.textContent = q;
       b.addEventListener('click', () => openChat(q));

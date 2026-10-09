@@ -1,7 +1,8 @@
 // Recado deixado pelo chat do portfólio: chega no e-mail do Kelvin pelo Resend (resend.com).
 // Configuração na Vercel (Settings > Environment Variables):
 //   RESEND_API_KEY  chave criada em resend.com/api-keys
-//   CONTACT_TO      e-mail que recebe os recados (o mesmo da conta do Resend, enquanto não houver domínio verificado)
+//   CONTACT_TO      e-mail que recebe os recados
+//   EMAIL_FROM      (opcional) remetente; o padrão é contato@kelvinkrauss.me, domínio verificado no Resend
 // Sem essas variáveis a função responde 503 e o chat oferece WhatsApp e e-mail no lugar.
 
 const ALLOWED_ORIGIN = /^(https:\/\/(www\.)?kelvinkrauss\.me|https:\/\/kelvinkrauss[a-z0-9-]*\.vercel\.app|http:\/\/localhost(:\d+)?)$/;
@@ -55,7 +56,8 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'Portfólio <onboarding@resend.dev>',
+        // kelvinkrauss.me is verified on Resend: messages go out from the portfolio's own domain
+        from: process.env.EMAIL_FROM || 'Portfólio Kelvin Krauss <contato@kelvinkrauss.me>',
         to: [to],
         subject: `Recado pelo portfólio: ${name}`,
         text,

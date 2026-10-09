@@ -495,3 +495,8 @@ a.go { text-decoration: none; }
 .msg-card .mc-cancel { border: 0; background: transparent; color: var(--muted); font: 500 .85rem var(--font); cursor: pointer; padding: 8px 6px; }
 .msg-card .mc-cancel:hover { color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .msg-card { animation: none; } }
+
+/* the whole site is being translated by the chat: a soft pulse until the new text arrives */
+.page.translating { animation: tr-pulse 1.4s ease-in-out infinite; }
+@keyframes tr-pulse { 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { .page.translating { animation: none; opacity: .7; } }
