@@ -19,10 +19,13 @@ export const FAST_MODELS = [
 
 const FALLBACK_STATUS = new Set([400, 403, 404, 429, 500, 503]);
 
-// A model that just said "no quota" (429) is skipped for a minute, and one that does not exist (404) for
-// an hour, so a question does not wait for the same refusals every time. Kept in the function's memory.
+// A model that just said "no quota" (429), "overloaded" (500/503) or did not answer in time is skipped for
+// a minute, and one that does not exist (404) for an hour, so a question does not wait for the same
+// refusals every time. Kept in the function's memory.
 const skipUntil = new Map();
-const SKIP_MS = { 404: 60 * 60 * 1000, 429: 60 * 1000 };
+const SKIP_MS = { 404: 60 * 60 * 1000, 429: 60 * 1000, 500: 60 * 1000, 503: 60 * 1000, timeout: 60 * 1000 };
+// each attempt has its own time limit: a slow, overloaded model must not eat the whole answer time
+const ATTEMPT_MS = 8000;
 
 // stream: true usa streamGenerateContent (SSE); false, generateContent (resposta inteira)
 export async function callGemini({ apiKey, body, stream = false, signal, models = MODELS }) {
@@ -34,12 +37,31 @@ export async function callGemini({ apiKey, body, stream = false, signal, models 
   const ready = list.filter(m => !(skipUntil.get(m) > now));
   for (const model of ready.length ? ready : list) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:${stream ? 'streamGenerateContent?alt=sse' : 'generateContent'}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-      body: JSON.stringify(body),
-      signal,
-    });
+    // the attempt limit only covers getting a first answer; once a stream has started it can finish
+    const attempt = new AbortController();
+    const timer = setTimeout(() => attempt.abort(), ATTEMPT_MS);
+    const onOuterAbort = () => attempt.abort();
+    if (signal) { if (signal.aborted) attempt.abort(); else signal.addEventListener('abort', onOuterAbort, { once: true }); }
+    let res;
+    try {
+      res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+        body: JSON.stringify(body),
+        signal: attempt.signal,
+      });
+    } catch (err) {
+      clearTimeout(timer);
+      if (signal && signal.aborted) throw err; // the whole request ran out of time
+      console.error('Gemini', model, 'no answer in', ATTEMPT_MS, 'ms');
+      tried.push(model + ':timeout');
+      skipUntil.set(model, Date.now() + SKIP_MS.timeout);
+      continue;
+    }
+    clearTimeout(timer);
+    // from here on, aborting this attempt would cut a stream that is already arriving: only the outer limit counts
+    if (signal) signal.removeEventListener('abort', onOuterAbort);
+    if (signal) signal.addEventListener('abort', () => attempt.abort(), { once: true });
     if (res.ok && res.body) return { res, model, tried: tried.join(',') };
     let detail = '';
     try { detail = (await res.json()).error?.message || ''; } catch {}
