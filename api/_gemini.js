@@ -7,10 +7,13 @@
 const MODELS = [process.env.GEMINI_MODEL, 'gemini-3.1-flash', 'gemini-flash-latest', 'gemini-3.1-flash-lite'].filter(Boolean);
 const FALLBACK_STATUS = new Set([400, 403, 404, 429, 500, 503]);
 
+// The fast model first: for simple jobs (translation) speed matters more than reasoning.
+export const FAST_MODELS = [process.env.GEMINI_FAST_MODEL, 'gemini-3.1-flash-lite', 'gemini-flash-lite-latest', 'gemini-flash-latest'].filter(Boolean);
+
 // stream: true usa streamGenerateContent (SSE); false, generateContent (resposta inteira)
-export async function callGemini({ apiKey, body, stream = false, signal }) {
+export async function callGemini({ apiKey, body, stream = false, signal, models = MODELS }) {
   let last = null;
-  for (const model of [...new Set(MODELS)]) {
+  for (const model of [...new Set(models)]) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:${stream ? 'streamGenerateContent?alt=sse' : 'generateContent'}`;
     const res = await fetch(url, {
       method: 'POST',

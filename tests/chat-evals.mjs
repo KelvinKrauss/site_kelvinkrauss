@@ -26,10 +26,11 @@ for (const [i, c] of cases.entries()) {
     body: JSON.stringify({ history: [{ role: 'user', parts: [{ text: c.q }] }] }),
   });
   const t = (await res.text()).trim();
+  const model = res.headers.get('x-model') || '?';
   const ok = res.ok && c.ok(t);
   if (ok) pass++;
-  console.log(`\n${ok ? 'PASS' : 'FAIL'}  ${c.q}  (${c.what})\n${t}`);
-  await new Promise(r => setTimeout(r, 1200));
+  console.log(`\n${ok ? 'PASS' : 'FAIL'}  ${c.q}  (${c.what})  [${model}]\n${t}`);
+  await new Promise(r => setTimeout(r, 6500)); // stays under the 10 questions/minute limit
 }
 console.log(`\n=== ${pass}/${cases.length} passed`);
 if (pass < cases.length) process.exitCode = 1;
