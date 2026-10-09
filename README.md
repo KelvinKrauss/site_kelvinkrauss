@@ -40,6 +40,15 @@ npm i -g vercel
 vercel dev          # needs GEMINI_API_KEY in the environment or in .env.local
 ```
 
+## Testing the assistant
+
+`tests/chat-evals.mjs` sends a set of tricky questions to the assistant (off-topic requests, prompt-injection attempts, translations, English, actions like scrolling or changing the theme) and checks each answer automatically. Run it after changing the prompt:
+
+```bash
+node tests/chat-evals.mjs                     # the live site
+node tests/chat-evals.mjs http://localhost:3000   # vercel dev
+```
+
 ## Credits
 
 The fluid simulation in `js/fluid.js` is adapted from [WebGL-Fluid-Simulation](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation) by Pavel Dobryakov, MIT License. The full license notice is at the top of that file.
