@@ -193,7 +193,8 @@
     portfolio: 'https://github.com/KelvinKrauss/site_kelvinkrauss',
   };
   const BUTTONS = ['ociani', 'projetos', 'trajetoria', 'habilidades', 'contato', 'curriculo', 'antes_depois', 'whatsapp', 'email', 'linkedin', 'github', 'codigo', 'copiar_email'];
-  const AUTO = ['abrir_curriculo', 'tema', 'idioma', 'mensagem'];
+  const AUTO = ['abrir_curriculo', 'tema', 'idioma', 'mensagem', 'ir', 'rolar'];
+  const SECTIONS = ['sobre', 'trajetoria', 'projetos', 'ociani', 'habilidades', 'contato'];
   const THEME_ALIAS = { escuro: 'escuro', dark: 'escuro', ardosia: 'ardosia', slate: 'ardosia', azul: 'ardosia', ameixa: 'ameixa', plum: 'ameixa', roxo: 'ameixa', nevoa: 'nevoa', claro: 'nevoa', light: 'nevoa', mist: 'nevoa' };
   const plain = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
   const cleanParam = p => (p || '').replace(/[\u0000-\u001f<>[\]{}]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
@@ -272,6 +273,14 @@
         if (want && want !== lang) setTimeout(() => $('#lang-btn').click(), 350);
       } else if (k === 'mensagem') {
         messageCard(p);
+      } else if (k === 'ir') {
+        // "me leva até os projetos": same as the button, without the click (it only moves this page)
+        const sec = plain(p);
+        if (SECTIONS.includes(sec)) setTimeout(() => goTo(sec), 600);
+      } else if (k === 'rolar') {
+        const end = /^(fim|final|embaixo|baixo|bottom|end|rodape)$/.test(plain(p));
+        const top = /^(topo|inicio|cima|comeco|top|start)$/.test(plain(p));
+        if (end || top) setTimeout(() => scrollTo({ top: end ? document.documentElement.scrollHeight : 0, behavior: calm.matches ? 'auto' : 'smooth' }), 500);
       }
     });
   }
