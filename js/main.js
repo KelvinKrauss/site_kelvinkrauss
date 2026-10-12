@@ -1413,4 +1413,9 @@
   })();
 
   applyLang(lang);
+
+  // Medidor de desempenho (kelvinkrauss.me/fps): o arquivo só é baixado quando pedido, visitantes normais não pagam nada
+  if (/^\/fps\/?$/.test(location.pathname) || new URLSearchParams(location.search).has('fps')) {
+    const s = document.createElement('script'); s.src = 'js/fps.js'; document.body.appendChild(s);
+  }
 })();
