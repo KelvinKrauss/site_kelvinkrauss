@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Krauss;Kelvin;;;
+FN:Kelvin Krauss
+TITLE:Desenvolvedor
+EMAIL;TYPE=INTERNET:kelvin.krauss.br@gmail.com
+TEL;TYPE=CELL:+5547999104771
+URL:https://www.kelvinkrauss.me
+ADR;TYPE=HOME:;;;Blumenau;SC;;Brasil
+END:VCARD

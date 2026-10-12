@@ -342,6 +342,36 @@
   @media (max-width: 560px) { .skills { grid-template-columns: minmax(0, 1fr); gap: 2px; } .skills dd { margin-bottom: 14px; } }
 
   /* Contact */
+  /* Business card: a real object you can turn. The page's colors in every theme; the light reflection
+     follows the angle, and the shadow on the "table" narrows when the card is seen edge-on. */
+  .bizcard { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-block: 6px 4px; }
+  .bc-stage { position: relative; width: min(100%, 340px); display: flex; justify-content: center; padding-block: 14px 30px; perspective: 1100px; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .bc-stage.dragging { cursor: grabbing; }
+  .bc-card { position: relative; width: min(100%, 340px); aspect-ratio: 1.66; transform-style: preserve-3d; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); will-change: transform; }
+  .bc-side { position: absolute; inset: 0; border-radius: 16px; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    display: grid; padding: 20px 22px; color: var(--ink);
+    background: linear-gradient(140deg, color-mix(in srgb, var(--accent) 20%, var(--card-solid)) 0%, var(--card-solid) 52%, color-mix(in srgb, var(--accent) 9%, var(--card-solid)) 100%);
+    box-shadow: inset 0 0 0 1px var(--line), inset 0 1px 0 var(--rim-lo); }
+  /* the light: a soft spot that slides across the card as it turns */
+  .bc-side::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: var(--glare, .5); transition: opacity .3s;
+    background: radial-gradient(circle at var(--gx, 30%) var(--gy, 15%), color-mix(in srgb, var(--rim-hi) 55%, transparent), transparent 58%); }
+  .bc-front { grid-template: auto 1fr auto auto / 1fr auto; }
+  .bc-mono { font: 700 1.05rem/1 var(--font); letter-spacing: -.03em; color: var(--accent); }
+  .bc-site { font: 500 .72rem/1.4 var(--mono); color: var(--muted); }
+  .bc-name { grid-column: 1 / -1; grid-row: 3; font-size: clamp(1.35rem, 5vw, 1.6rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.1; color: var(--ink); }
+  .bc-role { grid-column: 1 / -1; grid-row: 4; font-size: .86rem; color: var(--muted); margin-top: 4px; }
+  .bc-back { transform: rotateY(180deg); align-content: center; justify-items: start; gap: 4px; }
+  .bc-label { font: 500 .7rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  .bc-line { font: 500 .9rem/1.45 var(--font); color: var(--ink); overflow-wrap: anywhere; }
+  .bc-save { position: relative; z-index: 1; margin-top: 10px; padding: 7px 14px; border-radius: 999px; font: 600 .82rem var(--font); text-decoration: none;
+    color: var(--accent-ink); background: var(--accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent); transition: transform .2s cubic-bezier(.2, .9, .3, 1.4); }
+  .bc-save:hover { color: var(--accent-ink); transform: translateY(-1px); }
+  .bc-shadow { position: absolute; left: 50%; bottom: 10px; width: min(78%, 280px); height: 22px; border-radius: 50%; pointer-events: none;
+    transform: translateX(-50%) scaleX(var(--sx, 1)); background: radial-gradient(closest-side, rgba(0, 0, 0, .38), transparent); filter: blur(6px); opacity: .9; }
+  .bc-flip { border: 0; background: none; cursor: pointer; padding: 4px 0; margin-top: -6px; font-size: .82rem; color: var(--muted); border-radius: 8px; }
+  .bc-flip:hover { color: var(--ink); }
+  @media (prefers-reduced-motion: reduce) { .bc-card { transition: transform .01s; } }
+
   .contact-list { margin: 6px 0 0; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
   .contact-list div { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 4px 16px; padding: 14px 12px; margin-inline: -12px; border-bottom: 1px solid var(--line); border-radius: 12px; transition: background-color .2s; }
   .contact-list div:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); }

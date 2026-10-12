@@ -361,6 +361,27 @@ ID: 7d1a0274 | Nome: CDB Banco Brothersco | Taxa: 1.20% | Criado em: 04/10/2026 
         <div class="prose">
           <h3 data-en="Let's talk?">Vamos conversar?</h3>
           <p data-en="If you have an internship or junior role, or just want to talk about a project, send me a message. I also work remotely for companies outside Brazil.">Se você tem uma vaga de estágio ou júnior, ou só quer conversar sobre um projeto, me chama. Também trabalho remoto para empresas de fora do Brasil.</p>
+          <!-- business card: drag to turn it, tap to flip; the back saves the contact on the phone -->
+          <div class="bizcard">
+            <div class="bc-stage" id="bc-stage">
+              <div class="bc-shadow" id="bc-shadow" aria-hidden="true"></div>
+              <div class="bc-card" id="bc-card">
+                <div class="bc-side bc-front" id="bc-front">
+                  <span class="bc-mono">KK</span>
+                  <span class="bc-site">kelvinkrauss.me</span>
+                  <strong class="bc-name">Kelvin Krauss</strong>
+                  <span class="bc-role" data-en="Developer · Blumenau/SC, Brazil">Desenvolvedor · Blumenau/SC</span>
+                </div>
+                <div class="bc-side bc-back" id="bc-back" inert>
+                  <span class="bc-label" data-en="Let's talk">Vamos conversar</span>
+                  <span class="bc-line">kelvin.krauss.br@gmail.com</span>
+                  <span class="bc-line">+55 47 99910-4771</span>
+                  <a class="bc-save" href="/kelvin-krauss.vcf" download="Kelvin Krauss.vcf" data-en="Save to contacts">Salvar nos contatos</a>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="bc-flip" id="bc-flip" data-en="Drag or tap to flip the card">Arraste ou toque para virar o cartão</button>
+          </div>
           <dl class="contact-list">
             <div><dt>E-mail</dt><dd><span id="email">kelvin.krauss.br@gmail.com</span><button class="copy" type="button" id="copy-email" data-en="Copy">Copiar</button></dd></div>
             <div><dt>WhatsApp</dt><dd><a href="https://wa.me/5547999104771" target="_blank" rel="noopener">+55 47 99910-4771</a></dd></div>
