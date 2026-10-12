@@ -1,6 +1,6 @@
 {
   "cleanUrls": true,
-  "rewrites": [{ "source": "/fps", "destination": "/index.html" }],
+  "rewrites": [{ "source": "/fps", "destination": "/" }],
   "functions": {
     "api/chat.js": { "maxDuration": 30 },
     "api/translate.js": { "maxDuration": 60 }
