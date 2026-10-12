@@ -1399,7 +1399,7 @@
     let last = 0, prev = performance.now();
     (function loop(now) {
       const step = Math.min(now - prev, 100); prev = now;
-      if (!still && !document.hidden) {
+      if (!still && !document.hidden && !window.kkEchoStill) { // kkEchoStill: switch in the /fps meter
         clock += step / 1000 * speed;
         // more frames for faster speeds so they stay smooth (at 3x: one every ~17 ms)
         if (now - last > Math.max(16, 50 / speed)) { last = now; draw(); }

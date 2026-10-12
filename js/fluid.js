@@ -600,7 +600,7 @@
   let visible = true;
   if ('IntersectionObserver' in window) new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(canvas);
   setInterval(() => {
-    if (!visible || document.hidden || introT <= 1.4 || performance.now() - lastInput < 2500) return;
+    if (window.kkInkIdleOff || !visible || document.hidden || introT <= 1.4 || performance.now() - lastInput < 2500) return; // kkInkIdleOff: switch in the /fps meter
     const dir = Math.random() < 0.5 ? -1 : 1;
     rect = canvas.getBoundingClientRect();
     const x = toX(rect.left + rect.width * (0.15 + Math.random() * 0.7)), y = toY(rect.top + rect.height * (0.2 + Math.random() * 0.6));
@@ -647,7 +647,7 @@
     const dt = Math.min(gap / 1000, 0.016666);
     last = now;
     // nothing on screen to show, or nothing moving for a while: skip the work
-    if (!visible || document.hidden || (now - lastInput > 12000 && introT > 1.4)) { meterStart = 0; requestAnimationFrame(frame); return; }
+    if (window.kkInkHidden || !visible || document.hidden || (now - lastInput > 12000 && introT > 1.4)) { meterStart = 0; requestAnimationFrame(frame); return; }
     meter(now, gap);
     // resizing the chat window stretches the ink with it; moving between box and chat starts over
     if (resizeCanvas() || fresh) { initFramebuffers(!fresh); fresh = false; }
