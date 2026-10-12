@@ -66,8 +66,12 @@ export default async function handler(req, res) {
       signal: AbortSignal.timeout(15000),
     });
     if (!r.ok) {
-      console.error('Resend', r.status, await r.text().catch(() => ''));
-      return res.status(502).json({ error: 'Não foi possível enviar agora.' });
+      const detail = await r.text().catch(() => '');
+      console.error('Resend', r.status, detail);
+      // Resend's short error code (e.g. "invalid_api_key", "validation_error"; no secrets) helps diagnose a failure
+      let reason = '';
+      try { reason = String(JSON.parse(detail).name || '').slice(0, 40); } catch {}
+      return res.status(502).json({ error: 'Não foi possível enviar agora.', reason: r.status + (reason ? ':' + reason : '') });
     }
     return res.status(200).json({ ok: true });
   } catch (err) {
