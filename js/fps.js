@@ -51,6 +51,8 @@
     lab.style.cssText = 'display:flex;gap:7px;align-items:center;cursor:pointer';
     const cb = document.createElement('input');
     cb.type = 'checkbox'; cb.checked = true; cb.style.cssText = 'margin:0;accent-color:#74a6ff';
+    // in light mode only the background is on; the others are off by the mode itself
+    if (document.documentElement.classList.contains('lite') && key !== 'echo') { cb.checked = false; cb.disabled = true; lab.style.opacity = '.5'; lab.style.cursor = 'default'; }
     cb.addEventListener('change', () => {
       off[key] = !cb.checked;
       if (fn) fn(cb.checked);
@@ -64,7 +66,20 @@
   const nEl = box.querySelector('#fps-n'), tEl = box.querySelector('#fps-t'), g = box.querySelector('#fps-g').getContext('2d');
   box.querySelector('#fps-x').addEventListener('click', () => { box.remove(); running = false; });
   // the ink only lowers its quality (and remembers it for the tab): this starts the test again at the top level
-  box.querySelector('#fps-r').addEventListener('click', () => { try { sessionStorage.removeItem('kk-ink-q'); } catch (e) {} location.reload(); });
+  // forgets everything the site decided about this computer (ink level and light mode) and measures again
+  box.querySelector('#fps-r').addEventListener('click', () => {
+    try { sessionStorage.removeItem('kk-ink-q'); localStorage.removeItem('kk-lite'); } catch (e) {}
+    location.href = location.pathname + (location.pathname.replace(/\/$/, '') === '/fps' ? '' : '?fps');
+  });
+  // light mode: which one is on, why, and a link to see the other one
+  const lite = document.documentElement.classList.contains('lite');
+  const modeEl = document.createElement('div');
+  modeEl.style.cssText = 'margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.12)';
+  const other = location.pathname + '?' + (location.pathname.replace(/\/$/, '') === '/fps' ? '' : 'fps&') + (lite ? 'full' : 'lite');
+  modeEl.innerHTML = 'modo: <b style="color:' + (lite ? '#facc15' : '#6ee7a8') + '">' + (lite ? 'leve' : 'completo') + '</b>' +
+    (lite && window.kkLite ? '<br><span style="color:#8d94a6">motivo: ' + String(window.kkLite).replace(/[&<>]/g, '') + '</span>' : '') +
+    '<br><a href="' + other + '" style="color:#74a6ff">ver o modo ' + (lite ? 'completo' : 'leve') + '</a>';
+  box.querySelector('#fps-sw').before(modeEl);
 
   // graphics card name (Chrome and Edge show it; other browsers may hide it)
   let gpu = 'desconhecida';

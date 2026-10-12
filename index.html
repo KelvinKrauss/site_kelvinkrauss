@@ -49,6 +49,15 @@
 <body>
 <a class="skip" href="#inicio" data-en="Skip to content">Pular para o conteúdo</a>
 <script>
+  /* Modo leve guardado (computador fraco, decidido em js/main.js): aplicado antes de desenhar, sem piscar o vidro */
+  try {
+    const s = JSON.parse(localStorage.getItem('kk-lite'));
+    if ((s && Date.now() - s.at < 7 * 864e5 && !/[?&]full\b/.test(location.search)) || /[?&]lite\b/.test(location.search)) {
+      document.documentElement.classList.add('lite'); window.kkInkHidden = window.kkInkIdleOff = true;
+    }
+  } catch (e) {}
+</script>
+<script>
   /* Tema contínuo: 0 = escuro, 100 = claro. O fundo muda suavemente; o texto troca de claro
      para escuro no ponto em que os dois dão o mesmo contraste (luminância ~0,18), então ele
      fica sempre legível, inclusive nos cinzas do meio. */

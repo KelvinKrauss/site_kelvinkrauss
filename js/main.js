@@ -6,6 +6,61 @@
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
   };
 
+  /* ── Modo leve para computadores fracos ──
+     Fica só o fundo se mexendo: sem vidro (os elementos ganham fundo quase sólido), sem a tinta na caixa de
+     pergunta e sem o card flutuando. Testado num i5 de 8ª geração com placa Intel UHD 620, fora da tomada:
+     assim ele fica nos 60 fps. Decide nesta ordem:
+       1. ?lite ou ?full na URL (para testar);
+       2. a decisão guardada nos últimos 7 dias (o script no topo do HTML já aplicou, sem piscar);
+       3. o nome da placa de vídeo: renderização por software ou Intel integrada anterior à Iris Xe;
+       4. medindo: dois trechos seguidos abaixo de 50 fps logo depois de carregar.
+     A medida roda em toda visita (só conta quadros), então pega também o notebook fora da tomada. */
+  const LITE_KEY = 'kk-lite', LITE_DAYS = 7;
+  function setLite(why, save) {
+    root.classList.add('lite');
+    window.kkInkHidden = window.kkInkIdleOff = true;
+    window.kkLite = why;
+    if (save) store.set(LITE_KEY, JSON.stringify({ why, at: Date.now() }));
+  }
+  (function liteMode() {
+    const q = new URLSearchParams(location.search);
+    if (q.has('full')) { root.classList.remove('lite'); window.kkInkHidden = window.kkInkIdleOff = false; window.kkLite = ''; return; }
+    if (q.has('lite')) return setLite('pedido na URL (?lite)', false);
+    if (root.classList.contains('lite')) {
+      let saved = null; try { saved = JSON.parse(store.get(LITE_KEY)); } catch (e) {}
+      return setLite((saved && saved.why || 'decisão guardada') + ' · guardado', false);
+    }
+    window.kkLite = '';
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; // already calm: nothing moves anyway
+    // 3. graphics card name (Chrome, Edge and Firefox report it; Safari only says "Apple GPU")
+    let gpu = '';
+    try {
+      const gl = document.createElement('canvas').getContext('webgl');
+      const ext = gl && gl.getExtension('WEBGL_debug_renderer_info');
+      gpu = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : gl ? '' : 'sem WebGL';
+      const lose = gl && gl.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext();
+    } catch (e) {}
+    if (/swiftshader|llvmpipe|softpipe|software|basic render|sem WebGL/i.test(gpu)) return setLite('renderização por software', true);
+    if (/intel/i.test(gpu) && !/iris\s*\(?r?\)?\s*xe|\barc\b/i.test(gpu)) return setLite('placa Intel integrada', true);
+    // 4. measure: after the page settles, two 2 s windows in a row under 50 fps
+    let start = 0, frames = 0, bad = 0, prev = 0, windows = 0;
+    const begin = () => setTimeout(() => requestAnimationFrame(function tick(now) {
+      if (root.classList.contains('lite') || windows >= 4) return; // decided, or 4 good windows: stop counting
+      const gap = prev ? now - prev : 0; prev = now;
+      if (document.hidden || gap > 250) { start = 0; } // tab switched or paused: this window doesn't count
+      else if (!start) { start = now; frames = 0; }
+      else if (now - start < 2000) frames++;
+      else {
+        const fps = (frames + 1) * 1000 / (now - start);
+        start = 0; windows++;
+        bad = fps < 50 ? bad + 1 : 0;
+        if (bad >= 2) return setLite('medido: ' + Math.round(fps) + ' fps', true);
+      }
+      requestAnimationFrame(tick);
+    }), 1500);
+    document.readyState === 'complete' ? begin() : addEventListener('load', begin, { once: true });
+  })();
+
   /* ── Assistente: textos ── */
   // As instruções do assistente ficam no servidor (api/chat.js).
 
@@ -1211,7 +1266,7 @@
   (function liquidGlass() {
     const brands = navigator.userAgentData && navigator.userAgentData.brands;
     const chromium = brands ? brands.some(b => /Chromium/.test(b.brand)) : /Chrome\/\d+/.test(navigator.userAgent) && !/Firefox|FxiOS|CriOS|EdgiOS/.test(navigator.userAgent);
-    if (!chromium || matchMedia('(prefers-reduced-transparency: reduce)').matches) return;
+    if (!chromium || root.classList.contains('lite') || matchMedia('(prefers-reduced-transparency: reduce)').matches) return;
     const NS = 'http://www.w3.org/2000/svg';
     const defs = $('#lg-defs');
     let count = 0;
