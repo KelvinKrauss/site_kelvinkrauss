@@ -98,10 +98,13 @@
         if (meta) meta.content = rgb(p.bg);
       }
     };
-    let saved = 'escuro';
+    // first visit: follows the computer (light system = Névoa, dark = Escuro); after a choice, the choice wins
+    const system = matchMedia('(prefers-color-scheme: light)').matches ? 'nevoa' : 'escuro';
+    let saved = system;
     try {
-      saved = localStorage.getItem('kk-theme') || (+localStorage.getItem('kk-shade') >= 50 ? 'nevoa' : 'escuro'); // old light/dark choice
-      if (!T[saved]) saved = 'escuro';
+      const old = localStorage.getItem('kk-shade'); // light/dark choice from an older version of the site
+      saved = localStorage.getItem('kk-theme') || (old !== null ? (+old >= 50 ? 'nevoa' : 'escuro') : system);
+      if (!T[saved]) saved = system;
     } catch (e) {}
     window.kkTheme.current = saved;
     window.kkTheme.paint(T[saved]);

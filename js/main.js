@@ -189,10 +189,11 @@
     b.tabIndex = on ? 0 : -1;
   });
   markTheme(kkTheme.current);
-  function goTheme(name) {
+  // save = false: a change that follows the computer, not a choice of the visitor (so it keeps following)
+  function goTheme(name, save = true) {
     cancelAnimationFrame(themeAnim);
     const from = kkTheme.now, to = kkTheme.pal(name), t0 = performance.now(), ms = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450;
-    kkTheme.current = name; markTheme(name); store.set('kk-theme', name);
+    kkTheme.current = name; markTheme(name); if (save) store.set('kk-theme', name);
     root.classList.add('shading');
     const step = now => {
       const k = ms ? Math.min(1, (now - t0) / ms) : 1, e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
@@ -202,6 +203,15 @@
     };
     themeAnim = requestAnimationFrame(step);
   }
+  // until the visitor picks a color, the site follows the computer: switching the system to light or dark
+  // (or the automatic switch at night) changes the site too, with the same fade
+  const systemLight = matchMedia('(prefers-color-scheme: light)');
+  const followSystem = () => {
+    if (store.get('kk-theme') || store.get('kk-shade') !== null) return;
+    const name = systemLight.matches ? 'nevoa' : 'escuro';
+    if (name !== kkTheme.current) goTheme(name, false);
+  };
+  systemLight.addEventListener ? systemLight.addEventListener('change', followSystem) : systemLight.addListener(followSystem);
   themes.addEventListener('click', e => {
     const b = e.target.closest('.sw');
     if (!b) return;
