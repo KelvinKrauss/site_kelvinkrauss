@@ -124,6 +124,8 @@
   function applyLang(next) {
     lang = next;
     translatedTo = null; // switching PT/EN also undoes a translation made by the chat
+    trToken++;           // ...and cancels one still on its way (it would arrive and translate the page anyway)
+    $('.page').classList.remove('translating');
     if (typeof hideTrPill === 'function') hideTrPill();
     root.lang = lang === 'en' ? 'en' : 'pt-BR';
     document.querySelectorAll('[data-en]').forEach(el => {
@@ -176,7 +178,7 @@
     });
   });
 
-  /* ── Tema: 5 paletas escolhidas pelas bolinhas do topo; troca com um fade de 450 ms ── */
+  /* ── Tema: 4 paletas escolhidas pelas bolinhas do topo; troca com um fade de 450 ms ── */
   const themes = $('#themes'), swatches = [...themes.querySelectorAll('.sw')];
   const phoneThemes = matchMedia('(max-width: 560px)');
   let themeAnim = 0;
@@ -363,6 +365,7 @@
      O HTML que volta da IA é limpo antes de ir para a página (safeHtml). O botão de idioma, ou
      "volta pro português", desfaz. A tradução fica guardada na aba: pedir de novo é instantâneo. */
   let translatedTo = null;
+  let trToken = 0; // each translation request gets a number; only the latest one may change the page
   const TR_ATTRS = [['data-en-ph', 'ptPh', 'placeholder'], ['data-en-title', 'ptTitle', 'title'], ['data-en-alt', 'ptAlt', 'alt'],
     ['data-en-aria', 'ptAria', 'aria-label'], ['data-en-tip', 'ptTip', 'data-tip']];
   function collectSegments() {
@@ -435,9 +438,11 @@
   function fadePage(change) {
     const page = $('.page');
     page.classList.remove('translating');
-    if (!page.animate || calm.matches) return change();
+    // the dock's highlight follows the new width of its labels
+    const swap = () => { change(); queueDock(); };
+    if (!page.animate || calm.matches) return swap();
     page.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(4px)' }], { duration: 160, easing: 'ease-in' }).finished.then(() => {
-      change();
+      swap();
       page.animate([{ opacity: 0, transform: 'translateY(-4px)' }, { opacity: 1, transform: 'none' }], { duration: 280, easing: 'ease-out' });
     });
   }
@@ -450,6 +455,7 @@
   async function translateSite(target) {
     const key = plain(target);
     const segs = collectSegments();
+    const my = ++trToken;
     let result = trCache[key];
     if (!result) { try { result = JSON.parse(sessionStorage.getItem('kk-tr:' + key) || 'null'); } catch (e) {} }
     if (!result || !result.items || result.items.length !== segs.length) {
@@ -464,13 +470,18 @@
         trCache[key] = result;
         try { sessionStorage.setItem('kk-tr:' + key, JSON.stringify(result)); } catch (e) {}
       } catch (err) {
+        if (my !== trToken) return; // cancelled meanwhile: nothing to report
         page.classList.remove('translating');
         hideTrPill();
         bubble(err.status === 429 ? TXT[lang].trBusy : TXT[lang].trFail, 'ai');
         return;
       }
     }
+    // the visitor changed the language, or asked for another one, while this was on its way: keep the page as it is
+    // (it stays saved, so asking again later is instant)
+    if (my !== trToken) return;
     fadePage(() => {
+      if (my !== trToken) return;
       const hints = { label: '', sugg: [] }, ui = {};
       segs.forEach((s, i) => {
         const t = (result.items[i] || '').trim() || s.src;
@@ -556,8 +567,10 @@
         // not configured yet or failed: the visitor still has WhatsApp and e-mail, with the message ready
         const fail = bubble(err.status === 429 ? t.limit : t.failed, 'ai');
         addGoButtons(fail, [{ k: 'whatsapp', p: '' }, { k: 'email', p: '' }]);
-        const wa = fail.nextElementSibling && fail.nextElementSibling.querySelector('[data-key="whatsapp"]');
+        const row = fail.nextElementSibling;
+        const wa = row && row.querySelector('[data-key="whatsapp"]'), mail = row && row.querySelector('[data-key="email"]');
         if (wa) wa.href = 'https://wa.me/' + CONTACT.wa + '?text=' + encodeURIComponent(waText('') + '\n\n' + message + '\n\n' + name);
+        if (mail) mail.href += '&body=' + encodeURIComponent(message + '\n\n' + name + ' · ' + contact);
       }
     });
     msgs.appendChild(card);
@@ -630,9 +643,14 @@
       sugg.appendChild(b);
     });
   }
+  let asking = false;
   async function ask(text) {
     text = (text || '').trim();
     if (!text) return;
+    // one question at a time: a suggestion clicked while an answer is still coming waits in the input,
+    // ready to send (two at once mixed up the order of the answers and the conversation sent to the AI)
+    if (asking) { const input = $('#chat-input'); input.value = text; input.focus({ preventScroll: true }); return; }
+    asking = true;
     $('#sugg').innerHTML = '';
     stick = true; // a new question: follow the answer
     bubble(text, 'me');
@@ -666,6 +684,8 @@
       }
       raw += dec.decode();
       const out = splitReply(raw, true);
+      // an answer that is only an action ("[[rolar:fim]]") is still an answer: it runs, with a short confirmation
+      if (!out.text && (out.auto.length || out.acts.length)) out.text = lang === 'en' ? 'Done!' : 'Pronto!';
       if (!out.text) throw new Error('empty');
       history.push({ role: 'model', parts: [{ text: raw }] });
       wait.remove();
@@ -682,6 +702,7 @@
       history.pop();
       bubble(err && err.status === 429 ? TXT[lang].busy : TXT[lang].offline, 'ai');
     } finally {
+      asking = false;
       $('#chat-send').disabled = false;
     }
   }
@@ -1121,7 +1142,8 @@
       if (heroOnScreen) hideAutoBubble(); else showAutoBubble();
     }, { threshold: [0, 0.5, 1] }).observe(heroAsk);
   }
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !wrap.hidden) closeChat(); });
+  // with the resume open over the chat, Escape closes only the resume (its own handler, below)
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !wrap.hidden && cvWrap.hidden) closeChat(); });
 
   /* ── Projeto: abre e fecha os detalhes ── */
   const moreBtn = $('#ociani-toggle'), moreBody = $('#ociani-more');

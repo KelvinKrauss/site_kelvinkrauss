@@ -101,8 +101,18 @@ function cleanHistory(history) {
       : '';
     return { role, parts: [{ text }] };
   }).filter(turn => turn.parts[0].text.trim());
-  if (!turns.length || turns[turns.length - 1].role !== 'user') return null;
-  return turns;
+  // Gemini wants the conversation to start with the visitor and alternate. Cutting the last MAX_TURNS of a long
+  // conversation can start on an answer (from the 11th question on), and two questions in a row can happen:
+  // those are joined, and a leading answer is dropped.
+  const merged = [];
+  for (const turn of turns) {
+    const last = merged[merged.length - 1];
+    if (last && last.role === turn.role) last.parts[0].text += '\n\n' + turn.parts[0].text;
+    else merged.push(turn);
+  }
+  while (merged.length && merged[0].role !== 'user') merged.shift();
+  if (!merged.length || merged[merged.length - 1].role !== 'user') return null;
+  return merged;
 }
 
 export default async function handler(req, res) {
