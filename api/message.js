@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   const contact = field(body.contact, 120).replace(/\s+/g, ' ');
   const message = field(body.message, 2000);
   const lang = body.lang === 'en' ? 'en' : 'pt';
-  if (!name || !contact || message.length < 5) return res.status(400).json({ error: 'Preencha nome, contato e mensagem.' });
+  if (!name || !contact || !message) return res.status(400).json({ error: 'Preencha nome, contato e mensagem.' });
 
   const key = process.env.RESEND_API_KEY, to = process.env.CONTACT_TO;
   if (!key || !to) return res.status(503).json({ error: 'not_configured' });

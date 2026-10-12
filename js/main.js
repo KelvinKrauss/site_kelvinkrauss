@@ -25,7 +25,8 @@
       card: {
         title: 'Recado para o Kelvin', name: 'Seu nome', contact: 'Seu e-mail ou WhatsApp', message: 'Mensagem',
         placeholder: 'Escreva o que quiser contar para ele', send: 'Enviar para o Kelvin', cancel: 'Cancelar',
-        missing: 'Preencha nome, contato e a mensagem.', sending: 'Enviando...',
+        need: { name: 'Falta o seu nome.', contact: 'Falta um e-mail ou WhatsApp para ele te responder.', message: 'Escreva a mensagem.' },
+        sending: 'Enviando...',
         sent: 'Pronto, o recado chegou para o Kelvin! Ele costuma responder rápido. Enquanto isso, quer ver mais alguma coisa?',
         failed: 'Não consegui enviar o recado agora. Você pode mandar direto pelo WhatsApp (já com a mensagem pronta) ou por e-mail:',
         limit: 'Já chegaram vários recados daqui há pouco. Se for urgente, fale direto pelo WhatsApp ou e-mail:',
@@ -50,7 +51,8 @@
       card: {
         title: 'Message for Kelvin', name: 'Your name', contact: 'Your e-mail or WhatsApp', message: 'Message',
         placeholder: 'Write whatever you want to tell him', send: 'Send to Kelvin', cancel: 'Cancel',
-        missing: 'Please fill in your name, contact and the message.', sending: 'Sending...',
+        need: { name: 'Please add your name.', contact: 'Please add an e-mail or WhatsApp so he can reply.', message: 'Please write the message.' },
+        sending: 'Sending...',
         sent: "Done, Kelvin got your message! He usually replies quickly. Meanwhile, anything else you'd like to see?",
         failed: "I couldn't send the message right now. You can send it on WhatsApp (already written for you) or by e-mail:",
         limit: 'Several messages were sent from here a moment ago. If it is urgent, reach him on WhatsApp or by e-mail:',
@@ -468,12 +470,27 @@
     card.querySelector('.mc-cancel').textContent = t.cancel;
     const note = card.querySelector('.mc-note');
     card.querySelector('.mc-cancel').addEventListener('click', () => card.remove());
+    // typing in a field that was marked clears the mark and the note
+    card.addEventListener('input', e => {
+      if (e.target.getAttribute('aria-invalid') !== 'true') return;
+      e.target.removeAttribute('aria-invalid');
+      if (note.classList.contains('err')) { note.textContent = ''; note.classList.remove('err'); }
+    });
     card.addEventListener('submit', async e => {
       e.preventDefault();
       const name = fld('name').value.trim(), contact = fld('contact').value.trim(), message = fld('message').value.trim();
-      if (!name || !contact || message.length < 5) { note.textContent = t.missing; return; }
+      // points at the first field that still needs something, and says exactly what
+      const empty = !name ? 'name' : !contact ? 'contact' : !message ? 'message' : '';
+      if (empty) {
+        const f = fld(empty);
+        f.removeAttribute('aria-invalid'); void f.offsetWidth; // restart the shake on a second try
+        f.setAttribute('aria-invalid', 'true');
+        f.focus();
+        note.textContent = t.need[empty]; note.classList.add('err');
+        return;
+      }
       const send = card.querySelector('.mc-send');
-      send.disabled = true; note.textContent = t.sending;
+      send.disabled = true; note.classList.remove('err'); note.textContent = t.sending;
       try {
         const res = await fetch('/api/message', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, contact, message, lang }) });
         if (!res.ok) throw Object.assign(new Error('send'), { status: res.status });
