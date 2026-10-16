@@ -47,7 +47,7 @@
   <a class="nav-cell" href="#contato" data-en="Contact">Contato</a>
   <span class="nav-fill" aria-hidden="true"></span>
   <button class="nav-cell nav-lang" id="lang-btn" type="button" aria-label="Read in English">EN</button>
-  <a class="nav-go" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span> <span aria-hidden="true">↗</span></a>
+  <a class="nav-go" data-resume href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span> <span aria-hidden="true">↗</span></a>
 </nav>
 
 <main id="conteudo">
@@ -265,7 +265,7 @@
         <a class="crow" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>whatsapp</span><span class="cv">+55 47 99910-4771</span><span class="arrow" aria-hidden="true">↗</span></a>
         <a class="crow" href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-in"/></svg>linkedin</span><span class="cv">in/kelvin-krauss-04b7622b8</span><span class="arrow" aria-hidden="true">↗</span></a>
         <a class="crow" href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg>github</span><span class="cv">github.com/KelvinKrauss</span><span class="arrow" aria-hidden="true">↗</span></a>
-        <a class="crow" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="resume">currículo</span></span><span class="cv">PDF</span><span class="arrow" aria-hidden="true">↗</span></a>
+        <a class="crow" data-resume href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="resume">currículo</span></span><span class="cv">PDF</span><span class="arrow" aria-hidden="true">↗</span></a>
       </div>
     </div>
   </section>
@@ -281,6 +281,18 @@
     <a href="/" data-en="See the current design ↗">Ver o tema atual ↗</a>
   </div>
 </footer>
+
+<!-- résumé viewer: opens over the page on computers (on phones the PDF opens in a new tab) -->
+<div class="cv" id="cv" role="dialog" aria-modal="true" aria-labelledby="cv-title" hidden>
+  <div class="cv-box">
+    <div class="cv-bar">
+      <span id="cv-title" data-en="resume.pdf/">curriculo.pdf/</span>
+      <a class="cv-dl" id="cv-dl" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" download><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="Download">Baixar</span></a>
+      <button class="cv-x" id="cv-close" type="button" aria-label="Fechar o currículo" data-en-aria="Close the resume">✕</button>
+    </div>
+    <iframe id="cv-frame" title="Currículo de Kelvin Krauss" data-en-title="Kelvin Krauss's resume"></iframe>
+  </div>
+</div>
 
 <script src="js/alt.js"></script>
 </body>

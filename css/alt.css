@@ -244,6 +244,19 @@ a.crow:hover .ck, a.crow:hover .arrow { color: #fff; }
 .arrow { font-size: 1.2rem; color: var(--muted); transition: transform .2s; }
 a.crow:hover .arrow { transform: translate(3px, -3px); }
 
+/* ── Résumé viewer: a framed window over a dimmed page ── */
+.cv { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 24px; background: rgba(11, 15, 12, .55); }
+.cv[hidden] { display: none; }
+.cv-box { display: flex; flex-direction: column; width: min(980px, 100%); height: min(92vh, 1200px); background: var(--bg); box-shadow: 0 0 0 1px var(--ink), -8px 8px 0 var(--green); }
+.cv-bar { display: flex; align-items: stretch; background: var(--black); color: #fff; font: 400 .88rem var(--mono); }
+.cv-bar > * { display: flex; align-items: center; padding: 12px 16px; }
+#cv-title { flex: 1; }
+.cv-dl { gap: 8px; color: #fff; text-decoration: none; border-left: 1px solid #2a312c; }
+.cv-dl:hover { background: var(--green); }
+.cv-x { border: 0; border-left: 1px solid #2a312c; background: none; color: #fff; cursor: pointer; font-size: 1rem; }
+.cv-x:hover { background: #222a25; }
+#cv-frame { flex: 1; width: 100%; border: 0; background: #fff; }
+
 /* ── Footer: the full-width name, then a row of cells ── */
 .foot { margin: clamp(56px, 8vw, 104px) var(--edge) 0; border: 1px solid var(--line); border-bottom: 0; }
 .foot-name { padding: 22px 24px 18px; border-bottom: 1px solid var(--line); font: 900 120px/.86 var(--display); font-stretch: 125%; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; }

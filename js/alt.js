@@ -35,7 +35,7 @@
 
   /* ── Language (the same choice as the main site) ── */
   let lang = store.get('kk-lang') === 'en' ? 'en' : 'pt';
-  const ATTRS = [['enAria', 'ptAria', 'aria-label'], ['enPh', 'ptPh', 'placeholder'], ['enAlt', 'ptAlt', 'alt'], ['enHref', 'ptHref', 'href']];
+  const ATTRS = [['enAria', 'ptAria', 'aria-label'], ['enPh', 'ptPh', 'placeholder'], ['enAlt', 'ptAlt', 'alt'], ['enHref', 'ptHref', 'href'], ['enTitle', 'ptTitle', 'title']];
   function applyLang(next) {
     lang = next;
     root.lang = lang === 'en' ? 'en' : 'pt-BR';
@@ -115,10 +115,35 @@
       dpr = Math.min(devicePixelRatio || 1, 2);
       cv.width = Math.round(innerWidth * dpr); cv.height = Math.round(innerHeight * dpr);
     }
-    // empty space = an element that holds other elements, or has no text of its own
-    function emptySpot(t) {
+    // Areas where a square would get in the way of reading: every element that holds text, plus images, buttons,
+    // links, tags and the .trail-ignore blocks, each grown by a margin. Measured in page coordinates (scrolling
+    // doesn't change them) and measured again only after something on the page changes.
+    const PAD = 14;
+    let blocked = [], dirty = true;
+    const markDirty = () => { dirty = true; };
+    function measure() {
+      dirty = false;
+      const els = new Set(document.querySelectorAll('.trail-area img, .trail-area button, .trail-area a, .trail-area input, .trail-area .btn, .trail-area .tag, .trail-area .ico, .trail-ignore'));
+      const walk = document.createTreeWalker(document.querySelector('main') || document.body, NodeFilter.SHOW_TEXT);
+      for (let n = walk.nextNode(); n; n = walk.nextNode()) if (n.nodeValue.trim() && n.parentElement) els.add(n.parentElement);
+      document.querySelectorAll('.foot-name, .foot-row > *').forEach(e => els.add(e));
+      blocked = [];
+      for (const el of els) {
+        const r = el.getBoundingClientRect();
+        if (!r.width || !r.height) continue; // hidden (filtered agenda rows, the other language...)
+        blocked.push([r.left + scrollX - PAD, r.top + scrollY - PAD, r.right + scrollX + PAD, r.bottom + scrollY + PAD]);
+      }
+    }
+    new MutationObserver(markDirty).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden', 'class', 'style'] });
+    if ('ResizeObserver' in window) new ResizeObserver(markDirty).observe(document.body);
+    if (document.fonts) document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', markDirty);
+    // free = inside an area that allows squares, and the whole square (in page coordinates) touches no blocked area
+    function emptySpot(t, x, y) {
       if (!t || !t.closest || !t.closest('.trail-area') || t.closest('.trail-ignore, a, button, input, textarea, label, img, .btn, .tag')) return false;
-      return t.children.length !== 0 || !(t.textContent || '').trim();
+      if (dirty) measure();
+      const px = x + scrollX, py = y + scrollY;
+      for (const [l, tp, r, b] of blocked) if (px < r && px + SIZE > l && py < b && py + SIZE > tp) return false;
+      return true;
     }
     function draw(now) {
       raf = 0;
@@ -139,7 +164,7 @@
     addEventListener('mousemove', e => {
       const x = SIZE * Math.floor(e.clientX / SIZE), y = SIZE * Math.floor(e.clientY / SIZE);
       if (x === lastX && y === lastY) return;            // still in the same cell
-      if (!emptySpot(e.target)) return;
+      if (!emptySpot(e.target, x, y)) return;
       lastX = x; lastY = y;
       if (live.length >= MAX) live.shift();               // the oldest gives its place
       live.push({ x, y, born: performance.now(), life: 100 + 300 * Math.random(),
@@ -183,6 +208,40 @@
     const o = new IntersectionObserver(([en]) => { if (en.isIntersecting) { o.disconnect(); setTimeout(sweep, 250); } }, { threshold: .6 });
     o.observe(cmp);
   } else sweep();
+
+  /* ── Résumé: opens over the page on computers; on phones the PDF opens in a new tab (PDFs inside a page work badly there) ── */
+  const cv = $('#cv'), cvBox = cv.querySelector('.cv-box'), cvFrame = $('#cv-frame');
+  const bigScreen = matchMedia('(min-width: 760px) and (pointer: fine)');
+  let cvReturn = null;
+  function openCv(href, from) {
+    if (!bigScreen.matches) return false;
+    const want = href + '#view=FitH';
+    if (cvFrame.getAttribute('src') !== want) cvFrame.setAttribute('src', want);
+    cvReturn = from || document.activeElement;
+    cv.hidden = false;
+    root.style.overflow = 'hidden'; // the page behind stays still
+    if (!calm.matches && cv.animate) {
+      cv.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
+      cvBox.animate([{ transform: 'translateY(18px) scale(.97)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2, .9, .3, 1.1)' });
+    }
+    $('#cv-close').focus({ preventScroll: true });
+    return true;
+  }
+  function closeCv() {
+    if (cv.hidden) return;
+    const done = () => { cv.hidden = true; root.style.overflow = ''; if (cvReturn && cvReturn.focus) cvReturn.focus({ preventScroll: true }); };
+    if (calm.matches || !cv.animate) return done();
+    cvBox.animate([{ transform: 'none', opacity: 1 }, { transform: 'translateY(12px) scale(.98)', opacity: 0 }], { duration: 180, easing: 'ease-in', fill: 'forwards' });
+    cv.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: 'ease-in', fill: 'forwards' }).finished.then(() => { done(); cv.getAnimations().forEach(a => a.cancel()); cvBox.getAnimations().forEach(a => a.cancel()); });
+  }
+  // any résumé link (navigation, contact row, the assistant's button), including ones created later
+  document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('a[data-resume]');
+    if (a && openCv(a.getAttribute('href'), a)) e.preventDefault();
+  });
+  $('#cv-close').addEventListener('click', closeCv);
+  cv.addEventListener('click', e => { if (e.target === cv) closeCv(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCv(); });
 
   /* ── Copy e-mail ── */
   $('#copy-email').addEventListener('click', e => {
@@ -271,7 +330,7 @@
         svg.setAttribute('class', 'ico'); svg.setAttribute('aria-hidden', 'true'); use.setAttribute('href', '#' + icon);
         svg.appendChild(use); b.prepend(svg);
       }
-      if (href) { b.href = href; if (!href.startsWith('mailto:')) { b.target = '_blank'; b.rel = 'noopener'; } }
+      if (href) { b.href = href; if (!href.startsWith('mailto:')) { b.target = '_blank'; b.rel = 'noopener'; } if (a.k === 'curriculo') b.dataset.resume = ''; }
       else {
         b.type = 'button';
         b.addEventListener('click', () => {
@@ -289,6 +348,8 @@
     auto.forEach(({ k, p }) => {
       const pk = plain(p), behavior = calm.matches ? 'auto' : 'smooth';
       if (k === 'ir' && SECTIONS[pk]) setTimeout(() => goSection(pk), 500);
+      else if (k === 'abrir_curriculo') setTimeout(() => openCv(resumeHref()), 550); // the page's own viewer: no new tab
+
       else if (k === 'rolar') setTimeout(() => {
         if (/^(fim|final|embaixo|bottom|end|rodape)$/.test(pk)) scrollTo({ top: document.documentElement.scrollHeight, behavior });
         else if (/^(topo|inicio|comeco|top|start)$/.test(pk)) scrollTo({ top: 0, behavior });
