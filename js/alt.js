@@ -215,7 +215,7 @@
   let cvReturn = null;
   function openCv(href, from) {
     if (!bigScreen.matches) return false;
-    const want = href + '#view=FitH';
+    const want = href + '#view=FitH&navpanes=0'; // fit to width, without the thumbnails panel
     if (cvFrame.getAttribute('src') !== want) cvFrame.setAttribute('src', want);
     cvReturn = from || document.activeElement;
     cv.hidden = false;
