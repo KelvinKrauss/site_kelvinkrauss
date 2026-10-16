@@ -93,64 +93,58 @@
     navLinks.forEach(a => { const s = document.querySelector(a.getAttribute('href')); if (s) obs.observe(s); });
   }
 
-  /* ── Squares with programming symbols where the mouse passes, anywhere on the page ──
-     One canvas fixed behind the content: the squares show on the page's background and under transparent cells,
-     never over text boxes or buttons. Each square sits on a page grid (it stays in place when scrolling), pops in,
-     holds a moment and fades. Drawn only while some square is alive; with a still mouse, nothing runs.
-     Mouse only (phones have no hover), and off with "reduce motion". */
+  /* ── Squares with programming symbols where the mouse passes ──
+     Same rules as the effect on githubuniverse.com (read from its code, "CursorTrailAnimation"):
+     - only inside the areas marked .trail-area, and only on empty space: never over a piece of text, a link,
+       a button or anything inside .trail-ignore (labels, the lead text, buttons, images, the terminal...);
+     - a 20 px grid on the screen; a new square only when the mouse enters another cell;
+     - at most 10 at once, each lit for 0.1–0.4 s, then it fades;
+     - one symbol per square from - / ) . + = > < * & (, and 30% of them empty.
+     Drawn on one canvas above the content, only while a square is alive. Mouse only, off with "reduce motion". */
   (function symbolTrail() {
     const cv = $('#trail'), ctx = cv.getContext('2d');
     if (!ctx || calm.matches || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    const SIZE = 28, HOLD = 520, FADE = 650, POP = 140;
-    // the colors of the reference's artwork, and the text color that reads on each
-    const COLORS = [['#5fed83', '#0b0f0c'], ['#bba00a', '#0b0f0c'], ['#ae85ff', '#0b0f0c'], ['#f73678', '#fff'], ['#c05200', '#fff'], ['#583af7', '#fff']];
-    const SYMBOLS = ['=', '-', '&', ':', '>', '<', '{', '}', ';', '/', '*', '+', '|', '!', '?', '#', '$', '%', '(', ')', '[', ']', '~', '^', '_', '.', '=>', '&&', '::', '//', '!=', '<>'];
-    const live = new Map(); // "col,row" (page coordinates) -> square
-    let raf = 0, dpr = 1, last = null;
+    const SIZE = 20, MAX = 10, FADE = 220;
+    const COLORS = ['#ae85ff', '#f73678', '#c05200', '#583af7', '#5fed83', '#bba00a'];
+    const DARK_TEXT = new Set(['#ae85ff', '#5fed83', '#bba00a']); // the light colors get dark text, the strong ones white
+    const SYMBOLS = ['-', '/', ')', '.', '+', '=', '>', '<', '*', '&', '('];
+    const live = [];
+    let raf = 0, dpr = 1, lastX = null, lastY = null;
     function size() {
       dpr = Math.min(devicePixelRatio || 1, 2);
       cv.width = Math.round(innerWidth * dpr); cv.height = Math.round(innerHeight * dpr);
-      if (live.size && !raf) raf = requestAnimationFrame(draw);
     }
-    function spawn(col, row, now) {
-      const k = col + ',' + row;
-      if (live.has(k)) { live.get(k).born = Math.max(live.get(k).born, now - POP); return; } // already lit: just stays longer
-      const [bg, fg] = COLORS[(Math.random() * COLORS.length) | 0];
-      live.set(k, { col, row, bg, fg, s: SYMBOLS[(Math.random() * SYMBOLS.length) | 0], born: now });
+    // empty space = an element that holds other elements, or has no text of its own
+    function emptySpot(t) {
+      if (!t || !t.closest || !t.closest('.trail-area') || t.closest('.trail-ignore, a, button, input, textarea, label, img, .btn, .tag')) return false;
+      return t.children.length !== 0 || !(t.textContent || '').trim();
     }
     function draw(now) {
       raf = 0;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, innerWidth, innerHeight);
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      for (const [k, q] of live) {
-        const age = now - q.born;
-        if (age > HOLD + FADE) { live.delete(k); continue; }
-        const x = q.col * SIZE - scrollX, y = q.row * SIZE - scrollY;
-        if (x < -SIZE || y < -SIZE || x > innerWidth || y > innerHeight) continue;
-        // pop: grows from 55% with a little overshoot; then holds; then fades
-        const p = Math.min(1, age / POP), scale = age < POP ? .55 + .5 * Math.sin(p * Math.PI * .62) / Math.sin(Math.PI * .62) : 1;
-        ctx.globalAlpha = age < HOLD ? 1 : 1 - (age - HOLD) / FADE;
-        const s = (SIZE - 2) * scale, cx = x + SIZE / 2, cy = y + SIZE / 2;
-        ctx.fillStyle = q.bg; ctx.fillRect(cx - s / 2, cy - s / 2, s, s);
-        ctx.fillStyle = q.fg; ctx.font = '600 ' + Math.round((q.s.length > 1 ? 11 : 15) * scale) + 'px "Geist Mono", ui-monospace, monospace';
-        ctx.fillText(q.s, cx, cy + 1);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '600 13px "Geist Mono", ui-monospace, monospace';
+      for (let i = live.length - 1; i >= 0; i--) {
+        const q = live[i], age = now - q.born;
+        const a = age < q.life ? 1 : 1 - (age - q.life) / FADE;
+        if (a <= 0) { live.splice(i, 1); continue; }
+        ctx.globalAlpha = a;
+        ctx.fillStyle = q.color; ctx.fillRect(q.x, q.y, SIZE, SIZE);
+        if (q.text) { ctx.fillStyle = DARK_TEXT.has(q.color) ? '#0b0f0c' : '#fff'; ctx.fillText(q.text, q.x + SIZE / 2, q.y + SIZE / 2 + 1); }
       }
       ctx.globalAlpha = 1;
-      if (live.size) raf = requestAnimationFrame(draw);
+      if (live.length) raf = requestAnimationFrame(draw);
     }
-    addEventListener('pointermove', e => {
-      if (e.pointerType !== 'mouse') return;
-      const now = performance.now(), x = e.clientX + scrollX, y = e.clientY + scrollY;
-      // a square every so often along the path (not every cell: it reads as a trail, not a smear)
-      const from = last || { x, y }, dist = Math.hypot(x - from.x, y - from.y);
-      if (last && dist < SIZE * .9) return;
-      spawn(Math.floor(x / SIZE), Math.floor(y / SIZE), now);
-      last = { x, y };
+    addEventListener('mousemove', e => {
+      const x = SIZE * Math.floor(e.clientX / SIZE), y = SIZE * Math.floor(e.clientY / SIZE);
+      if (x === lastX && y === lastY) return;            // still in the same cell
+      if (!emptySpot(e.target)) return;
+      lastX = x; lastY = y;
+      if (live.length >= MAX) live.shift();               // the oldest gives its place
+      live.push({ x, y, born: performance.now(), life: 100 + 300 * Math.random(),
+        color: COLORS[(Math.random() * COLORS.length) | 0], text: Math.random() < .3 ? '' : SYMBOLS[(Math.random() * SYMBOLS.length) | 0] });
       if (!raf) raf = requestAnimationFrame(draw);
     }, { passive: true });
-    addEventListener('scroll', () => { if (live.size && !raf) raf = requestAnimationFrame(draw); }, { passive: true });
-    document.addEventListener('pointerleave', () => { last = null; });
     size();
     addEventListener('resize', size);
   })();

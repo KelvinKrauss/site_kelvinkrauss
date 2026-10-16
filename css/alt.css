@@ -50,7 +50,7 @@ button { font: inherit; color: inherit; }
 .nav-go:hover { background: #087a2e; }
 
 /* ── Squares with symbols: one canvas fixed behind the content, drawn only while some square is lit ── */
-#trail { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+#trail { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none; } /* above the content (squares only appear on empty spots), below the navigation */
 .bar, main, .foot { position: relative; z-index: 1; }
 
 /* ── The name: big, with the facts beside it ── */
