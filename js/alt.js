@@ -105,7 +105,7 @@
     const cv = $('#trail'), ctx = cv.getContext('2d');
     if (!ctx || calm.matches || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     const SIZE = 20, MAX = 10, FADE = 220;
-    const BOX = 14, INSET = (SIZE - BOX) / 2; // the colored square is a bit smaller than its grid cell
+    const BOX = 20, INSET = (SIZE - BOX) / 2; // the colored square fills its grid cell
     const COLORS = ['#ae85ff', '#f73678', '#c05200', '#583af7', '#5fed83', '#bba00a'];
     const DARK_TEXT = new Set(['#ae85ff', '#5fed83', '#bba00a']); // the light colors get dark text, the strong ones white
     const SYMBOLS = ['-', '/', ')', '.', '+', '=', '>', '<', '*', '&', '('];
@@ -124,7 +124,7 @@
       raf = 0;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, innerWidth, innerHeight);
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '600 10px "Geist Mono", ui-monospace, monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '600 13px "Geist Mono", ui-monospace, monospace';
       for (let i = live.length - 1; i >= 0; i--) {
         const q = live[i], age = now - q.born;
         const a = age < q.life ? 1 : 1 - (age - q.life) / FADE;
