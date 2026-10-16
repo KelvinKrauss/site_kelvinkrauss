@@ -16,7 +16,7 @@
   --mono: "Geist Mono", ui-monospace, Consolas, monospace;
   --gutter: clamp(16px, 2vw, 24px);
   /* like githubuniverse.com: the content stops at 1440px and stays centered; only the black bar and the lines go edge to edge */
-  --max: 1440px;
+  --max: max(1440px, 75%); /* 75% of the screen (12.5% free on each side), never narrower than 1440px */
   --edge: max(var(--gutter), calc((100% - var(--max)) / 2));
   color-scheme: light;
 }
@@ -51,7 +51,7 @@ button { font: inherit; color: inherit; }
 .nav-lang { min-width: 72px; border: 0; border-right: 1px solid var(--line); background: none; cursor: pointer; justify-content: center; font: 500 .9rem var(--mono); }
 .nav-go { min-width: 180px; gap: 8px; border-right: 0; background: var(--green); color: #fff; font-weight: 600; }
 .nav-go:hover { background: #087a2e; }
-@media (min-width: 1489px) { .nav-mark { border-left: 1px solid var(--line); } }
+@media (min-width: 1489px) { .nav-mark { border-left: 1px solid var(--line); } .nav-go { border-right: 1px solid var(--line); } }
 
 /* ── Squares with symbols: one canvas, drawn only while some square is lit ── */
 #trail { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none; } /* above the content (squares only appear on empty spots), below the navigation */
