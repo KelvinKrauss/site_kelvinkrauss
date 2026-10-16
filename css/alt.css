@@ -245,8 +245,9 @@ a.crow:hover .ck, a.crow:hover .arrow { color: #fff; }
 a.crow:hover .arrow { transform: translate(3px, -3px); }
 
 /* ── Résumé viewer: a framed window over a dimmed page ── */
-.cv { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 24px; background: rgba(11, 15, 12, .55); }
-.cv[hidden] { display: none; }
+/* (an id, not the class .cv: that one is the value in the contact rows) */
+#cv { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 24px; background: rgba(11, 15, 12, .55); }
+#cv[hidden] { display: none; }
 .cv-box { display: flex; flex-direction: column; width: min(980px, 100%); height: min(92vh, 1200px); background: var(--bg); box-shadow: 0 0 0 1px var(--ink), -8px 8px 0 var(--green); }
 .cv-bar { display: flex; align-items: stretch; background: var(--black); color: #fff; font: 400 .88rem var(--mono); }
 .cv-bar > * { display: flex; align-items: center; padding: 12px 16px; }
