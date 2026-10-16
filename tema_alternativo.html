@@ -19,6 +19,16 @@
 <a class="skip" href="#conteudo" data-en="Skip to content">Pular para o conteúdo</a>
 <!-- squares with programming symbols that light up where the mouse passes (behind the content) -->
 <canvas id="trail" aria-hidden="true"></canvas>
+<!-- icons (the same ones as the main design) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-gh" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.7 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></symbol>
+    <symbol id="i-in" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35ZM12.04 21.8h-.01a9.8 9.8 0 0 1-5-1.37l-.36-.21-3.71.97.99-3.62-.24-.37a9.8 9.8 0 1 1 8.33 4.6Zm8.35-18.15A11.75 11.75 0 0 0 1.88 17.82L.2 23.96l6.28-1.65a11.74 11.74 0 0 0 5.56 1.42h.01A11.75 11.75 0 0 0 20.39 3.65Z"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></symbol>
+  </defs>
+</svg>
 
 <!-- ── Black bar: where and what time it is for Kelvin ── -->
 <div class="bar">
@@ -37,7 +47,7 @@
   <a class="nav-cell" href="#contato" data-en="Contact">Contato</a>
   <span class="nav-fill" aria-hidden="true"></span>
   <button class="nav-cell nav-lang" id="lang-btn" type="button" aria-label="Read in English">EN</button>
-  <a class="nav-go" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><span data-en="Resume">Currículo</span> <span aria-hidden="true">↗</span></a>
+  <a class="nav-go" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span> <span aria-hidden="true">↗</span></a>
 </nav>
 
 <main id="conteudo">
@@ -177,19 +187,19 @@
         <p class="mono-row trail-ignore"><span>java · poo · 2025</span></p>
         <h3 data-en="Banking simulator">Simulador bancário</h3>
         <p data-en="A console system that simulates what a bank does: create accounts, deposit, withdraw, transfer, create investments with a yield percentage, and see a dated history of every action. My first complete system, built in the NTT DATA bootcamp.">Um sistema de console que simula o que um banco faz: criar contas, depositar, sacar, transferir, criar investimentos com rendimento em % e ver o histórico com data e hora de cada ação. Meu primeiro sistema completo, feito no bootcamp da NTT DATA.</p>
-        <a class="btn btn-line" href="https://github.com/KelvinKrauss/Aplicativo-de-Controle-de-Transacoes-Financeiras-com-Java" target="_blank" rel="noopener"><span data-en="See the code">Ver o código</span><span aria-hidden="true">↗</span></a>
+        <a class="btn btn-line" href="https://github.com/KelvinKrauss/Aplicativo-de-Controle-de-Transacoes-Financeiras-com-Java" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg><span data-en="See the code">Ver o código</span></span><span aria-hidden="true">↗</span></a>
       </article>
       <article class="cell card">
         <p class="mono-row trail-ignore"><span data-en="spring boot · microservices · 2025">spring boot · microsserviços · 2025</span></p>
         <h3 data-en="Catalog and orders">Catálogo e pedidos</h3>
         <p data-en="Four Spring Boot services working together: Eureka Server, product catalog, order simulator and API Gateway. Products live in an in-memory H2 database, and the API lists, searches by name, checks stock, creates and cancels orders.">Quatro serviços Spring Boot trabalhando juntos: Eureka Server, catálogo de produtos, simulador de pedidos e API Gateway. Os produtos ficam num banco H2 em memória, e a API lista, busca por nome, confere estoque, cria e cancela pedidos.</p>
-        <a class="btn btn-line" href="https://github.com/KelvinKrauss/Catalogo-e-Simulacao-de-pedido-persistente-em-h2database" target="_blank" rel="noopener"><span data-en="See the code">Ver o código</span><span aria-hidden="true">↗</span></a>
+        <a class="btn btn-line" href="https://github.com/KelvinKrauss/Catalogo-e-Simulacao-de-pedido-persistente-em-h2database" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg><span data-en="See the code">Ver o código</span></span><span aria-hidden="true">↗</span></a>
       </article>
       <article class="cell card">
         <p class="mono-row trail-ignore"><span>html · css · js · 2026</span></p>
         <h3 data-en="This portfolio">Este portfólio</h3>
         <p data-en="No framework, in two designs: this one and the main one, with liquid ink in WebGL. The assistant answers with the Gemini API in a Vercel serverless function, and can scroll the page, change the language and open links.">Sem framework, em dois visuais: este e o principal, com tinta líquida em WebGL. O assistente responde com a API do Gemini numa função serverless da Vercel, e consegue rolar a página, mudar o idioma e abrir links.</p>
-        <a class="btn btn-line" href="https://github.com/KelvinKrauss/site_kelvinkrauss" target="_blank" rel="noopener"><span data-en="See the code">Ver o código</span><span aria-hidden="true">↗</span></a>
+        <a class="btn btn-line" href="https://github.com/KelvinKrauss/site_kelvinkrauss" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg><span data-en="See the code">Ver o código</span></span><span aria-hidden="true">↗</span></a>
       </article>
     </div>
     <p class="more-gh" data-en="More on <a href='https://github.com/KelvinKrauss' target='_blank' rel='noopener'>GitHub</a>: a hangman game in Java, a to-do list in JavaScript and my code from college classes.">Mais no <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">GitHub</a>: jogo da forca em Java, lista de tarefas em JavaScript e os códigos das disciplinas da faculdade.</p>
@@ -246,16 +256,16 @@
       <div class="invite-text cell">
         <h2 class="invite-title" data-en="lets-build-something/">vamos-construir-algo/</h2>
         <p data-en="If you have an internship or junior role, or just want to talk about a project, send me a message. I also work remotely for companies outside Brazil.">Se você tem uma vaga de estágio ou júnior, ou só quer conversar sobre um projeto, me chama. Também trabalho remoto para empresas de fora do Brasil.</p>
-        <a class="btn btn-green btn-wide" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><span data-en="Talk on WhatsApp">Falar no WhatsApp</span><span aria-hidden="true">↗</span></a>
+        <a class="btn btn-green btn-wide" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg><span data-en="Talk on WhatsApp">Falar no WhatsApp</span></span><span aria-hidden="true">↗</span></a>
       </div>
     </div>
     <div class="frame contact">
       <div class="rows">
-        <div class="crow"><span class="ck">e-mail</span><span class="cv" id="email">kelvin.krauss.br@gmail.com</span><button class="btn btn-line btn-sm" id="copy-email" type="button" data-en="Copy">Copiar</button></div>
-        <a class="crow" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><span class="ck">whatsapp</span><span class="cv">+55 47 99910-4771</span><span class="arrow" aria-hidden="true">↗</span></a>
-        <a class="crow" href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><span class="ck">linkedin</span><span class="cv">in/kelvin-krauss-04b7622b8</span><span class="arrow" aria-hidden="true">↗</span></a>
-        <a class="crow" href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><span class="ck">github</span><span class="cv">github.com/KelvinKrauss</span><span class="arrow" aria-hidden="true">↗</span></a>
-        <a class="crow" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><span class="ck" data-en="resume">currículo</span><span class="cv">PDF</span><span class="arrow" aria-hidden="true">↗</span></a>
+        <div class="crow"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>e-mail</span><span class="cv" id="email">kelvin.krauss.br@gmail.com</span><button class="btn btn-line btn-sm" id="copy-email" type="button" data-en="Copy">Copiar</button></div>
+        <a class="crow" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>whatsapp</span><span class="cv">+55 47 99910-4771</span><span class="arrow" aria-hidden="true">↗</span></a>
+        <a class="crow" href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-in"/></svg>linkedin</span><span class="cv">in/kelvin-krauss-04b7622b8</span><span class="arrow" aria-hidden="true">↗</span></a>
+        <a class="crow" href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg>github</span><span class="cv">github.com/KelvinKrauss</span><span class="arrow" aria-hidden="true">↗</span></a>
+        <a class="crow" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="resume">currículo</span></span><span class="cv">PDF</span><span class="arrow" aria-hidden="true">↗</span></a>
       </div>
     </div>
   </section>
@@ -265,8 +275,8 @@
   <p class="foot-name" id="foot-name" aria-hidden="true"><span>KELVIN</span> <span>KRAUSS</span></p>
   <div class="foot-row">
     <span>© 2026 Kelvin Krauss</span>
-    <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">GitHub</a>
-    <a href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg>GitHub</a>
+    <a href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-in"/></svg>LinkedIn</a>
     <span class="foot-fill" aria-hidden="true"></span>
     <a href="/" data-en="See the current design ↗">Ver o tema atual ↗</a>
   </div>

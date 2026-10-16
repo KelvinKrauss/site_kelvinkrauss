@@ -105,6 +105,7 @@
     const cv = $('#trail'), ctx = cv.getContext('2d');
     if (!ctx || calm.matches || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     const SIZE = 20, MAX = 10, FADE = 220;
+    const BOX = 14, INSET = (SIZE - BOX) / 2; // the colored square is a bit smaller than its grid cell
     const COLORS = ['#ae85ff', '#f73678', '#c05200', '#583af7', '#5fed83', '#bba00a'];
     const DARK_TEXT = new Set(['#ae85ff', '#5fed83', '#bba00a']); // the light colors get dark text, the strong ones white
     const SYMBOLS = ['-', '/', ')', '.', '+', '=', '>', '<', '*', '&', '('];
@@ -123,13 +124,13 @@
       raf = 0;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, innerWidth, innerHeight);
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '600 13px "Geist Mono", ui-monospace, monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '600 10px "Geist Mono", ui-monospace, monospace';
       for (let i = live.length - 1; i >= 0; i--) {
         const q = live[i], age = now - q.born;
         const a = age < q.life ? 1 : 1 - (age - q.life) / FADE;
         if (a <= 0) { live.splice(i, 1); continue; }
         ctx.globalAlpha = a;
-        ctx.fillStyle = q.color; ctx.fillRect(q.x, q.y, SIZE, SIZE);
+        ctx.fillStyle = q.color; ctx.fillRect(q.x + INSET, q.y + INSET, BOX, BOX);
         if (q.text) { ctx.fillStyle = DARK_TEXT.has(q.color) ? '#0b0f0c' : '#fff'; ctx.fillText(q.text, q.x + SIZE / 2, q.y + SIZE / 2 + 1); }
       }
       ctx.globalAlpha = 1;
@@ -202,6 +203,7 @@
   };
   const BUTTONS = ['ociani', 'projetos', 'trajetoria', 'habilidades', 'contato', 'curriculo', 'antes_depois', 'whatsapp', 'email', 'linkedin', 'github', 'codigo', 'copiar_email'];
   const AUTO = ['abrir_curriculo', 'idioma', 'traduzir', 'mensagem', 'ir', 'rolar', 'tema'];
+  const ICONS = { whatsapp: 'i-wa', email: 'i-mail', copiar_email: 'i-mail', linkedin: 'i-in', github: 'i-gh', codigo: 'i-gh', curriculo: 'i-doc' };
   const SECTIONS = { sobre: '#sobre', trajetoria: '#trajetoria', projetos: '#projetos', ociani: '#ociani', habilidades: '#habilidades', contato: '#contato' };
   const plain = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
   const cleanParam = p => (p || '').replace(/[\u0000-\u001f<>[\]{}]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
@@ -263,6 +265,12 @@
       const b = document.createElement(href ? 'a' : 'button');
       b.className = 'btn ' + (i === 0 ? 'btn-green' : 'btn-line');
       b.textContent = TXT[lang].go[a.k];
+      const icon = ICONS[a.k];
+      if (icon) {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'), use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        svg.setAttribute('class', 'ico'); svg.setAttribute('aria-hidden', 'true'); use.setAttribute('href', '#' + icon);
+        svg.appendChild(use); b.prepend(svg);
+      }
       if (href) { b.href = href; if (!href.startsWith('mailto:')) { b.target = '_blank'; b.rel = 'noopener'; } }
       else {
         b.type = 'button';
