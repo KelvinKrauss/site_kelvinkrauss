@@ -60,8 +60,8 @@
   const tickClock = () => { clock.textContent = fmtTime.format(new Date()).replace(/:/g, ' : '); };
   tickClock(); setInterval(tickClock, 1000);
 
-  /* ── The name fills the width: measured once at 120px, then scaled. On phones, one word per line ── */
-  const name = $('#name'), nameBox = name.parentElement;
+  /* ── The footer name fills the width: measured once at 120px, then scaled. On phones, one word per line ── */
+  const name = $('#foot-name'), nameBox = name;
   function fitName() {
     const words = [...name.children];
     const stack = innerWidth < 700;
@@ -93,54 +93,79 @@
     navLinks.forEach(a => { const s = document.querySelector(a.getAttribute('href')); if (s) obs.observe(s); });
   }
 
-  /* ── Graph paper: squares light up under the mouse and fade out ──
-     Draws only while some square is still lit; with the mouse still, nothing runs. */
-  (function pixels() {
-    const cv = $('#pixels'), paper = cv.parentElement, ctx = cv.getContext('2d');
-    const SIZE = 24, COLORS = ['#0b8a35', '#22c55e', '#a855f7', '#ff8a3d', '#ff4fd8', '#3da5ff'];
-    const lit = new Map(); // "col,row" -> { a: brightness 0..1, c: color }
+  /* ── Squares with programming symbols where the mouse passes, anywhere on the page ──
+     One canvas fixed behind the content: the squares show on the page's background and under transparent cells,
+     never over text boxes or buttons. Each square sits on a page grid (it stays in place when scrolling), pops in,
+     holds a moment and fades. Drawn only while some square is alive; with a still mouse, nothing runs.
+     Mouse only (phones have no hover), and off with "reduce motion". */
+  (function symbolTrail() {
+    const cv = $('#trail'), ctx = cv.getContext('2d');
+    if (!ctx || calm.matches || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const SIZE = 28, HOLD = 520, FADE = 650, POP = 140;
+    // the colors of the reference's artwork, and the text color that reads on each
+    const COLORS = [['#5fed83', '#0b0f0c'], ['#bba00a', '#0b0f0c'], ['#ae85ff', '#0b0f0c'], ['#f73678', '#fff'], ['#c05200', '#fff'], ['#583af7', '#fff']];
+    const SYMBOLS = ['=', '-', '&', ':', '>', '<', '{', '}', ';', '/', '*', '+', '|', '!', '?', '#', '$', '%', '(', ')', '[', ']', '~', '^', '_', '.', '=>', '&&', '::', '//', '!=', '<>'];
+    const live = new Map(); // "col,row" (page coordinates) -> square
     let raf = 0, dpr = 1, last = null;
     function size() {
       dpr = Math.min(devicePixelRatio || 1, 2);
-      cv.width = Math.round(paper.clientWidth * dpr); cv.height = Math.round(paper.clientHeight * dpr);
+      cv.width = Math.round(innerWidth * dpr); cv.height = Math.round(innerHeight * dpr);
+      if (live.size && !raf) raf = requestAnimationFrame(draw);
     }
-    function light(col, row, a) {
-      const k = col + ',' + row, cur = lit.get(k);
-      if (cur) cur.a = Math.max(cur.a, a);
-      else lit.set(k, { a, c: COLORS[(Math.random() * COLORS.length) | 0] });
+    function spawn(col, row, now) {
+      const k = col + ',' + row;
+      if (live.has(k)) { live.get(k).born = Math.max(live.get(k).born, now - POP); return; } // already lit: just stays longer
+      const [bg, fg] = COLORS[(Math.random() * COLORS.length) | 0];
+      live.set(k, { col, row, bg, fg, s: SYMBOLS[(Math.random() * SYMBOLS.length) | 0], born: now });
     }
-    function draw() {
+    function draw(now) {
       raf = 0;
-      ctx.clearRect(0, 0, cv.width, cv.height);
-      for (const [k, p] of lit) {
-        const [col, row] = k.split(',').map(Number);
-        ctx.globalAlpha = Math.min(1, p.a);
-        ctx.fillStyle = p.c;
-        ctx.fillRect(col * SIZE * dpr, row * SIZE * dpr, (SIZE - 1) * dpr, (SIZE - 1) * dpr);
-        p.a -= .011; // about 1.5 s to fade
-        if (p.a <= 0) lit.delete(k);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      for (const [k, q] of live) {
+        const age = now - q.born;
+        if (age > HOLD + FADE) { live.delete(k); continue; }
+        const x = q.col * SIZE - scrollX, y = q.row * SIZE - scrollY;
+        if (x < -SIZE || y < -SIZE || x > innerWidth || y > innerHeight) continue;
+        // pop: grows from 55% with a little overshoot; then holds; then fades
+        const p = Math.min(1, age / POP), scale = age < POP ? .55 + .5 * Math.sin(p * Math.PI * .62) / Math.sin(Math.PI * .62) : 1;
+        ctx.globalAlpha = age < HOLD ? 1 : 1 - (age - HOLD) / FADE;
+        const s = (SIZE - 2) * scale, cx = x + SIZE / 2, cy = y + SIZE / 2;
+        ctx.fillStyle = q.bg; ctx.fillRect(cx - s / 2, cy - s / 2, s, s);
+        ctx.fillStyle = q.fg; ctx.font = '600 ' + Math.round((q.s.length > 1 ? 11 : 15) * scale) + 'px "Geist Mono", ui-monospace, monospace';
+        ctx.fillText(q.s, cx, cy + 1);
       }
       ctx.globalAlpha = 1;
-      if (lit.size) raf = requestAnimationFrame(draw);
+      if (live.size) raf = requestAnimationFrame(draw);
     }
-    paper.addEventListener('pointermove', e => {
-      if (calm.matches) return;
-      const r = paper.getBoundingClientRect();
-      const x = e.clientX - r.left, y = e.clientY - r.top;
-      // fills the path between two moves, so a fast mouse leaves a continuous trail
-      const from = last || { x, y }, steps = Math.max(1, Math.ceil(Math.hypot(x - from.x, y - from.y) / (SIZE / 2)));
-      for (let i = 1; i <= steps; i++) {
-        const px = from.x + (x - from.x) * i / steps, py = from.y + (y - from.y) * i / steps;
-        light(Math.floor(px / SIZE), Math.floor(py / SIZE), 1);
-        if (Math.random() < .35) light(Math.floor(px / SIZE) + (Math.random() < .5 ? -1 : 1), Math.floor(py / SIZE) + (Math.random() < .5 ? -1 : 1), .55);
-      }
+    addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      const now = performance.now(), x = e.clientX + scrollX, y = e.clientY + scrollY;
+      // a square every so often along the path (not every cell: it reads as a trail, not a smear)
+      const from = last || { x, y }, dist = Math.hypot(x - from.x, y - from.y);
+      if (last && dist < SIZE * .9) return;
+      spawn(Math.floor(x / SIZE), Math.floor(y / SIZE), now);
       last = { x, y };
       if (!raf) raf = requestAnimationFrame(draw);
-    });
-    paper.addEventListener('pointerleave', () => { last = null; });
+    }, { passive: true });
+    addEventListener('scroll', () => { if (live.size && !raf) raf = requestAnimationFrame(draw); }, { passive: true });
+    document.addEventListener('pointerleave', () => { last = null; });
     size();
     addEventListener('resize', size);
   })();
+
+  /* ── Journey tabs: everything, work, or study ── */
+  const tabs = [...document.querySelectorAll('.tab')], rows = [...document.querySelectorAll('.agenda .row')];
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.setAttribute('aria-selected', String(x === t)));
+    const kind = t.dataset.kind;
+    rows.forEach(r => {
+      const show = kind === 'all' || r.dataset.kind === kind;
+      if (show && r.hidden && r.animate && !calm.matches) { r.hidden = false; r.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' }); }
+      else r.hidden = !show;
+    });
+  }));
 
   /* ── Before and after: the old site on top, cut at the line. When it comes into view, the line sweeps once ── */
   const cmp = $('#cmp'), cmpRange = cmp.querySelector('.cmp-range');

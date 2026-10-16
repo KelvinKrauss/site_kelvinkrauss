@@ -17,6 +17,8 @@
 </head>
 <body>
 <a class="skip" href="#conteudo" data-en="Skip to content">Pular para o conteúdo</a>
+<!-- squares with programming symbols that light up where the mouse passes (behind the content) -->
+<canvas id="trail" aria-hidden="true"></canvas>
 
 <!-- ── Black bar: where and what time it is for Kelvin ── -->
 <div class="bar">
@@ -39,16 +41,17 @@
 </nav>
 
 <main id="conteudo">
-  <!-- ── Name, as big as the screen ── -->
+  <!-- ── Name: big, but not the whole screen (the full-width one closes the page, in the footer) ── -->
   <header class="name" id="topo">
-    <h1 id="name"><span>KELVIN</span> <span>KRAUSS<i class="cursor" aria-hidden="true"></i></span></h1>
+    <h1><span>KELVIN</span> <span>KRAUSS<i class="cursor" aria-hidden="true"></i></span></h1>
+    <p class="name-side"><span data-en="developer · web &amp; back-end">desenvolvedor · web e back-end</span><span data-en="blumenau, brazil">blumenau, brasil</span><span data-en="graduating in 2028">formatura em 2028</span></p>
   </header>
 
   <section class="hero frame">
     <div class="hero-left cell">
       <div class="mono-row">
         <span data-en="systems analysis &amp; development / IFSC">análise e desenvolvimento de sistemas / IFSC</span>
-        <span data-en="blumenau, brazil">blumenau, SC</span>
+        <span data-en="on-site &amp; remote">presencial &amp; remoto</span>
       </div>
       <p class="hero-tag" data-en="open-to-work/">aberto-a-vagas/</p>
     </div>
@@ -60,19 +63,15 @@
     </div>
   </section>
 
-  <!-- ── Graph paper: squares light up where the mouse passes. "Agora" sits on top of it ── -->
-  <section class="paper frame" aria-labelledby="agora-t">
-    <canvas id="pixels" aria-hidden="true"></canvas>
-    <p class="paper-hint" aria-hidden="true" data-en="move_the_mouse_here/">passe_o_mouse_aqui/</p>
-    <aside class="now">
-      <p class="now-head"><span class="now-dot" aria-hidden="true"></span><strong id="agora-t" data-en="now/">agora/</strong><span data-en="october 2026">outubro de 2026</span></p>
-      <ul>
-        <li data-en="Apprentice at Ociani Transportadora: office work, IT support and the company's new website, live since October 2.">Jovem aprendiz na Ociani Transportadora: administrativo, suporte de TI e o novo site da empresa, que foi ao ar em 2 de outubro.</li>
-        <li data-en="First semester of Systems Analysis and Development at IFSC.">Primeiro semestre de Análise e Desenvolvimento de Sistemas no IFSC.</li>
-        <li data-en="Studying AWS to take the official certification.">Estudando AWS para tirar a certificação oficial.</li>
-        <li data-en="Open to internship or junior role offers, on-site or remote.">Aberto a propostas de estágio ou vaga júnior, presencial ou remoto.</li>
-      </ul>
-    </aside>
+  <!-- ── Agora: one slim row of cells ── -->
+  <section class="now frame" aria-labelledby="agora-t">
+    <p class="now-head cell"><strong id="agora-t" data-en="now/">agora/</strong><span><span data-en="october 2026">outubro de 2026</span> <i class="sq" aria-hidden="true"></i></span></p>
+    <ul class="now-list">
+      <li class="cell" data-en="Apprentice at Ociani Transportadora: office work, IT support and the company's new website, live since October 2.">Jovem aprendiz na Ociani Transportadora: administrativo, suporte de TI e o novo site da empresa, que foi ao ar em 2 de outubro.</li>
+      <li class="cell" data-en="First semester of Systems Analysis and Development at IFSC.">Primeiro semestre de Análise e Desenvolvimento de Sistemas no IFSC.</li>
+      <li class="cell" data-en="Studying AWS to take the official certification.">Estudando AWS para tirar a certificação oficial.</li>
+      <li class="cell" data-en="Open to internship or junior role offers, on-site or remote.">Aberto a propostas de estágio ou vaga júnior, presencial ou remoto.</li>
+    </ul>
   </section>
 
   <!-- ── Sobre ── -->
@@ -92,29 +91,48 @@
   <!-- ── Trajetória: like an agenda ── -->
   <section class="sec" id="trajetoria">
     <h2 class="sec-title" data-en="journey/">trajetoria/</h2>
+    <!-- tabs filter the agenda: everything, work, or study -->
+    <div class="frame tabs" role="tablist" aria-label="Filtrar a trajetória" data-en-aria="Filter the journey">
+      <button class="tab" type="button" role="tab" aria-selected="true" data-kind="all"><span data-en="All">Tudo</span><i aria-hidden="true"></i></button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-kind="work"><span data-en="Work">Trabalho</span><i aria-hidden="true"></i></button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-kind="study"><span data-en="Study">Estudo</span><i aria-hidden="true"></i></button>
+      <span class="tabs-fill" aria-hidden="true"></span>
+    </div>
     <ol class="frame agenda">
-      <li class="row">
-        <span class="when" data-en="jan_2026 — now">jan_2026 — hoje</span>
-        <div><h3 data-en="Apprentice · Ociani Transportadora">Jovem Aprendiz · Ociani Transportadora</h3>
-        <p data-en="Through the SEST SENAT program. Day to day I support the administrative and accounting team (documents and data entry), repair computers and help my coworkers with IT. I also built the company's new website.">Pelo programa do SEST SENAT. No dia a dia apoio o administrativo e a contabilidade (documentos e lançamentos), faço manutenção de computadores e ajudo os colegas com TI. Também desenvolvi o novo site da empresa.</p></div>
+      <li class="row" data-kind="work">
+        <p class="day">ociani/</p>
+        <div class="slot">
+          <span class="when" data-en="jan 2026 — now">jan 2026 — hoje</span>
+          <h3 data-en="Apprentice · Ociani Transportadora">Jovem Aprendiz · Ociani Transportadora</h3>
+          <p data-en="Through the SEST SENAT program. Day to day I support the administrative and accounting team (documents and data entry), repair computers and help my coworkers with IT. I also built the company's new website.">Pelo programa do SEST SENAT. No dia a dia apoio o administrativo e a contabilidade (documentos e lançamentos), faço manutenção de computadores e ajudo os colegas com TI. Também desenvolvi o novo site da empresa.</p>
+        </div>
         <span class="tag tag-live" data-en="now">agora</span>
       </li>
-      <li class="row">
-        <span class="when" data-en="jul_2026 — dec_2028">jul_2026 — dez_2028</span>
-        <div><h3 data-en="Systems Analysis and Development · IFSC">Análise e Desenvolvimento de Sistemas · IFSC</h3>
-        <p data-en="Federal Institute of Santa Catarina. In progress.">Instituto Federal de Santa Catarina. Cursando.</p></div>
+      <li class="row" data-kind="study">
+        <p class="day">ifsc/</p>
+        <div class="slot">
+          <span class="when" data-en="jul 2026 — dec 2028">jul 2026 — dez 2028</span>
+          <h3 data-en="Systems Analysis and Development">Análise e Desenvolvimento de Sistemas</h3>
+          <p data-en="Federal Institute of Santa Catarina. In progress.">Instituto Federal de Santa Catarina. Cursando.</p>
+        </div>
         <span class="tag tag-live" data-en="now">agora</span>
       </li>
-      <li class="row">
-        <span class="when" data-en="jan_2025 — jun_2026">jan_2025 — jun_2026</span>
-        <div><h3 data-en="Computer Science · IFC">Ciência da Computação · IFC</h3>
-        <p data-en="Instituto Federal Catarinense. Programming logic, data structures and my first steps in Java. Transferred to IFSC.">Instituto Federal Catarinense. Lógica, estruturas de dados e os primeiros passos em Java. Transferência para o IFSC.</p></div>
+      <li class="row" data-kind="study">
+        <p class="day">ifc/</p>
+        <div class="slot">
+          <span class="when" data-en="jan 2025 — jun 2026">jan 2025 — jun 2026</span>
+          <h3 data-en="Computer Science">Ciência da Computação</h3>
+          <p data-en="Instituto Federal Catarinense. Programming logic, data structures and my first steps in Java. Transferred to IFSC.">Instituto Federal Catarinense. Lógica, estruturas de dados e os primeiros passos em Java. Transferência para o IFSC.</p>
+        </div>
         <span class="tag" data-en="transferred">transferido</span>
       </li>
-      <li class="row">
-        <span class="when">2024 — 2025</span>
-        <div><h3 data-en="Bootcamps · Entra21 and NTT DATA">Bootcamps · Entra21 e NTT DATA</h3>
-        <p data-en="Entra21 Back-end Java Developer (220 h, 2024) and NTT DATA Java and AI for Beginners (48 h, 2025).">Entra21 Desenvolvedor Back-end Java (220 h, 2024) e NTT DATA Java e IA para Iniciantes (48 h, 2025).</p></div>
+      <li class="row" data-kind="study">
+        <p class="day">bootcamps/</p>
+        <div class="slot">
+          <span class="when">2024 — 2025</span>
+          <h3>Entra21 · NTT DATA</h3>
+          <p data-en="Entra21 Back-end Java Developer (220 h, 2024) and NTT DATA Java and AI for Beginners (48 h, 2025).">Entra21 Desenvolvedor Back-end Java (220 h, 2024) e NTT DATA Java e IA para Iniciantes (48 h, 2025).</p>
+        </div>
         <span class="tag" data-en="done">concluído</span>
       </li>
     </ol>
@@ -215,9 +233,23 @@
 
   <!-- ── Contato: rows ── -->
   <section class="sec" id="contato">
-    <h2 class="sec-title" data-en="lets-talk/">vamos-conversar/</h2>
+    <!-- colored tiles drawn with CSS: brackets, a prompt, a pixel cross and dots -->
+    <div class="frame invite">
+      <div class="tiles" aria-hidden="true">
+        <div class="tile t-brace"><span>{</span></div>
+        <div class="tile t-blue"></div>
+        <div class="tile t-cross"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="tile t-blue2"><span>}</span></div>
+        <div class="tile t-dots"></div>
+        <div class="tile t-prompt"><span>&gt;</span><b></b></div>
+      </div>
+      <div class="invite-text cell">
+        <h2 class="invite-title" data-en="lets-build-something/">vamos-construir-algo/</h2>
+        <p data-en="If you have an internship or junior role, or just want to talk about a project, send me a message. I also work remotely for companies outside Brazil.">Se você tem uma vaga de estágio ou júnior, ou só quer conversar sobre um projeto, me chama. Também trabalho remoto para empresas de fora do Brasil.</p>
+        <a class="btn btn-green btn-wide" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><span data-en="Talk on WhatsApp">Falar no WhatsApp</span><span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
     <div class="frame contact">
-      <p class="cell contact-lead" data-en="If you have an internship or junior role, or just want to talk about a project, send me a message. I also work remotely for companies outside Brazil.">Se você tem uma vaga de estágio ou júnior, ou só quer conversar sobre um projeto, me chama. Também trabalho remoto para empresas de fora do Brasil.</p>
       <div class="rows">
         <div class="crow"><span class="ck">e-mail</span><span class="cv" id="email">kelvin.krauss.br@gmail.com</span><button class="btn btn-line btn-sm" id="copy-email" type="button" data-en="Copy">Copiar</button></div>
         <a class="crow" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><span class="ck">whatsapp</span><span class="cv">+55 47 99910-4771</span><span class="arrow" aria-hidden="true">↗</span></a>
@@ -230,9 +262,14 @@
 </main>
 
 <footer class="foot">
-  <span>© 2026 kelvin krauss</span>
-  <span data-en="hand-made, no framework">feito à mão, sem framework</span>
-  <a href="/" data-en="see the current design ↗">ver o tema atual ↗</a>
+  <p class="foot-name" id="foot-name" aria-hidden="true"><span>KELVIN</span> <span>KRAUSS</span></p>
+  <div class="foot-row">
+    <span>© 2026 Kelvin Krauss</span>
+    <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener">LinkedIn</a>
+    <span class="foot-fill" aria-hidden="true"></span>
+    <a href="/" data-en="See the current design ↗">Ver o tema atual ↗</a>
+  </div>
 </footer>
 
 <script src="js/alt.js"></script>
