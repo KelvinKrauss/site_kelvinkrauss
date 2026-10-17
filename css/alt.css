@@ -46,6 +46,22 @@ button { font: inherit; color: inherit; }
 .nav-mark { gap: 4px; align-items: center; padding: 0 18px; font: 900 1.45rem/1 var(--display); font-stretch: 125%; letter-spacing: -.02em; }
 .nav-mark i { width: 9px; height: 9px; background: var(--green); margin-top: -12px; }
 .nav-cell { min-width: 140px; }
+/* KK: opens the contacts menu */
+.nav-mark-wrap { position: relative; padding: 0 !important; }
+.nav-mark { display: flex; height: 100%; border: 0; background: none; cursor: pointer; color: var(--ink); }
+.kk-chev { width: 14px; height: 14px; margin-left: 6px; color: var(--muted); transition: transform .2s; }
+.nav-mark[aria-expanded="true"] { background: var(--paper); }
+.nav-mark[aria-expanded="true"] .kk-chev { transform: rotate(180deg); }
+.kk-menu { position: absolute; top: calc(100% + 1px); left: -1px; z-index: 35; width: 320px; max-width: calc(100vw - 16px); display: flex; flex-direction: column;
+  background: var(--bg); box-shadow: 0 0 0 1px var(--ink), -6px 6px 0 var(--green); }
+.kk-menu[hidden] { display: none; }
+.kk-head { padding: 12px 16px 8px; font: 400 .8rem var(--mono); color: var(--muted); }
+.kk-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line); text-decoration: none; font: 400 .85rem var(--mono); color: var(--muted); transition: background-color .15s, color .15s; }
+.kk-item .ico { width: 18px; height: 18px; color: var(--ink); }
+.kk-item span { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+.kk-item b { font: 600 .95rem var(--display); color: var(--ink); }
+.kk-item:hover, .kk-item:focus-visible { background: var(--green); color: #fff; }
+.kk-item:hover .ico, .kk-item:hover b, .kk-item:focus-visible .ico, .kk-item:focus-visible b { color: #fff; }
 .nav-cell:hover, .nav-mark:hover { background: var(--paper); }
 .nav-cell.on { box-shadow: inset 0 -3px 0 var(--green); }
 .nav-fill { flex: 1; padding: 0; }
@@ -320,8 +336,8 @@ a.crow:hover .arrow { transform: translate(3px, -3px); }
 #cv-frame { flex: 1; width: 100%; border: 0; background: #fff; }
 
 /* ── Footer: the full-width name, then a row of cells ── */
-.foot { margin: clamp(56px, 8vw, 104px) var(--edge) 0; border: 1px solid var(--line); border-bottom: 0; }
-.foot-name { padding: 22px 24px 18px; border-bottom: 1px solid var(--line); font: 900 120px/.86 var(--display); font-stretch: 125%; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; }
+.foot { margin: clamp(56px, 8vw, 104px) var(--edge) 96px; /* room below so the AI bubble never covers the footer */ border: 1px solid var(--line); border-bottom: 0; }
+.foot-name { color: var(--green); padding: 22px 24px 18px; border-bottom: 1px solid var(--line); font: 900 120px/.86 var(--display); font-stretch: 125%; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; }
 .foot-name span { display: inline-block; }
 .foot-row { display: flex; flex-wrap: wrap; }
 .foot-row > * { padding: 20px 24px; border-right: 1px solid var(--line); font-size: .95rem; text-decoration: none; }

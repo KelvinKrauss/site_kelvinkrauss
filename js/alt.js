@@ -246,6 +246,18 @@
   cv.addEventListener('click', e => { if (e.target === cv) closeCv(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCv(); });
 
+  /* ── KK: the contacts menu in the navigation ── */
+  const kkBtn = $('#kk-btn'), kkMenu = $('#kk-menu');
+  function kkToggle(open) {
+    kkMenu.hidden = !open;
+    kkBtn.setAttribute('aria-expanded', String(open));
+    if (open && !calm.matches && kkMenu.animate) kkMenu.animate([{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { duration: 180, easing: 'ease-out' });
+  }
+  kkBtn.addEventListener('click', () => kkToggle(kkMenu.hidden));
+  document.addEventListener('click', e => { if (!kkMenu.hidden && !e.target.closest('.nav-mark-wrap')) kkToggle(false); });
+  kkMenu.addEventListener('click', e => { if (e.target.closest('a')) kkToggle(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !kkMenu.hidden) { kkToggle(false); kkBtn.focus(); } });
+
   /* ── Copy e-mail ── */
   $('#copy-email').addEventListener('click', e => {
     const b = e.currentTarget, email = $('#email').textContent.trim();

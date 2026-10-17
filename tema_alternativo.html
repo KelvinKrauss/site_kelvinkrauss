@@ -39,7 +39,18 @@
 
 <!-- ── Navigation: a row of cells ── -->
 <nav class="nav" aria-label="Navegação" data-en-aria="Navigation">
-  <a class="nav-mark" href="#topo" aria-label="Início" data-en-aria="Top"><span>KK</span><i aria-hidden="true"></i></a>
+  <!-- KK opens the contacts: always one click away, from anywhere on the page -->
+  <div class="nav-mark-wrap">
+    <button class="nav-mark" id="kk-btn" type="button" aria-expanded="false" aria-controls="kk-menu" aria-label="Contatos do Kelvin" data-en-aria="Kelvin's contacts"><span>KK</span><i aria-hidden="true"></i><svg class="kk-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="kk-menu" id="kk-menu" hidden>
+      <p class="kk-head" data-en="talk to me">fale comigo</p>
+      <a class="kk-item" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg><span><b>WhatsApp</b>+55 47 99910-4771</span></a>
+      <a class="kk-item" href="mailto:kelvin.krauss.br@gmail.com"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg><span><b>E-mail</b>kelvin.krauss.br@gmail.com</span></a>
+      <a class="kk-item" href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-in"/></svg><span><b>LinkedIn</b>in/kelvin-krauss-04b7622b8</span></a>
+      <a class="kk-item" href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg><span><b>GitHub</b>github.com/KelvinKrauss</span></a>
+      <a class="kk-item" data-resume href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span><b data-en="Resume">Currículo</b>PDF</span></a>
+    </div>
+  </div>
   <a class="nav-cell" href="#sobre" data-en="About">Sobre</a>
   <a class="nav-cell" href="#trajetoria" data-en="Journey">Trajetória</a>
   <a class="nav-cell" href="#projetos" data-en="Projects">Projetos</a>
@@ -336,6 +347,7 @@
     <span>© 2026 Kelvin Krauss</span>
     <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg>GitHub</a>
     <a href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-in"/></svg>LinkedIn</a>
+    <a href="https://wa.me/5547999104771" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
     <span class="foot-fill" aria-hidden="true"></span>
     <a href="/" data-en="See the current design ↗">Ver o tema atual ↗</a>
   </div>
