@@ -60,28 +60,6 @@
   const tickClock = () => { clock.textContent = fmtTime.format(new Date()).replace(/:/g, ' : '); };
   tickClock(); setInterval(tickClock, 1000);
 
-  /* ── The footer name fills the width: measured once at 120px, then scaled. On phones, one word per line ── */
-  const name = $('#foot-name'), nameBox = name;
-  function fitName() {
-    const words = [...name.children];
-    const stack = innerWidth < 700;
-    // "table" puts each word on its own line while keeping the box as wide as the word (a block would fill the line)
-    words.forEach(w => { w.style.display = stack ? 'table' : 'inline-block'; });
-    name.style.fontSize = '120px';
-    const avail = nameBox.clientWidth - parseFloat(getComputedStyle(nameBox).paddingLeft) * 2;
-    // the width of the letters themselves (the heading box is always as wide as the page)
-    const boxes = words.map(w => w.getBoundingClientRect());
-    const wide = stack ? Math.max(...boxes.map(b => b.width)) : boxes[boxes.length - 1].right - boxes[0].left;
-    name.style.fontSize = Math.floor(120 * avail / wide * .995) + 'px';
-  }
-  fitName();
-  // measured again once the real typeface has arrived (until then the width is the fallback font's)
-  if (document.fonts) {
-    document.fonts.load('900 120px "Mona Sans"').then(fitName, () => {});
-    document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', fitName);
-  }
-  let fitTimer = 0;
-  addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitName, 80); });
 
   /* ── Navigation: marks the section in view ── */
   const navLinks = [...document.querySelectorAll('.nav-cell[href^="#"]')];
@@ -126,7 +104,7 @@
       const els = new Set(document.querySelectorAll('.frame, .foot, .name, .trail-area img, .trail-area button, .trail-area a, .trail-area input, .trail-area .btn, .trail-area .tag, .trail-area .ico, .trail-ignore'));
       const walk = document.createTreeWalker(document.querySelector('main') || document.body, NodeFilter.SHOW_TEXT);
       for (let n = walk.nextNode(); n; n = walk.nextNode()) if (n.nodeValue.trim() && n.parentElement) els.add(n.parentElement);
-      document.querySelectorAll('.foot-name, .foot-row > *').forEach(e => els.add(e));
+      document.querySelectorAll('.foot-row > *').forEach(e => els.add(e));
       blocked = [];
       for (const el of els) {
         const r = el.getBoundingClientRect();
@@ -246,17 +224,6 @@
   cv.addEventListener('click', e => { if (e.target === cv) closeCv(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCv(); });
 
-  /* ── KK: the contacts menu in the navigation ── */
-  const kkBtn = $('#kk-btn'), kkMenu = $('#kk-menu');
-  function kkToggle(open) {
-    kkMenu.hidden = !open;
-    kkBtn.setAttribute('aria-expanded', String(open));
-    if (open && !calm.matches && kkMenu.animate) kkMenu.animate([{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { duration: 180, easing: 'ease-out' });
-  }
-  kkBtn.addEventListener('click', () => kkToggle(kkMenu.hidden));
-  document.addEventListener('click', e => { if (!kkMenu.hidden && !e.target.closest('.nav-mark-wrap')) kkToggle(false); });
-  kkMenu.addEventListener('click', e => { if (e.target.closest('a')) kkToggle(false); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !kkMenu.hidden) { kkToggle(false); kkBtn.focus(); } });
 
   /* ── Copy e-mail ── */
   $('#copy-email').addEventListener('click', e => {

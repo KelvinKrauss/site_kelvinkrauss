@@ -43,32 +43,14 @@ button { font: inherit; color: inherit; }
 /* ── Navigation cells ── */
 .nav { position: sticky; top: 0; z-index: 30; display: flex; align-items: stretch; height: 64px; padding-inline: max(0px, calc((100% - var(--max)) / 2)); background: var(--bg); border-bottom: 1px solid var(--line); }
 .nav > * { display: flex; align-items: flex-end; padding: 0 18px 14px; border-right: 1px solid var(--line); text-decoration: none; font: 500 .98rem var(--display); transition: background-color .2s; }
-.nav-mark { gap: 4px; align-items: center; padding: 0 18px; font: 900 1.45rem/1 var(--display); font-stretch: 125%; letter-spacing: -.02em; }
-.nav-mark i { width: 9px; height: 9px; background: var(--green); margin-top: -12px; }
 .nav-cell { min-width: 140px; }
-/* KK: opens the contacts menu */
-.nav-mark-wrap { position: relative; padding: 0 !important; }
-.nav-mark { display: flex; height: 100%; border: 0; background: none; cursor: pointer; color: var(--ink); }
-.kk-chev { width: 14px; height: 14px; margin-left: 6px; color: var(--muted); transition: transform .2s; }
-.nav-mark[aria-expanded="true"] { background: var(--paper); }
-.nav-mark[aria-expanded="true"] .kk-chev { transform: rotate(180deg); }
-.kk-menu { position: absolute; top: calc(100% + 1px); left: -1px; z-index: 35; width: 320px; max-width: calc(100vw - 16px); display: flex; flex-direction: column;
-  background: var(--bg); box-shadow: 0 0 0 1px var(--ink), -6px 6px 0 var(--green); }
-.kk-menu[hidden] { display: none; }
-.kk-head { padding: 12px 16px 8px; font: 400 .8rem var(--mono); color: var(--muted); }
-.kk-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line); text-decoration: none; font: 400 .85rem var(--mono); color: var(--muted); transition: background-color .15s, color .15s; }
-.kk-item .ico { width: 18px; height: 18px; color: var(--ink); }
-.kk-item span { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
-.kk-item b { font: 600 .95rem var(--display); color: var(--ink); }
-.kk-item:hover, .kk-item:focus-visible { background: var(--green); color: #fff; }
-.kk-item:hover .ico, .kk-item:hover b, .kk-item:focus-visible .ico, .kk-item:focus-visible b { color: #fff; }
-.nav-cell:hover, .nav-mark:hover { background: var(--paper); }
+.nav-cell:hover { background: var(--paper); }
 .nav-cell.on { box-shadow: inset 0 -3px 0 var(--green); }
 .nav-fill { flex: 1; padding: 0; }
 .nav-lang { min-width: 72px; border: 0; border-right: 1px solid var(--line); background: none; cursor: pointer; justify-content: center; font: 500 .9rem var(--mono); }
 .nav-go { min-width: 180px; gap: 8px; border-right: 0; background: var(--green); color: #fff; font-weight: 600; }
 .nav-go:hover { background: color-mix(in srgb, var(--green) 82%, #000); }
-@media (min-width: 1489px) { .nav-mark { border-left: 1px solid var(--line); } .nav-go { border-right: 1px solid var(--line); } }
+@media (min-width: 1489px) { .nav > :first-child { border-left: 1px solid var(--line); } .nav-go { border-right: 1px solid var(--line); } }
 
 /* ── Squares with symbols: one canvas, drawn only while some square is lit ── */
 #trail { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none; } /* above the content (squares only appear on empty spots), below the navigation */
@@ -96,6 +78,8 @@ button { font: inherit; color: inherit; }
 .hero-left { display: flex; flex-direction: column; justify-content: space-between; gap: 64px; min-height: 280px; border-right: 1px solid var(--line); }
 .hero-tag { font: 500 clamp(2.4rem, 4.6vw, 4rem)/1 var(--display); letter-spacing: -.03em; }
 .hero-right { display: flex; flex-direction: column; }
+.hero-links { display: flex; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--line); }
+.hero-links .btn { gap: 10px; }
 .hero-lead { font-size: clamp(1.2rem, 1.9vw, 1.65rem); line-height: 1.3; letter-spacing: -.01em; border-bottom: 1px solid var(--line); flex: 1; }
 .cell-cta { padding: 24px; }
 
@@ -337,8 +321,6 @@ a.crow:hover .arrow { transform: translate(3px, -3px); }
 
 /* ── Footer: the full-width name, then a row of cells ── */
 .foot { margin: clamp(56px, 8vw, 104px) var(--edge) 96px; /* room below so the AI bubble never covers the footer */ border: 1px solid var(--line); border-bottom: 0; }
-.foot-name { color: var(--green); padding: 22px 24px 18px; border-bottom: 1px solid var(--line); font: 900 120px/.86 var(--display); font-stretch: 125%; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; }
-.foot-name span { display: inline-block; }
 .foot-row { display: flex; flex-wrap: wrap; }
 .foot-row > * { padding: 20px 24px; border-right: 1px solid var(--line); font-size: .95rem; text-decoration: none; }
 .foot-row > span:first-child { color: var(--muted); }
@@ -389,7 +371,6 @@ a.crow:hover .arrow { transform: translate(3px, -3px); }
   .nav { height: 56px; }
   .hero-left { min-height: 0; gap: 36px; }
   .nav > * { padding: 0 14px 12px; }
-  .nav-mark { padding: 0 14px; }
   .cell, .cell-cta { padding: 18px; }
   .sec-head { min-height: 150px; gap: 36px; padding: 18px; }
   .shot-cap { left: 10px; bottom: 10px; font-size: .66rem; white-space: nowrap; }
