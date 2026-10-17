@@ -86,7 +86,10 @@
 
   <!-- ── Sobre ── -->
   <section class="sec trail-area" id="sobre">
-    <h2 class="sec-title" data-en="About me">Sobre mim</h2>
+    <div class="frame sec-head">
+      <p class="mono-row trail-ignore"><span><span data-en="blumenau, brazil">blumenau, brasil</span> <i class="sq" aria-hidden="true"></i></span></p>
+      <h2 class="sec-title" data-en="About me">Sobre mim</h2>
+    </div>
     <!-- in short: one cell per fact, with its logo (what a recruiter checks first) -->
     <ul class="frame summary">
       <li class="fact cell">
@@ -127,7 +130,6 @@
       </li>
     </ul>
     <div class="frame split">
-      <p class="cell statement" data-en="From the office to my first real project: rebuilding the website of the company where I work.">Do administrativo ao meu primeiro projeto de verdade: refazer o site da empresa onde trabalho.</p>
       <div class="cell prose">
         <p data-en="I'm from Blumenau, in southern Brazil. I started Computer Science at the Instituto Federal Catarinense in 2025 and, in 2026, transferred to <strong>Systems Analysis and Development at IFSC</strong>, where I'll graduate in 2028.">Sou de Blumenau/SC. Comecei Ciência da Computação no Instituto Federal Catarinense em 2025 e, em 2026, fiz transferência para <strong>Análise e Desenvolvimento de Sistemas no IFSC</strong>, onde me formo em 2028.</p>
         <p data-en="Since January 2026 I've been an apprentice at Ociani, a trucking company founded in 1981. The job started in the office and in IT support, and it led me to my first real project: rebuilding the company's website from scratch.">Desde janeiro de 2026 sou jovem aprendiz na Ociani, uma transportadora fundada em 1981. O trabalho começou no administrativo e no suporte de TI, e me levou ao meu primeiro projeto de verdade: refazer o site da empresa do zero.</p>
@@ -139,7 +141,10 @@
 
   <!-- ── Trajetória: like an agenda ── -->
   <section class="sec trail-area" id="trajetoria">
-    <h2 class="sec-title" data-en="Journey">Trajetória</h2>
+    <div class="frame sec-head">
+      <p class="mono-row trail-ignore"><span><span data-en="work and study · 2024 — now">trabalho e estudo · 2024 — hoje</span> <i class="sq" aria-hidden="true"></i></span></p>
+      <h2 class="sec-title" data-en="Journey">Trajetória</h2>
+    </div>
     <!-- tabs filter the agenda: everything, work, or study -->
     <div class="frame tabs trail-ignore" role="tablist" aria-label="Filtrar a trajetória" data-en-aria="Filter the journey">
       <button class="tab" type="button" role="tab" aria-selected="true" data-kind="all"><span data-en="All">Tudo</span><i aria-hidden="true"></i></button>
@@ -189,7 +194,10 @@
 
   <!-- ── Projetos ── -->
   <section class="sec trail-area" id="projetos">
-    <h2 class="sec-title" data-en="Projects">Projetos</h2>
+    <div class="frame sec-head">
+      <p class="mono-row trail-ignore"><span><span data-en="1 professional · 3 personal">1 profissional · 3 pessoais</span> <i class="sq" aria-hidden="true"></i></span></p>
+      <h2 class="sec-title" data-en="Projects">Projetos</h2>
+    </div>
     <article class="frame feature" id="ociani">
       <div class="feature-shot trail-ignore">
         <div class="cmp" id="cmp">
@@ -198,6 +206,7 @@
           <span class="cmp-tag before" data-en="before">antes</span>
           <span class="cmp-tag after" data-en="after">depois</span>
           <span class="cmp-line" aria-hidden="true"></span>
+          <span class="cmp-knob" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6"/></svg></span>
           <input class="cmp-range" type="range" min="0" max="100" step="0.1" value="0" aria-label="Comparar o site antigo com o novo" data-en-aria="Compare the old website with the new one">
         </div>
         <p class="shot-cap" data-en="drag to compare with the old site">arraste para comparar com o site antigo</p>
@@ -216,7 +225,7 @@
           <li><b data-en="Coverage map">Mapa de cobertura</b></li>
           <li><b data-en="News (Sanity)">Notícias (Sanity)</b></li>
         </ul>
-        <div class="cell facts"><span><b>144</b> commits</span><span class="stack"><img class="logo" src="images/logos/astro.svg" alt="" width="16" height="16">astro</span><span class="stack"><img class="logo" src="images/logos/typescript.svg" alt="" width="16" height="16">typescript</span><span class="stack"><img class="logo" src="images/logos/cloudflare.svg" alt="" width="16" height="16">cloudflare</span><span class="stack"><img class="logo" src="images/logos/sanity.svg" alt="" width="16" height="16">sanity</span></div>
+        <div class="cell facts"><span><b>144</b> commits</span><span>astro · typescript · cloudflare · sanity</span></div>
         <div class="cell cell-cta trail-ignore"><a class="btn btn-green btn-wide" href="https://www.ociani.com.br/" target="_blank" rel="noopener"><span data-en="Visit the website">Visitar o site</span><span aria-hidden="true">↗</span></a></div>
       </div>
     </article>
@@ -246,15 +255,18 @@
 
   <!-- ── Habilidades ── -->
   <section class="sec trail-area" id="habilidades">
-    <h2 class="sec-title" data-en="Skills">Habilidades</h2>
+    <div class="frame sec-head">
+      <p class="mono-row trail-ignore"><span><span data-en="18 technologies">18 tecnologias</span> <i class="sq" aria-hidden="true"></i></span></p>
+      <h2 class="sec-title" data-en="Skills">Habilidades</h2>
+    </div>
     <div class="frame skills">
       <div class="cell skill-col">
         <p class="skill-head"><span data-en="used in production">usei em produção</span><span class="tag tag-live">11</span></p>
-        <ul><li><img class="logo" src="images/logos/typescript.svg" alt="" width="16" height="16">TypeScript</li><li><img class="logo" src="images/logos/javascript.svg" alt="" width="16" height="16">JavaScript</li><li><img class="logo" src="images/logos/astro.svg" alt="" width="16" height="16">Astro</li><li><img class="logo" src="images/logos/html.svg" alt="" width="16" height="16">HTML</li><li><img class="logo" src="images/logos/css.svg" alt="" width="16" height="16">CSS</li><li><img class="logo" src="images/logos/workers.svg" alt="" width="16" height="16">Cloudflare Workers</li><li>DNS</li><li data-en="SOAP APIs">APIs SOAP</li><li><img class="logo" src="images/logos/sanity.svg" alt="" width="16" height="16">Sanity</li><li><img class="logo" src="images/logos/git.svg" alt="" width="16" height="16">Git</li><li data-en="AI">IA</li></ul>
+        <ul><li>TypeScript</li><li>JavaScript</li><li>Astro</li><li>HTML</li><li>CSS</li><li>Cloudflare Workers</li><li>DNS</li><li data-en="SOAP APIs">APIs SOAP</li><li>Sanity</li><li>Git</li><li data-en="AI">IA</li></ul>
       </div>
       <div class="cell skill-col">
         <p class="skill-head"><span data-en="studied and practiced">estudei e pratiquei</span><span class="tag">6</span></p>
-        <ul><li><img class="logo" src="images/logos/java.svg" alt="" width="16" height="16">Java</li><li><img class="logo" src="images/logos/spring.svg" alt="" width="16" height="16">Spring Boot</li><li>SQL</li><li><img class="logo" src="images/logos/python.svg" alt="" width="16" height="16">Python</li><li><img class="logo" src="images/logos/maven.svg" alt="" width="16" height="16">Maven</li><li><img class="logo" src="images/logos/postman.svg" alt="" width="16" height="16">Postman</li></ul>
+        <ul><li>Java</li><li>Spring Boot</li><li>SQL</li><li>Python</li><li>Maven</li><li>Postman</li></ul>
       </div>
       <div class="cell skill-col">
         <p class="skill-head"><span data-en="studying now">estudando agora</span><span class="tag">1</span></p>
@@ -267,7 +279,10 @@
 
   <!-- ── Assistente: a terminal ── -->
   <section class="sec trail-area" id="pergunte">
-    <h2 class="sec-title" data-en="Ask my AI assistant">Pergunte ao meu assistente</h2>
+    <div class="frame sec-head">
+      <p class="mono-row trail-ignore"><span><span data-en="AI assistant · answers right away">assistente de IA · responde na hora</span> <i class="sq" aria-hidden="true"></i></span></p>
+      <h2 class="sec-title" data-en="Ask my AI assistant">Pergunte ao meu assistente</h2>
+    </div>
     <!-- shown here while the assistant is open in the corner of the screen -->
     <div class="frame term-away" id="term-away" hidden>
       <p data-en="The assistant is open in the corner of the screen.">O assistente está aberto no canto da tela.</p>
@@ -331,7 +346,7 @@
   <svg viewBox="0 0 14 12" shape-rendering="crispEdges" aria-hidden="true">
     <g fill="#fff"><rect x="2" y="0" width="10" height="1"/><rect x="1" y="1" width="12" height="1"/><rect x="0" y="2" width="14" height="6"/>
       <rect x="1" y="8" width="12" height="1"/><rect x="2" y="9" width="10" height="1"/><rect x="2" y="10" width="3" height="1"/><rect x="2" y="11" width="2" height="1"/></g>
-    <g fill="#0b8a35"><rect class="d1" x="3" y="4" width="2" height="2"/><rect class="d2" x="6" y="4" width="2" height="2"/><rect class="d3" x="9" y="4" width="2" height="2"/></g>
+    <g style="fill:var(--green)"><rect class="d1" x="3" y="4" width="2" height="2"/><rect class="d2" x="6" y="4" width="2" height="2"/><rect class="d3" x="9" y="4" width="2" height="2"/></g>
   </svg>
   <i class="ai-unread" aria-hidden="true"></i>
 </button>

@@ -123,7 +123,7 @@
     const markDirty = () => { dirty = true; };
     function measure() {
       dirty = false;
-      const els = new Set(document.querySelectorAll('.trail-area img, .trail-area button, .trail-area a, .trail-area input, .trail-area .btn, .trail-area .tag, .trail-area .ico, .trail-ignore'));
+      const els = new Set(document.querySelectorAll('.frame, .foot, .name, .trail-area img, .trail-area button, .trail-area a, .trail-area input, .trail-area .btn, .trail-area .tag, .trail-area .ico, .trail-ignore'));
       const walk = document.createTreeWalker(document.querySelector('main') || document.body, NodeFilter.SHOW_TEXT);
       for (let n = walk.nextNode(); n; n = walk.nextNode()) if (n.nodeValue.trim() && n.parentElement) els.add(n.parentElement);
       document.querySelectorAll('.foot-name, .foot-row > *').forEach(e => els.add(e));
@@ -139,7 +139,7 @@
     if (document.fonts) document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', markDirty);
     // free = inside an area that allows squares, and the whole square (in page coordinates) touches no blocked area
     function emptySpot(t, x, y) {
-      if (!t || !t.closest || !t.closest('.trail-area') || t.closest('.trail-ignore, a, button, input, textarea, label, img, .btn, .tag')) return false;
+      if (!t || !t.closest || !t.closest('.trail-area') || t.closest('.frame, .foot, .name, .trail-ignore, a, button, input, textarea, label, img, .btn, .tag')) return false;
       if (dirty) measure();
       const px = x + scrollX, py = y + scrollY;
       for (const [l, tp, r, b] of blocked) if (px < r && px + SIZE > l && py < b && py + SIZE > tp) return false;
