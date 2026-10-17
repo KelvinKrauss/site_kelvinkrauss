@@ -104,7 +104,7 @@
   (function symbolTrail() {
     const cv = $('#trail'), ctx = cv.getContext('2d');
     if (!ctx || calm.matches || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    const SIZE = 20, MAX = 10, FADE = 220;
+    const SIZE = 20, MAX = 10, FADE = 260; // FADE: how long it takes to shrink away
     const BOX = 20, INSET = (SIZE - BOX) / 2; // the colored square fills its grid cell
     const COLORS = ['#ae85ff', '#f73678', '#c05200', '#583af7', '#5fed83', '#bba00a'];
     const DARK_TEXT = new Set(['#ae85ff', '#5fed83', '#bba00a']); // the light colors get dark text, the strong ones white
@@ -149,16 +149,19 @@
       raf = 0;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, innerWidth, innerHeight);
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '600 13px "Geist Mono", ui-monospace, monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       for (let i = live.length - 1; i >= 0; i--) {
         const q = live[i], age = now - q.born;
-        const a = age < q.life ? 1 : 1 - (age - q.life) / FADE;
-        if (a <= 0) { live.splice(i, 1); continue; }
-        ctx.globalAlpha = a;
-        ctx.fillStyle = q.color; ctx.fillRect(q.x + INSET, q.y + INSET, BOX, BOX);
-        if (q.text) { ctx.fillStyle = DARK_TEXT.has(q.color) ? '#0b0f0c' : '#fff'; ctx.fillText(q.text, q.x + SIZE / 2, q.y + SIZE / 2 + 1); }
+        // at the end of its life the square shrinks into its center (like githubuniverse.com), it doesn't fade
+        const k = age < q.life ? 1 : 1 - (age - q.life) / FADE;
+        if (k <= 0) { live.splice(i, 1); continue; }
+        const s = k * k * (3 - 2 * k), box = BOX * s, cx = q.x + SIZE / 2, cy = q.y + SIZE / 2; // smooth ease
+        ctx.fillStyle = q.color; ctx.fillRect(cx - box / 2, cy - box / 2, box, box);
+        if (q.text && s > .25) {
+          ctx.font = '600 ' + (13 * s).toFixed(1) + 'px "Geist Mono", ui-monospace, monospace';
+          ctx.fillStyle = DARK_TEXT.has(q.color) ? '#0b0f0c' : '#fff'; ctx.fillText(q.text, cx, cy + s);
+        }
       }
-      ctx.globalAlpha = 1;
       if (live.length) raf = requestAnimationFrame(draw);
     }
     addEventListener('mousemove', e => {

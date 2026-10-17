@@ -117,6 +117,28 @@ a.crow:hover .ck .ico { color: #fff; }
 .sec { padding-top: clamp(56px, 8vw, 104px); }
 .sec-title { padding: 0 var(--edge) 22px; font: 500 clamp(2.4rem, 5vw, 4.4rem)/1 var(--display); letter-spacing: -.035em; border-bottom: 1px solid var(--line); }
 .sec-title + .frame { border-top: 0; }
+
+/* "sobre/" in short: one cell per fact, logo on top (what a recruiter checks first) */
+.summary { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fact { display: flex; flex-direction: column; gap: 4px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.fact:nth-child(3n) { border-right: 0; }
+.fact:nth-last-child(-n + 3) { border-bottom: 0; }
+.fact-logo { align-self: flex-start; height: 40px; width: auto; max-width: 72px; margin-bottom: 16px; object-fit: contain; object-position: left center; }
+.fact-shot { width: 64px; object-fit: cover; object-position: left top; box-shadow: 0 0 0 1px var(--line); }
+.fact-badge { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 0 10px; height: 40px; box-shadow: inset 0 0 0 1.5px var(--ink); font: 600 .95rem var(--mono); }
+.fact-badge i { width: 1px; height: 18px; background: var(--ink); }
+.fact-open { display: inline-flex; align-items: center; justify-content: center; align-self: flex-start; width: 40px; height: 40px; box-shadow: inset 0 0 0 1.5px var(--green); }
+.fact-open i { width: 14px; height: 14px; background: var(--green); animation: blink 1.6s steps(1) infinite; }
+.fact-k { font: 400 .82rem var(--mono); color: var(--muted); }
+.fact strong { font-size: 1.12rem; font-weight: 600; letter-spacing: -.01em; line-height: 1.3; }
+.fact-v { font-size: .93rem; color: var(--muted); }
+.summary + .split { border-top: 1px solid var(--line); }
+
+/* small technology logos next to their names */
+.logo { width: 16px; height: 16px; flex: none; }
+.stack { display: inline-flex; align-items: center; gap: 6px; }
+.skill-col li { align-items: center; }
+.skill-col li .logo { margin-left: -4px; }
 .split { display: grid; grid-template-columns: 1fr 1fr; }
 .statement { font: 600 clamp(1.6rem, 3vw, 2.6rem)/1.1 var(--display); letter-spacing: -.03em; border-right: 1px solid var(--line); }
 .prose { display: flex; flex-direction: column; gap: 16px; color: #1d2420; }
@@ -291,6 +313,11 @@ a.crow:hover .arrow { transform: translate(3px, -3px); }
   .name { flex-direction: column; align-items: flex-start; }
   .name-side { flex-direction: row; flex-wrap: wrap; gap: 4px 14px; align-items: flex-start; text-align: left; }
   .tab { min-width: 0; flex: 1; padding: 16px; }
+  .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fact:nth-child(3n) { border-right: 1px solid var(--line); }
+  .fact:nth-child(2n) { border-right: 0; }
+  .fact:nth-last-child(-n + 3) { border-bottom: 1px solid var(--line); }
+  .fact:nth-last-child(-n + 2) { border-bottom: 0; }
   .tabs-fill { display: none; }
   .day { font-size: 1.5rem; }
   .hero-left { min-height: 220px; gap: 40px; }
@@ -310,6 +337,11 @@ a.crow:hover .arrow { transform: translate(3px, -3px); }
   .nav-mark { padding: 0 14px; }
   .cell, .cell-cta { padding: 18px; }
   .shot-cap { left: 10px; bottom: 10px; font-size: .66rem; white-space: nowrap; }
+  .summary { grid-template-columns: 1fr; }
+  .fact, .fact:nth-child(3n) { border-right: 0; }
+  .fact:nth-last-child(-n + 2) { border-bottom: 1px solid var(--line); }
+  .fact:last-child { border-bottom: 0; }
+  .fact-logo { margin-bottom: 10px; }
   .now { grid-template-columns: 1fr; }
   .now-list li { border-right: 0; }
   .now-list li:nth-last-child(2) { border-bottom: 1px solid var(--line); }

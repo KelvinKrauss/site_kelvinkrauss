@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="1643 -32 761 760">
+  <!-- Ícone da aba: o prisma da logo em vetor (design/ociani-logo.svg), com o
+       mesmo brilho. Se a logo mudar, refazer a partir de lá. -->
+  <defs>
+    <clipPath id="brilho"><path d="M-10 -10H2430V355Q1000 230 0 352H-10Z"/></clipPath>
+    <polygon id="triEsq" points="1866,668 2082,34 1652,254"/>
+    <polygon id="triDir" points="1953,664 2173,28 2395,436"/>
+  </defs>
+  <use href="#triEsq" xlink:href="#triEsq" fill="#54BFF1"/>
+  <use href="#triEsq" xlink:href="#triEsq" fill="#5BC1F2" clip-path="url(#brilho)"/>
+  <use href="#triDir" xlink:href="#triDir" fill="#286BAD"/>
+  <use href="#triDir" xlink:href="#triDir" fill="#3272B1" clip-path="url(#brilho)"/>
+</svg>
