@@ -404,6 +404,7 @@
       buttons(r.acts);
       runAuto(r.auto);
       chips(r.chips);
+      if (!floating && !sectionInView) bubble.classList.add('unread'); // answered while out of sight
     } catch (err) {
       history.pop();
       live.classList.remove('wait'); live.classList.add('err');
@@ -413,6 +414,46 @@
     }
   }
   $('#term-form').addEventListener('submit', e => { e.preventDefault(); const q = input.value; input.value = ''; ask(q); });
+
+  /* ── The assistant from anywhere (like the main design's bubble) ──
+     While the "Pergunte" section is off screen, a pixel-art bubble waits in the corner. Clicking it moves the same
+     terminal (same conversation) into a floating window; ✕ or Escape puts it back, and so does the button left in
+     its place. An answer that arrives while it's closed marks the bubble. */
+  const term = $('#term'), away = $('#term-away'), aiFloat = $('#ai-float'), bubble = $('#ai-bubble'), askSec = $('#pergunte');
+  let floating = false, sectionInView = false;
+  const syncBubble = () => { bubble.hidden = floating || sectionInView; };
+  function openFloat() {
+    if (floating) return;
+    floating = true;
+    away.hidden = false;
+    aiFloat.appendChild(term);
+    aiFloat.hidden = false;
+    bubble.classList.remove('unread');
+    syncBubble();
+    if (!calm.matches && aiFloat.animate) aiFloat.animate([{ opacity: 0, transform: 'translateY(18px) scale(.95)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'cubic-bezier(.2, .9, .3, 1.1)' });
+    out.scrollTop = out.scrollHeight;
+    input.focus({ preventScroll: true });
+  }
+  function closeFloat(back) {
+    if (!floating) return;
+    const done = () => {
+      floating = false; aiFloat.hidden = true;
+      away.after(term); away.hidden = true;
+      syncBubble();
+      if (back) { term.scrollIntoView({ behavior: calm.matches ? 'auto' : 'smooth', block: 'center' }); input.focus({ preventScroll: true }); }
+      else if (!bubble.hidden) bubble.focus({ preventScroll: true });
+    };
+    if (calm.matches || !aiFloat.animate) return done();
+    aiFloat.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(14px) scale(.97)' }], { duration: 180, easing: 'ease-in' }).finished.then(done);
+  }
+  bubble.addEventListener('click', openFloat);
+  $('#term-close').addEventListener('click', () => closeFloat(false));
+  $('#term-back').addEventListener('click', () => closeFloat(true));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && floating && cv.hidden) closeFloat(false); });
+  if ('IntersectionObserver' in window) new IntersectionObserver(([en]) => { sectionInView = en.isIntersecting; syncBubble(); }, { threshold: .15 }).observe(askSec);
+  else syncBubble();
+  // the hero's "ask my assistant" button: with the window open, it just focuses it
+  document.querySelectorAll('a[href="#pergunte"]').forEach(a => a.addEventListener('click', e => { if (floating) { e.preventDefault(); input.focus(); } }));
 
   applyLang(lang);
 })();
