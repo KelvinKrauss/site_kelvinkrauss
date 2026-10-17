@@ -43,6 +43,9 @@ button { font: inherit; color: inherit; }
 /* ── Navigation cells ── */
 .nav { position: sticky; top: 0; z-index: 30; display: flex; align-items: stretch; height: 64px; padding-inline: max(0px, calc((100% - var(--max)) / 2)); background: var(--bg); border-bottom: 1px solid var(--line); }
 .nav > * { display: flex; align-items: flex-end; padding: 0 18px 14px; border-right: 1px solid var(--line); text-decoration: none; font: 500 .98rem var(--display); transition: background-color .2s; }
+.nav-mark { gap: 4px; align-items: center; padding: 0 18px; font: 900 1.45rem/1 var(--display); font-stretch: 125%; letter-spacing: -.02em; }
+.nav-mark i { width: 9px; height: 9px; background: var(--green); margin-top: -12px; }
+.nav-mark:hover { background: var(--paper); }
 .nav-cell { min-width: 140px; }
 .nav-cell:hover { background: var(--paper); }
 .nav-cell.on { box-shadow: inset 0 -3px 0 var(--green); }
@@ -80,6 +83,20 @@ button { font: inherit; color: inherit; }
 .hero-right { display: flex; flex-direction: column; }
 .hero-links { display: flex; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--line); }
 .hero-links .btn { gap: 10px; }
+/* contact buttons in their brand colors */
+.brand { color: #fff; }
+.brand .ico { color: #fff; }
+.c-in { background: #0a66c2; }
+.c-wa { background: #1c9e52; }
+.c-gh { background: #24292f; }
+.c-cv { background: var(--green); }
+.c-mail { background: #d93025; }
+.brand:hover, .brand:focus-visible { color: #fff; filter: brightness(1.08); }
+/* a short blink when KK brings you here */
+.hero-links.flash .brand { animation: contact-flash .9s ease-out; }
+.hero-links.flash .brand:nth-child(2) { animation-delay: .06s; } .hero-links.flash .brand:nth-child(3) { animation-delay: .12s; }
+.hero-links.flash .brand:nth-child(4) { animation-delay: .18s; } .hero-links.flash .brand:nth-child(5) { animation-delay: .24s; }
+@keyframes contact-flash { 0%, 100% { transform: none; } 35% { transform: translateY(-6px) scale(1.06); } 65% { transform: translateY(1px); } }
 .hero-lead { font-size: clamp(1.2rem, 1.9vw, 1.65rem); line-height: 1.3; letter-spacing: -.01em; border-bottom: 1px solid var(--line); flex: 1; }
 .cell-cta { padding: 24px; }
 
@@ -369,6 +386,7 @@ a.crow:hover .arrow { transform: translate(3px, -3px); }
   .bar-path { display: none; }
   .bar-label { display: none; }
   .nav { height: 56px; }
+  .nav-mark { padding: 0 14px; }
   .hero-left { min-height: 0; gap: 36px; }
   .nav > * { padding: 0 14px 12px; }
   .cell, .cell-cta { padding: 18px; }

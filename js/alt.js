@@ -225,6 +225,15 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCv(); });
 
 
+  /* ── KK: back to the top, where the contacts are; they give a short blink so the eye finds them ── */
+  $('#kk-link').addEventListener('click', e => {
+    e.preventDefault();
+    scrollTo({ top: 0, behavior: calm.matches ? 'auto' : 'smooth' });
+    const links = $('.hero-links');
+    if (!links || calm.matches) return;
+    setTimeout(() => { links.classList.remove('flash'); void links.offsetWidth; links.classList.add('flash'); }, scrollY > 40 ? 500 : 0);
+  });
+
   /* ── Copy e-mail ── */
   $('#copy-email').addEventListener('click', e => {
     const b = e.currentTarget, email = $('#email').textContent.trim();
