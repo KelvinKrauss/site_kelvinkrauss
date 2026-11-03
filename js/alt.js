@@ -234,6 +234,49 @@
     setTimeout(() => { links.classList.remove('flash'); void links.offsetWidth; links.classList.add('flash'); }, scrollY > 40 ? 500 : 0);
   });
 
+  /* ── Mosaic of small tiles down the left margin ──
+     Medium tiles (48 px), almost full, thinning toward the content; the same pattern every visit (fixed seed).
+     Where the margin is too thin it takes one column and pushes the page a little; on phones it's off. */
+  (function mosaic() {
+    const box = document.createElement('div'); box.id = 'mosaic'; box.setAttribute('aria-hidden', 'true');
+    document.body.prepend(box);
+    const SIZE = 48, FILL = .95;
+    const COLORS = ['#0f766e', '#1f8fff', '#ae85ff', '#583af7', '#a5f3e8', '#bba00a', '#ff7be5', '#c05200'];
+    const FG = { '#0f766e': ['#bba00a', '#ff7be5'], '#1f8fff': ['#583af7', '#a5f3e8'], '#ae85ff': ['#583af7', '#ff7be5'], '#583af7': ['#ae85ff', '#a5f3e8'],
+      '#a5f3e8': ['#0f766e', '#583af7'], '#bba00a': ['#c05200', '#fff'], '#ff7be5': ['#c05200', '#583af7'], '#c05200': ['#ff7be5', '#bba00a'] };
+    const KINDS = ['solid', 'solid', 'dots', 'cross', 'quarter', 'quarter', 'half', 'glyph'];
+    const GLYPHS = ['{', '}', '>', '<', '/', '=', '+', '*'];
+    let lastKey = '';
+    function build() {
+      let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      document.body.classList.remove('mosaic-pad'); document.body.style.removeProperty('--pad');
+      if (innerWidth < 860) { box.innerHTML = ''; box.style.width = '0'; lastKey = ''; return; }
+      const hero = document.querySelector('.hero');
+      let room = hero.getBoundingClientRect().left + scrollX - 12;
+      if (room < SIZE) { document.body.classList.add('mosaic-pad'); document.body.style.setProperty('--pad', (SIZE + 12) + 'px'); room = SIZE; }
+      const cols = Math.max(1, Math.floor(room / SIZE)), rows = Math.ceil(document.documentElement.scrollHeight / SIZE);
+      const key = cols + 'x' + rows; if (key === lastKey) return; lastKey = key;
+      Object.assign(box.style, { width: cols * SIZE + 'px', height: rows * SIZE + 'px', gridTemplateColumns: 'repeat(' + cols + ', ' + SIZE + 'px)', gridAutoRows: SIZE + 'px' });
+      box.style.setProperty('--ts', SIZE + 'px');
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < cols * rows; i++) {
+        const t = document.createElement('div'), col = i % cols, fade = cols > 1 ? 1 - (col / cols) * .45 : 1;
+        if (rnd() > FILL * fade) { t.className = 'mt empty'; frag.appendChild(t); continue; }
+        const bg = COLORS[(rnd() * COLORS.length) | 0], kind = KINDS[(rnd() * KINDS.length) | 0], [fg, fg2] = FG[bg];
+        t.className = 'mt ' + kind + (kind === 'quarter' ? ' r' + (1 + ((rnd() * 4) | 0)) : kind === 'half' ? ' r' + (1 + ((rnd() * 2) | 0)) : '');
+        t.style.background = bg; t.style.setProperty('--fg', fg); t.style.setProperty('--fg2', fg2);
+        if (kind === 'cross') t.innerHTML = '<i></i><i></i><i></i><i></i><i></i>';
+        if (kind === 'glyph') t.textContent = GLYPHS[(rnd() * GLYPHS.length) | 0];
+        frag.appendChild(t);
+      }
+      box.replaceChildren(frag);
+    }
+    let timer = 0; const later = () => { clearTimeout(timer); timer = setTimeout(build, 150); };
+    addEventListener('resize', later);
+    if ('ResizeObserver' in window) new ResizeObserver(later).observe(document.body); // the page grew (images, tabs, chat)
+    build();
+  })();
+
   /* ── Copy e-mail ── */
   $('#copy-email').addEventListener('click', e => {
     const b = e.currentTarget, email = $('#email').textContent.trim();

@@ -336,6 +336,21 @@ a.crow:hover .arrow { transform: translate(3px, -3px); }
 .cv-x:hover { background: #222a25; }
 #cv-frame { flex: 1; width: 100%; border: 0; background: #fff; }
 
+/* ── Mosaic of small tiles down the left margin (built by js/alt.js; only where there is margin) ── */
+#mosaic { position: absolute; top: 0; left: 0; z-index: 0; display: grid; pointer-events: none; overflow: hidden; }
+#mosaic .mt { position: relative; overflow: hidden; display: grid; place-items: center; font: 800 calc(var(--ts) * .78)/1 var(--mono); }
+#mosaic .empty { background: none; }
+#mosaic .dots { background-image: radial-gradient(var(--fg) 22%, transparent 24%); background-size: 50% 50%; background-position: center; }
+#mosaic .cross i { position: absolute; width: 26%; height: 26%; background: var(--fg); }
+#mosaic .cross i:nth-child(1) { left: 37%; top: 11%; } #mosaic .cross i:nth-child(2) { left: 11%; top: 37%; } #mosaic .cross i:nth-child(3) { left: 37%; top: 37%; background: var(--fg2); }
+#mosaic .cross i:nth-child(4) { left: 63%; top: 37%; } #mosaic .cross i:nth-child(5) { left: 37%; top: 63%; }
+#mosaic .quarter::after { content: ""; position: absolute; inset: 0; background: var(--fg); border-radius: 0 0 100% 0; }
+#mosaic .quarter.r2::after { border-radius: 0 0 0 100%; } #mosaic .quarter.r3::after { border-radius: 100% 0 0 0; } #mosaic .quarter.r4::after { border-radius: 0 100% 0 0; }
+#mosaic .half::after { content: ""; position: absolute; inset: 0; background: var(--fg); clip-path: polygon(0 0, 100% 0, 0 100%); }
+#mosaic .half.r2::after { clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+#mosaic .glyph { color: var(--fg); }
+body.mosaic-pad { padding-left: var(--pad, 0px); }
+
 /* ── Footer: the full-width name, then a row of cells ── */
 .foot { margin: clamp(56px, 8vw, 104px) var(--edge) 96px; /* room below so the AI bubble never covers the footer */ border: 1px solid var(--line); border-bottom: 0; }
 .foot-row { display: flex; flex-wrap: wrap; }

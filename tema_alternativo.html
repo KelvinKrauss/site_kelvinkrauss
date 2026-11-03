@@ -3,375 +3,454 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Kelvin Krauss · Desenvolvedor</title>
-  <!-- Alternative design, only at /tema_alternativo while Kelvin compares it with the main one: kept out of search results -->
+  <!-- Previous design, kept at /tema_alternativo as a souvenir: out of search results -->
   <meta name="robots" content="noindex">
+  <title>Kelvin Krauss · Desenvolvedor</title>
+  <meta name="description" content="Kelvin Krauss, estudante de Análise e Desenvolvimento de Sistemas no IFSC e jovem aprendiz na Ociani Transportadora. Criou o novo site da Ociani, com cotação de frete e rastreamento integrados ao sistema SSW.">
+  <meta name="theme-color" content="#0b0c10">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2232%22%20fill%3D%22%230b0c10%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2241%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22%23f1f2f6%22%20text-anchor%3D%22middle%22%3EKK%3C%2Ftext%3E%3C%2Fsvg%3E">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.kelvinkrauss.me/">
+  <meta property="og:title" content="Kelvin Krauss · Desenvolvedor">
+  <meta property="og:description" content="Kelvin Krauss, estudante de Análise e Desenvolvimento de Sistemas no IFSC e jovem aprendiz na Ociani Transportadora. Criou o novo site da Ociani, com cotação de frete e rastreamento integrados ao sistema SSW.">
+  <meta property="og:site_name" content="Kelvin Krauss">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:image" content="https://www.kelvinkrauss.me/images/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Olá, eu sou o Kelvin Krauss. Desenvolvedor em Blumenau/SC.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.kelvinkrauss.me/images/og.jpg">
   <link rel="canonical" href="https://www.kelvinkrauss.me/">
-  <meta name="description" content="Kelvin Krauss, estudante de Análise e Desenvolvimento de Sistemas no IFSC e jovem aprendiz na Ociani Transportadora.">
-  <meta name="theme-color" content="#000000">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22%23000%22%2F%3E%3Crect%20x%3D%2242%22%20y%3D%2210%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22%2322c55e%22%2F%3E%3Ctext%20x%3D%2230%22%20y%3D%2246%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2228%22%20font-weight%3D%22900%22%20fill%3D%22%23fff%22%20text-anchor%3D%22middle%22%3EKK%3C%2Ftext%3E%3C%2Fsvg%3E">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Kelvin Krauss",
+    "url": "https://www.kelvinkrauss.me/",
+    "image": "https://www.kelvinkrauss.me/images/og.jpg",
+    "jobTitle": "Desenvolvedor",
+    "email": "mailto:kelvin.krauss.br@gmail.com",
+    "address": { "@type": "PostalAddress", "addressLocality": "Blumenau", "addressRegion": "SC", "addressCountry": "BR" },
+    "alumniOf": [
+      { "@type": "CollegeOrUniversity", "name": "Instituto Federal de Santa Catarina (IFSC)" },
+      { "@type": "CollegeOrUniversity", "name": "Instituto Federal Catarinense (IFC)" }
+    ],
+    "worksFor": { "@type": "Organization", "name": "Ociani Transportadora", "url": "https://www.ociani.com.br/" },
+    "knowsAbout": ["TypeScript", "JavaScript", "Astro", "Cloudflare Workers", "SOAP", "Java", "Spring Boot", "SQL", "Python"],
+    "knowsLanguage": ["pt-BR", "en"],
+    "sameAs": ["https://www.linkedin.com/in/kelvin-krauss-04b7622b8/", "https://github.com/KelvinKrauss"]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@75..125,200..900&family=Geist+Mono:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="css/alt.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<a class="skip" href="#conteudo" data-en="Skip to content">Pular para o conteúdo</a>
-<!-- squares with programming symbols that light up where the mouse passes (behind the content) -->
-<canvas id="trail" aria-hidden="true"></canvas>
-<!-- icons (the same ones as the main design) -->
+<a class="skip" href="#inicio" data-en="Skip to content">Pular para o conteúdo</a>
+<script>
+  /* Modo leve guardado (computador fraco, decidido em js/main.js): aplicado antes de desenhar, sem piscar o vidro */
+  try {
+    const s = JSON.parse(localStorage.getItem('kk-lite'));
+    if ((s && Date.now() - s.at < 7 * 864e5 && !/[?&]full\b/.test(location.search)) || /[?&]lite\b/.test(location.search)) {
+      document.documentElement.classList.add('lite'); window.kkInkHidden = window.kkInkIdleOff = true;
+    }
+  } catch (e) {}
+</script>
+<script>
+  /* Tema contínuo: 0 = escuro, 100 = claro. O fundo muda suavemente; o texto troca de claro
+     para escuro no ponto em que os dois dão o mesmo contraste (luminância ~0,18), então ele
+     fica sempre legível, inclusive nos cinzas do meio. */
+  (function () {
+    // i = the three ink colors used with the accent in the background echo
+    const T = {
+      escuro:  { bg: [11, 12, 16],    card: [22, 24, 30],    ink: [241, 242, 246], text: [201, 204, 214], muted: [143, 147, 163], line: [255, 255, 255, .1],  accent: [106, 165, 255], ok: [74, 222, 128],  i: [[168, 85, 247], [236, 72, 153], [20, 184, 166]], light: 0, dither: 2, speed: 3 },
+      ardosia: { bg: [29, 37, 50],    card: [39, 49, 65],    ink: [238, 242, 248], text: [201, 210, 224], muted: [141, 153, 173], line: [255, 255, 255, .1],  accent: [124, 199, 255], ok: [111, 227, 176], i: [[143, 155, 255], [95, 224, 200], [199, 160, 255]], light: 0, dither: 2, speed: 3 },
+      ameixa:  { bg: [33, 25, 36],    card: [44, 34, 48],    ink: [245, 238, 246], text: [217, 203, 221], muted: [161, 143, 167], line: [255, 230, 255, .1],  accent: [242, 166, 201], ok: [134, 223, 184], i: [[193, 140, 255], [255, 162, 124], [127, 214, 194]], light: 0, dither: 2, speed: 3 },
+      nevoa:   { bg: [201, 204, 209], card: [215, 218, 222], ink: [21, 23, 27],    text: [43, 46, 52],    muted: [86, 91, 100],   line: [20, 22, 28, .13],    accent: [44, 95, 201],   ok: [29, 122, 67],   i: [[124, 58, 237], [219, 39, 119], [13, 148, 136]], light: 1, dither: 2, speed: 3 }
+    };
+    const num = (a, b, k) => a + (b - a) * k;
+    const mixAny = (a, b, k) => Array.isArray(a) ? a.map((v, n) => mixAny(v, b[n], k)) : num(a, b, k);
+    const rgb = c => 'rgb(' + c.slice(0, 3).map(Math.round).join(',') + ')';
+    const rgba = c => 'rgba(' + c.slice(0, 3).map(Math.round).join(',') + ',' + (+c[3]).toFixed(3) + ')';
+    const f3 = v => +v.toFixed(3);
+    window.kkTheme = {
+      names: Object.keys(T),
+      pal: name => T[name] || T.escuro,
+      mix: (a, b, k) => { const o = {}; for (const key in a) o[key] = mixAny(a[key], b[key], k); return o; },
+      paint(p) {
+        this.now = p;
+        const s = document.documentElement.style, set = (n, v) => s.setProperty(n, v), L = p.light;
+        set('--bg', rgb(p.bg)); set('--card-solid', rgb(p.card));
+        set('--ink', rgb(p.ink)); set('--text', rgb(p.text)); set('--muted', rgb(p.muted));
+        set('--line', rgba(p.line)); set('--accent', rgb(p.accent)); set('--ok', rgb(p.ok));
+        set('--dither', f3(p.dither));
+        set('--echo-speed', f3(p.speed));
+        set('--i1', rgb(p.i[0])); set('--i2', rgb(p.i[1])); set('--i3', rgb(p.i[2]));
+        set('--glass-tint', 'rgba(255, 255, 255, ' + f3(num(.06, .3, L)) + ')');
+        set('--glass-tint-hover', 'rgba(255, 255, 255, ' + f3(num(.11, .45, L)) + ')');
+        set('--rim-hi', 'rgba(255, 255, 255, ' + f3(num(.42, .85, L)) + ')');
+        set('--rim-lo', 'rgba(255, 255, 255, ' + f3(num(.06, .22, L)) + ')');
+        set('--glass-shadow', '0 1px 1px rgba(0, 0, 0, ' + f3(num(.3, .05, L)) + '), 0 8px 26px rgba(0, 0, 0, ' + f3(num(.35, .1, L)) + ')');
+        set('--shadow-lg', '0 2px 4px rgba(0, 0, 0, ' + f3(num(.4, .06, L)) + '), 0 24px 60px rgba(0, 0, 0, ' + f3(num(.5, .15, L)) + ')');
+        s.colorScheme = L > .5 ? 'light' : 'dark';
+        const meta = document.querySelector('meta[name=theme-color]');
+        if (meta) meta.content = rgb(p.bg);
+      }
+    };
+    // first visit: follows the computer (light system = Névoa, dark = Escuro); after a choice, the choice wins
+    const system = matchMedia('(prefers-color-scheme: light)').matches ? 'nevoa' : 'escuro';
+    let saved = system;
+    try {
+      const old = localStorage.getItem('kk-shade'); // light/dark choice from an older version of the site
+      saved = localStorage.getItem('kk-theme') || (old !== null ? (+old >= 50 ? 'nevoa' : 'escuro') : system);
+      if (!T[saved]) saved = system;
+    } catch (e) {}
+    window.kkTheme.current = saved;
+    window.kkTheme.paint(T[saved]);
+  })();
+</script>
+
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
+    <symbol id="i-smile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></symbol>
+    <symbol id="i-case" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7l10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2M15 18H9M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></symbol>
+    <symbol id="i-coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M6 2v2M10 2v2M14 2v2"/></symbol>
+    <symbol id="i-calc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h8"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 4-6 2v14l6-2 6 2 6-2V4l-6 2-6-2ZM9 4v14M15 6v14"/></symbol>
+    <symbol id="i-news" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13v16H6a2 2 0 0 1-2-2V4ZM17 8h3v10a2 2 0 0 1-2 2"/><path d="M8 8h5M8 12h5M8 16h3"/></symbol>
+    <symbol id="i-boxes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
     <symbol id="i-gh" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.7 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></symbol>
     <symbol id="i-in" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></symbol>
     <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35ZM12.04 21.8h-.01a9.8 9.8 0 0 1-5-1.37l-.36-.21-3.71.97.99-3.62-.24-.37a9.8 9.8 0 1 1 8.33 4.6Zm8.35-18.15A11.75 11.75 0 0 0 1.88 17.82L.2 23.96l6.28-1.65a11.74 11.74 0 0 0 5.56 1.42h.01A11.75 11.75 0 0 0 20.39 3.65Z"/></symbol>
     <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></symbol>
-    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></symbol>
   </defs>
 </svg>
 
-<!-- ── Black bar: where and what time it is for Kelvin ── -->
-<div class="bar">
-  <span class="bar-path">kelvinkrauss.me</span>
-  <span class="bar-clock" aria-label="Horário em Blumenau" data-en-aria="Time in Blumenau"><span class="bar-label" data-en="time in Blumenau">horário em Blumenau</span> <span id="clock">--:--:--</span></span>
-  <a class="bar-link" href="/" data-en="see the current design ↗">ver o tema atual ↗</a>
+<svg id="lg-svg" width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="lg-defs"></defs></svg>
+
+<canvas id="ink-echo" aria-hidden="true"></canvas>
+<div class="page">
+  <div class="wrap">
+    <div class="top">
+      <a class="me" href="#topo" id="topo">
+        <span class="monogram" aria-hidden="true">KK</span>
+        <span><strong>Kelvin Krauss</strong><small data-en="Developer · Blumenau, Brazil">Desenvolvedor · Blumenau/SC</small></span>
+      </a>
+      <div class="top-right">
+        <div class="themes glass" data-glass="30" id="themes" role="radiogroup" aria-label="Tema do site" data-en-aria="Site theme">
+          <button type="button" class="sw" data-theme="escuro" role="radio" aria-checked="false" title="Escuro" data-en-title="Dark" aria-label="Tema Escuro" data-en-aria="Dark theme"><i></i></button>
+          <button type="button" class="sw" data-theme="ardosia" role="radio" aria-checked="false" title="Ardósia" data-en-title="Slate" aria-label="Tema Ardósia" data-en-aria="Slate theme"><i></i></button>
+          <button type="button" class="sw" data-theme="ameixa" role="radio" aria-checked="false" title="Ameixa" data-en-title="Plum" aria-label="Tema Ameixa" data-en-aria="Plum theme"><i></i></button>
+          <button type="button" class="sw" data-theme="nevoa" role="radio" aria-checked="false" title="Névoa" data-en-title="Mist" aria-label="Tema Névoa" data-en-aria="Mist theme"><i></i></button>
+        </div>
+        <button class="pill glass" data-glass="30" id="lang-btn" type="button" aria-label="Read in English">EN</button>
+      </div>
+    </div>
+
+    <!-- ── Hero ── -->
+    <header class="hero" id="inicio" tabindex="-1">
+      <div class="hero-main">
+      <h1 data-en="<span class='soft'>Hi, I'm</span> Kelvin Krauss"><span class="soft">Olá, eu sou o</span> Kelvin Krauss</h1>
+      <p class="lead" data-en="I am a Systems Analysis and Development student at the Federal Institute of Santa Catarina, and a huge technology enthusiast, with a strong interest in AI, web development, and back-end. My main technical focus is the AWS Ecosystem, Java, SQL databases, and Python, creating efficient solutions and robust architectures, such as APIs and microservices.">Sou graduando em Análise e Desenvolvimento de Sistemas no Instituto Federal de Santa Catarina, e um grande entusiasta da tecnologia, com forte interesse em I.A., desenvolvimento web e back-end. Meu foco técnico principal está no Ecossistema AWS, Java, bancos de dados SQL e Python, criando soluções eficientes e arquiteturas robustas, como APIs e microsserviços.</p>
+      <p class="lead lead-2" data-en="Open to internships, collaborations, and continuous learning opportunities in tech, including remote work for international companies.">Aberto a oportunidades de estágio, colaborações e aprendizado contínuo na área de tecnologia, incluindo atuação remota para empresas internacionais.</p>
+      <div class="bio-links">
+        <a class="pill glass" data-glass="32" href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><svg><use href="#i-in"/></svg>LinkedIn</a>
+        <a class="pill glass" data-glass="32" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>
+        <a class="pill glass" data-glass="32" href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><svg><use href="#i-gh"/></svg>GitHub</a>
+        <a class="pill glass" data-glass="32" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener" data-resume><svg><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></a>
+      </div>
+
+      <form class="ask glass" data-glass="44" id="hero-ask" role="search">
+        <canvas id="fluid" aria-hidden="true"></canvas>
+        <input id="hero-input" type="text" autocomplete="off" maxlength="4000" aria-label="Pergunte ao assistente" placeholder="Pergunte qualquer coisa ao meu assistente de IA..." data-en-ph="Ask my AI assistant anything..." data-en-aria="Ask the assistant">
+        <button class="send" type="submit" aria-label="Enviar pergunta" data-en-aria="Send question"><svg><use href="#i-arrow"/></svg></button>
+      </form>
+      <div class="ask-hints" id="ask-hints"></div>
+      </div>
+
+      <aside class="now-card" aria-labelledby="now-title">
+        <p class="now-head"><span class="now-dot" aria-hidden="true"></span><strong id="now-title" data-en="Now">Agora</strong><span data-en="October 2026">outubro de 2026</span></p>
+        <ul>
+          <li data-en="Apprentice at Ociani Transportadora: office work, IT support and the company's new website, live since October 2.">Jovem aprendiz na Ociani Transportadora: administrativo, suporte de TI e o novo site da empresa, que foi ao ar em 2 de outubro.</li>
+          <li data-en="First semester of Systems Analysis and Development at IFSC.">Primeiro semestre de Análise e Desenvolvimento de Sistemas no IFSC.</li>
+          <li data-en="Studying AWS to take the official certification.">Estudando AWS para tirar a certificação oficial.</li>
+          <li data-en="Open to internship or junior role offers, on-site or remote.">Aberto a propostas de estágio ou vaga júnior, presencial ou remoto.</li>
+        </ul>
+      </aside>
+    </header>
+
+    <main>
+      <!-- ── Sobre ── -->
+      <section class="sec" id="sobre">
+        <header><h2 data-en="About">Sobre</h2></header>
+        <div class="prose">
+          <p data-en="I'm from Blumenau, in southern Brazil. I started Computer Science at the Instituto Federal Catarinense in 2025 and, in 2026, transferred to <strong>Systems Analysis and Development at IFSC</strong>, where I'll graduate in 2028.">Sou de Blumenau/SC. Comecei Ciência da Computação no Instituto Federal Catarinense em 2025 e, em 2026, fiz transferência para <strong>Análise e Desenvolvimento de Sistemas no IFSC</strong>, onde me formo em 2028.</p>
+          <p data-en="Since January 2026 I've been an apprentice at Ociani, a trucking company founded in 1981. The job started in the office and in IT support, and it led me to my first real project: rebuilding the company's website from scratch.">Desde janeiro de 2026 sou jovem aprendiz na Ociani, uma transportadora fundada em 1981. O trabalho começou no administrativo e no suporte de TI, e me levou ao meu primeiro projeto de verdade: refazer o site da empresa do zero.</p>
+          <p data-en="In the project I gathered what the company needed, integrated the site with the logistics system, checked every piece of information with the team, tested everything and took care of the launch.">No projeto, levantei o que a empresa precisava, integrei o site ao sistema de logística, conferi cada informação com a equipe, testei tudo e cuidei do lançamento.</p>
+          <p data-en="Before that, I took the <strong>Entra21</strong> and <strong>NTT DATA</strong> bootcamps, where I built my first projects in Java and Spring Boot.">Antes disso, fiz os bootcamps do <strong>Entra21</strong> e da <strong>NTT DATA</strong>, onde criei meus primeiros projetos em Java e Spring Boot.</p>
+        </div>
+      </section>
+
+      <!-- ── Trajetória ── -->
+      <section class="sec" id="trajetoria">
+        <header><h2 data-en="Journey">Trajetória</h2><p data-en="Work and education">Trabalho e estudo</p></header>
+        <div class="prose">
+          <div class="timeline">
+            <article class="entry now">
+              <div class="entry-top"><h3 data-en="Apprentice · Ociani Transportadora">Jovem Aprendiz · Ociani Transportadora</h3><span class="meta" data-en="Jan 2026 – now">jan 2026 – hoje</span></div>
+              <p data-en="Through the SEST SENAT program. Day to day I support the administrative and accounting team (documents and data entry), repair computers and help my coworkers with IT. I also built the company's new website.">Pelo programa do SEST SENAT. No dia a dia apoio o administrativo e a contabilidade (documentos e lançamentos), faço manutenção de computadores e ajudo os colegas com TI. Também desenvolvi o novo site da empresa.</p>
+            </article>
+            <article class="entry now">
+              <div class="entry-top"><h3 data-en="Systems Analysis and Development · IFSC">Análise e Desenvolvimento de Sistemas · IFSC</h3><span class="meta" data-en="Jul 2026 – Dec 2028">jul 2026 – dez 2028</span></div>
+              <p class="where" data-en="Federal Institute of Santa Catarina. In progress.">Instituto Federal de Santa Catarina. Cursando.</p>
+            </article>
+            <article class="entry">
+              <div class="entry-top"><h3 data-en="Computer Science · IFC">Ciência da Computação · IFC</h3><span class="meta" data-en="Jan 2025 – Jun 2026">jan 2025 – jun 2026</span></div>
+              <p class="where" data-en="Instituto Federal Catarinense. Programming logic, data structures and my first steps in Java. Transferred to IFSC.">Instituto Federal Catarinense. Lógica, estruturas de dados e os primeiros passos em Java. Transferência para o IFSC.</p>
+            </article>
+            <article class="entry">
+              <div class="entry-top"><h3 data-en="Bootcamps · Entra21 and NTT DATA">Bootcamps · Entra21 e NTT DATA</h3><span class="meta">2024 – 2025</span></div>
+              <p class="where" data-en="Entra21 Back-end Java Developer (220 h, 2024) and NTT DATA Java and AI for Beginners (48 h, 2025).">Entra21 Desenvolvedor Back-end Java (220 h, 2024) e NTT DATA Java e IA para Iniciantes (48 h, 2025).</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Projetos ── -->
+      <section class="sec" id="projetos">
+        <header><h2 data-en="Projects">Projetos</h2></header>
+        <div class="prose">
+          <article class="card featured" id="ociani">
+          <div class="case-top">
+            <div class="case-main">
+              <div class="case-head">
+                <span class="badge" data-en="Live · since Oct 2, 2026">No ar · desde 02/10/2026</span>
+                <span class="meta" data-en="Professional project · built from scratch">Projeto profissional · feito do zero</span>
+                <h3><a href="https://www.ociani.com.br/" target="_blank" rel="noopener" data-en="Ociani Transportadora website ↗">Site da Ociani Transportadora ↗</a></h3>
+              </div>
+              <p data-en="The new website of the company where I work, connected to the SSW logistics system.">Novo site institucional da empresa onde trabalho, integrado ao sistema SSW.</p>
+              <ul class="feats" aria-label="O que o site faz" data-en-aria="What the website does">
+                <li class="feat" tabindex="0" data-tip="Cotação na hora para clientes cadastrados e pedido de cotação para quem ainda não é cliente." data-en-tip="Instant quotes for registered customers, and a quote request for people who aren't customers yet."><svg aria-hidden="true"><use href="#i-calc"/></svg><span data-en="Quotes">Cotação</span><span class="ssw">SSW</span></li>
+                <li class="feat" tabindex="0" data-tip="Pedido de coleta enviado direto para o sistema da transportadora." data-en-tip="Pickup requests sent straight to the company's logistics system."><svg aria-hidden="true"><use href="#i-box"/></svg><span data-en="Pickups">Coleta</span><span class="ssw">SSW</span></li>
+                <li class="feat" tabindex="0" data-tip="Consulta de cotação e rastreamento de entregas." data-en-tip="Quote lookup and delivery tracking."><svg aria-hidden="true"><use href="#i-search"/></svg><span data-en="Tracking">Rastreamento</span><span class="ssw">SSW</span></li>
+                <li class="feat" tabindex="0" data-tip="Atalhos do dia a dia para quem já é cliente." data-en-tip="Day-to-day shortcuts for existing customers."><svg aria-hidden="true"><use href="#i-user"/></svg><span data-en="Customer Area">Área do Cliente</span></li>
+                <li class="feat" tabindex="0" data-tip="Mapa interativo com as regiões atendidas." data-en-tip="An interactive map of the regions the company serves."><svg aria-hidden="true"><use href="#i-map"/></svg><span data-en="Coverage map">Mapa</span></li>
+                <li class="feat" tabindex="0" data-tip="A equipe publica notícias num painel Sanity, sem mexer no código." data-en-tip="The team publishes news in a Sanity panel, without touching code."><svg aria-hidden="true"><use href="#i-news"/></svg><span data-en="News">Notícias</span></li>
+              </ul>
+              <div class="facts"><span><b>144</b> commits</span><span>Astro · TypeScript · Cloudflare · Sanity</span></div>
+              <div class="case-actions">
+                <a class="pill visit" href="https://www.ociani.com.br/" target="_blank" rel="noopener"><span data-en="Visit the website">Visitar o site</span><svg aria-hidden="true"><use href="#i-out"/></svg></a>
+                <button class="pill glass more-btn" data-glass="30" type="button" aria-expanded="false" aria-controls="ociani-more" id="ociani-toggle">
+                  <span class="when-closed" data-en="See project details">Ver detalhes do projeto</span><span class="when-open" data-en="Hide details">Ocultar detalhes</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+              </div>
+            </div>
+            <a class="shot case-shot" href="https://www.ociani.com.br/" target="_blank" rel="noopener" aria-label="Abrir o site da Ociani" data-en-aria="Open the Ociani website">
+              <span class="shot-bar"><i></i><i></i><i></i><span>ociani.com.br</span></span>
+              <img src="images/ociani.jpg" alt="Página inicial do site da Ociani Transportadora" data-en-alt="Home page of the Ociani Transportadora website" width="1440" height="900" loading="lazy">
+            </a>
+          </div>
+          <div class="more-body" id="ociani-more" inert>
+          <div class="more-inner">
+          <figure class="shot compare" style="margin-inline:0">
+            <div class="shot-bar"><i></i><i></i><i></i><span>ociani.com.br</span></div>
+            <div class="cmp" id="cmp">
+              <img src="images/ociani.jpg" alt="Site novo da Ociani Transportadora, no ar desde outubro de 2026" data-en-alt="The new Ociani Transportadora website, live since October 2026" width="1440" height="900" loading="lazy">
+              <div class="cmp-before">
+                <img src="images/ociani-antigo.jpg" alt="Site antigo da Ociani Transportadora" data-en-alt="The old Ociani Transportadora website" width="1440" height="900" loading="lazy">
+              </div>
+              <span class="cmp-tag before" data-en="Before">Antes</span>
+              <span class="cmp-tag after" data-en="After">Depois</span>
+              <div class="cmp-handle" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6"/></svg></span></div>
+              <input class="cmp-range" type="range" min="0" max="100" step="0.1" value="50" aria-label="Comparar o site antigo com o novo" data-en-aria="Compare the old website with the new one">
+            </div>
+            <figcaption data-en="Drag to compare the old website with the one I built.">Arraste para comparar o site antigo com o que eu fiz.</figcaption>
+          </figure>
+          <p data-en="The new website replaced the old one and went live on October 2, 2026. I presented it to the company before launch and adjusted what the team asked for.">O site novo substituiu o antigo e entrou no ar em 2 de outubro de 2026. Apresentei para a empresa antes do lançamento e ajustei o que a equipe pediu.</p>
+
+          <h4 data-en="What it does">O que ele faz</h4>
+          <ul>
+            <li data-en="Instant freight quotes for registered customers, and a quote request for people who aren't customers yet.">Cotação de frete na hora para clientes cadastrados, e pedido de cotação para quem ainda não é cliente.</li>
+            <li data-en="Pickup requests, quote lookup and delivery tracking, all talking to SSW, the logistics system the company already uses (SOAP web services).">Pedido de coleta, consulta de cotação e rastreamento de entregas, tudo conversando com o SSW, o sistema que a transportadora já usa (webservices SOAP).</li>
+            <li data-en="A Customer Area with the day-to-day shortcuts.">Área do Cliente com os atalhos do dia a dia.</li>
+            <li data-en="An interactive coverage map of the regions the company serves.">Mapa de cobertura interativo com as regiões atendidas.</li>
+            <li data-en="News published by the team itself in a Sanity panel, without touching code. The 18 posts from the old site were migrated.">Notícias publicadas pela própria equipe num painel Sanity, sem mexer no código. As 18 notícias do site antigo foram migradas.</li>
+          </ul>
+
+          <h4 data-en="What I learned along the way">O que aprendi no caminho</h4>
+          <ul class="lessons">
+            <li data-en="<strong>Integrating is reading the documentation.</strong> The quote sends the same 16 parameters as the old site, every SSW response is handled the way the documentation says, and there's a time limit so the site doesn't freeze if the system is slow."><strong>Integrar é ler a documentação.</strong> A cotação manda os mesmos 16 parâmetros do site antigo, cada resposta do SSW é tratada como a documentação manda, e existe um tempo limite para o site não travar se o sistema demorar.</li>
+            <li data-en="<strong>Every piece of information is checked.</strong> Phone numbers, addresses and branch details were all confirmed with the team before going live."><strong>Toda informação é conferida.</strong> Telefones, endereços e dados das filiais foram todos confirmados com a equipe antes de ir ao ar.</li>
+            <li data-en="<strong>Security is not optional.</strong> The SSW password is stored as a secret on Cloudflare, forms have a submission limit, security headers are set, and a resume is only accepted if it's a real PDF, checked by the file's content."><strong>Segurança não é opcional.</strong> A senha do SSW fica guardada como segredo na Cloudflare, os formulários têm limite de envios, o site tem cabeçalhos de segurança e o currículo só é aceito se for um PDF de verdade, conferido pelo conteúdo do arquivo.</li>
+            <li data-en="<strong>Launching is moving without breaking things.</strong> I moved the domain to Cloudflare without taking the company's email down and redirected the old addresses so visits from Google kept working."><strong>Lançar é migrar sem quebrar nada.</strong> Levei o domínio para a Cloudflare sem derrubar o e-mail da empresa e redirecionei os endereços antigos para não perder as visitas do Google.</li>
+          </ul>
+          </div>
+          </div>
+          </article>
+
+          <div class="entries">
+            <article class="entry card has-peek">
+              <div class="peek" aria-hidden="true">
+                <div class="peek-bar"><i></i><i></i><i></i><span>java Main</span></div>
+                <pre class="term"><span class="p">Escolha uma opção:</span> 8
+<span class="h">--- CONTAS CRIADAS ---</span>
+Conta: 1002 | Tipo: Conta Poupança | Titular: Joao Souza | CPF: 55566677788 | Saldo: R$ 0.00 | Criada em: 04/10/2026 15:22
+Conta: 1001 | Tipo: Conta Corrente | Titular: Maria Silva | CPF: 11122233344 | Saldo: R$ 1000.00 | Criada em: 04/10/2026 15:22
+
+<span class="p">Escolha uma opção:</span> 9
+<span class="h">--- INVESTIMENTOS DISPONÍVEIS ---</span>
+ID: 7d1a0274 | Nome: CDB Banco Brothersco | Taxa: 1.20% | Criado em: 04/10/2026 15:22</pre>
+                <p class="peek-cap" data-en="Real output of the program, with sample data">Saída real do programa, com dados de exemplo</p>
+              </div>
+              <div class="entry-top"><h3><a href="https://github.com/KelvinKrauss/Aplicativo-de-Controle-de-Transacoes-Financeiras-com-Java" target="_blank" rel="noopener" data-en="Banking simulator ↗">Simulador bancário ↗</a></h3><span class="meta" data-en="Java · OOP · 2025">Java · POO · 2025</span></div>
+              <p data-en="A console system that simulates what a bank does: create accounts, deposit, withdraw, transfer, create investments with a yield percentage, and see a dated history of every action. It was my first complete system, built in the NTT DATA bootcamp, and it taught me to program thinking about business rules.">Um sistema de console que simula o que um banco faz: criar contas, depositar, sacar, transferir, criar investimentos com rendimento em % e ver o histórico com data e hora de cada ação. Foi meu primeiro sistema completo, feito no bootcamp da NTT DATA, e me ensinou a programar pensando em regras de negócio.</p>
+            </article>
+            <article class="entry card has-peek">
+              <div class="peek" aria-hidden="true">
+                <div class="peek-bar"><i></i><i></i><i></i><span data-en="4 Spring Boot services">4 serviços Spring Boot</span></div>
+                <div class="arch">
+                  <div class="arch-row">
+                    <div class="node"><b data-en="Client">Cliente</b></div>
+                    <span class="link"></span>
+                    <div class="node gw"><b>API Gateway</b><small>:8700 · token Bearer</small></div>
+                    <span class="link split"></span>
+                    <div class="arch-col">
+                      <div class="node"><b data-en="Catalog">Catálogo</b><small>:8100 · /api/produtos · H2</small></div>
+                      <div class="node"><b data-en="Orders">Pedidos</b><small data-en=":8200 · /api/pedidos · H2 · checks stock in the catalog">:8200 · /api/pedidos · H2 · confere o estoque no catálogo</small></div>
+                    </div>
+                  </div>
+                  <div class="node eureka"><b>Eureka</b><small data-en=":8761 · every service registers here and finds the others">:8761 · todos se registram aqui e se encontram por ele</small></div>
+                </div>
+                <p class="peek-cap" data-en="Architecture taken from the project's configuration files">Arquitetura tirada dos arquivos de configuração do projeto</p>
+              </div>
+              <div class="entry-top"><h3><a href="https://github.com/KelvinKrauss/Catalogo-e-Simulacao-de-pedido-persistente-em-h2database" target="_blank" rel="noopener" data-en="Catalog and orders ↗">Catálogo e pedidos ↗</a></h3><span class="meta" data-en="Spring Boot · microservices · 2025">Spring Boot · microsserviços · 2025</span></div>
+              <p data-en="Four Spring Boot services working together: Eureka Server, product catalog, order simulator and API Gateway. Products live in an in-memory H2 database, and the API lists, searches by name, checks stock, creates and cancels orders.">Quatro serviços Spring Boot trabalhando juntos: Eureka Server, catálogo de produtos, simulador de pedidos e API Gateway. Os produtos ficam num banco H2 em memória, e a API lista, busca por nome, confere estoque, cria e cancela pedidos.</p>
+            </article>
+            <article class="entry card">
+              <div class="entry-top"><h3><a href="https://github.com/KelvinKrauss/site_kelvinkrauss" target="_blank" rel="noopener" data-en="This portfolio ↗">Este portfólio ↗</a></h3><span class="meta">HTML · CSS · JS · 2026</span></div>
+              <p data-en="No framework. The AI box has liquid ink simulated in WebGL, the page background is a slow echo of it, the buttons use an SVG filter that imitates Apple's liquid glass, and the assistant answers with the Gemini API in a Vercel serverless function.">Sem framework. A caixa da IA tem uma tinta líquida simulada em WebGL, o fundo da página é um eco lento dela, os botões usam um filtro SVG que imita o vidro líquido da Apple e o assistente responde com a API do Gemini numa função serverless da Vercel.</p>
+            </article>
+            <p class="more-gh" data-en="More on <a href='https://github.com/KelvinKrauss' target='_blank' rel='noopener'>GitHub</a>: a hangman game in Java, a to-do list in JavaScript and my code from college classes.">Mais no <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">GitHub</a>: jogo da forca em Java, lista de tarefas em JavaScript e os códigos das disciplinas da faculdade.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Habilidades ── -->
+      <section class="sec" id="habilidades">
+        <header><h2 data-en="Skills">Habilidades</h2></header>
+        <div class="prose">
+          <dl class="skills">
+            <dt data-en="Used in production">Usei em produção</dt><dd><ul class="chips hot"><li>TypeScript</li><li>JavaScript</li><li>Astro</li><li>HTML</li><li>CSS</li><li>Cloudflare Workers</li><li>DNS</li><li data-en="SOAP APIs">APIs SOAP</li><li>Sanity</li><li>Git</li><li data-en="AI">IA</li></ul></dd>
+            <dt data-en="Studied and practiced">Estudei e pratiquei</dt><dd><ul class="chips"><li>Java</li><li>Spring Boot</li><li>SQL</li><li>Python</li><li>Maven</li><li>Postman</li></ul></dd>
+            <dt data-en="Studying now">Estudando agora</dt><dd><ul class="chips soon"><li>AWS</li></ul></dd>
+                        <dt data-en="Languages">Idiomas</dt><dd data-en="Portuguese (native) and English (advanced)">Português (nativo) e inglês (avançado)</dd>
+          </dl>
+        </div>
+      </section>
+
+
+      <!-- ── Contato ── -->
+      <section class="sec" id="contato">
+        <header><h2 data-en="Contact">Contato</h2></header>
+        <div class="prose">
+          <h3 data-en="Let's talk?">Vamos conversar?</h3>
+          <p data-en="If you have an internship or junior role, or just want to talk about a project, send me a message. I also work remotely for companies outside Brazil.">Se você tem uma vaga de estágio ou júnior, ou só quer conversar sobre um projeto, me chama. Também trabalho remoto para empresas de fora do Brasil.</p>
+          <dl class="contact-list">
+            <div><dt>E-mail</dt><dd><span id="email">kelvin.krauss.br@gmail.com</span><button class="copy" type="button" id="copy-email" data-en="Copy">Copiar</button></dd></div>
+            <div><dt>WhatsApp</dt><dd><a href="https://wa.me/5547999104771" target="_blank" rel="noopener">+55 47 99910-4771</a></dd></div>
+            <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener">in/kelvin-krauss-04b7622b8</a></dd></div>
+            <div><dt>GitHub</dt><dd><a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">github.com/KelvinKrauss</a></dd></div>
+            <div><dt data-en="Resume">Currículo</dt><dd><a href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener" data-resume>PDF</a></dd></div>
+          </dl>
+        </div>
+      </section>
+    </main>
+
+    <footer>© 2026 Kelvin Krauss</footer>
+  </div>
 </div>
 
-<!-- ── Navigation: a row of cells ── -->
-<nav class="nav" aria-label="Navegação" data-en-aria="Navigation">
-  <!-- KK takes you to the contacts, at the top, next to the intro -->
-  <a class="nav-mark" href="#topo" id="kk-link" aria-label="Contatos do Kelvin" data-en-aria="Kelvin's contacts" title="Contatos" data-en-title="Contacts"><span>KK</span><i aria-hidden="true"></i></a>
-  <a class="nav-cell" href="#sobre" data-en="About">Sobre</a>
-  <a class="nav-cell" href="#trajetoria" data-en="Journey">Trajetória</a>
-  <a class="nav-cell" href="#projetos" data-en="Projects">Projetos</a>
-  <a class="nav-cell" href="#habilidades" data-en="Skills">Habilidades</a>
-  <a class="nav-cell" href="#contato" data-en="Contact">Contato</a>
-  <span class="nav-fill" aria-hidden="true"></span>
-  <button class="nav-cell nav-lang" id="lang-btn" type="button" aria-label="Read in English">EN</button>
-  <a class="nav-go" data-resume href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span> <span aria-hidden="true">↗</span></a>
+<!-- ── Dock ── -->
+<nav class="dock glass" data-glass="52" data-blur="9" id="dock" aria-label="Navegação" data-en-aria="Navigation">
+  <span class="dock-lens" id="dock-lens" aria-hidden="true"></span>
+  <a href="#sobre"><svg><use href="#i-smile"/></svg><span data-en="About">Sobre</span></a>
+  <a href="#trajetoria"><svg><use href="#i-route"/></svg><span data-en="Journey">Trajetória</span></a>
+  <a href="#projetos"><svg><use href="#i-case"/></svg><span data-en="Projects">Projetos</span></a>
+  <a href="#habilidades"><svg><use href="#i-layers"/></svg><span data-en="Skills">Habilidades</span></a>
+  <a href="#contato"><svg><use href="#i-mail"/></svg><span data-en="Contact">Contato</span></a>
 </nav>
+<!-- appears while the site shows a translation made by the chat: it is temporary, and one click goes back -->
+<div class="tr-pill glass" id="tr-pill" role="status" aria-live="polite" hidden>
+  <svg class="tr-ico" aria-hidden="true"><use href="#i-globe"/></svg>
+  <span class="tr-text"></span>
+  <button type="button" class="tr-orig"></button>
+</div>
 
-<main id="conteudo">
-  <!-- ── Name: big, but not the whole screen (the full-width one closes the page, in the footer) ── -->
-  <header class="name" id="topo">
-    <h1><span>KELVIN</span> <span>KRAUSS<i class="cursor" aria-hidden="true"></i></span></h1>
-    <p class="name-side"><span data-en="developer · web &amp; back-end">desenvolvedor · web e back-end</span><span data-en="blumenau, brazil">blumenau, brasil</span><span data-en="graduating in 2028">formatura em 2028</span></p>
-  </header>
-
-  <section class="hero frame trail-area">
-    <div class="hero-left cell">
-      <div class="mono-row trail-ignore">
-        <span data-en="systems analysis &amp; development / IFSC">análise e desenvolvimento de sistemas / IFSC</span>
-        <span data-en="on-site &amp; remote">presencial &amp; remoto</span>
-      </div>
-      <p class="hero-tag" data-en="Open to work">Aberto a vagas</p>
-    </div>
-    <div class="hero-right">
-      <p class="hero-lead cell trail-ignore" data-en="Developer in training. I built the new website of the company where I work, connected to its logistics system, and I'm looking for an internship or junior role, on-site or remote.">Desenvolvedor em formação. Fiz o novo site da empresa onde trabalho, integrado ao sistema de logística dela, e procuro estágio ou vaga júnior, presencial ou remota.</p>
-      <div class="cell hero-links trail-ignore">
-        <a class="btn btn-sm brand c-in" href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-in"/></svg>LinkedIn</span></a>
-        <a class="btn btn-sm brand c-wa" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</span></a>
-        <a class="btn btn-sm brand c-gh" href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg>GitHub</span></a>
-        <a class="btn btn-sm brand c-cv" data-resume href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="Resume">Currículo</span></span></a>
-        <a class="btn btn-sm brand c-mail" href="mailto:kelvin.krauss.br@gmail.com"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>E-mail</span></a>
-      </div>
-      <div class="cell cell-cta trail-ignore">
-        <a class="btn btn-green btn-wide" href="#pergunte"><span data-en="Ask my AI assistant">Perguntar ao meu assistente de IA</span><span aria-hidden="true">↓</span></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Agora: one slim row of cells ── -->
-  <section class="now frame trail-area" aria-labelledby="agora-t">
-    <p class="now-head cell"><strong id="agora-t" data-en="Now">Agora</strong><span><span data-en="october 2026">outubro de 2026</span> <i class="sq" aria-hidden="true"></i></span></p>
-    <ul class="now-list">
-      <li class="cell" data-en="Apprentice at Ociani Transportadora: office work, IT support and the company's new website, live since October 2.">Jovem aprendiz na Ociani Transportadora: administrativo, suporte de TI e o novo site da empresa, que foi ao ar em 2 de outubro.</li>
-      <li class="cell" data-en="First semester of Systems Analysis and Development at IFSC.">Primeiro semestre de Análise e Desenvolvimento de Sistemas no IFSC.</li>
-      <li class="cell" data-en="Studying AWS to take the official certification.">Estudando AWS para tirar a certificação oficial.</li>
-      <li class="cell" data-en="Open to internship or junior role offers, on-site or remote.">Aberto a propostas de estágio ou vaga júnior, presencial ou remoto.</li>
-    </ul>
-  </section>
-
-  <!-- ── Sobre ── -->
-  <section class="sec trail-area" id="sobre">
-    <div class="frame sec-head">
-      <p class="mono-row trail-ignore"><span><span data-en="blumenau, brazil">blumenau, brasil</span> <i class="sq" aria-hidden="true"></i></span></p>
-      <h2 class="sec-title" data-en="About me">Sobre mim</h2>
-    </div>
-    <!-- in short: one cell per fact, with its logo (what a recruiter checks first) -->
-    <ul class="frame summary">
-      <li class="fact cell">
-        <img class="fact-logo" src="images/logos/ifsc.svg" alt="IFSC" width="30" height="40">
-        <span class="fact-k" data-en="education">formação</span>
-        <strong data-en="Systems Analysis and Development">Análise e Desenvolvimento de Sistemas</strong>
-        <span class="fact-v" data-en="IFSC · graduating in 2028">IFSC · formatura em 2028</span>
-      </li>
-      <li class="fact cell">
-        <img class="fact-logo" src="images/logos/ociani.svg" alt="Ociani" width="40" height="40">
-        <span class="fact-k" data-en="work">trabalho</span>
-        <strong data-en="Apprentice at Ociani Transportadora">Jovem aprendiz na Ociani Transportadora</strong>
-        <span class="fact-v" data-en="since January 2026 · office work and IT">desde janeiro de 2026 · administrativo e TI</span>
-      </li>
-      <li class="fact cell">
-        <img class="fact-logo fact-shot" src="images/ociani.jpg" alt="" width="64" height="40">
-        <span class="fact-k" data-en="shipped">entregou</span>
-        <strong data-en="Ociani's new website">O novo site da Ociani</strong>
-        <span class="fact-v" data-en="live since October 2, 2026 · connected to SSW">no ar desde 02/10/2026 · integrado ao SSW</span>
-      </li>
-      <li class="fact cell">
-        <img class="fact-logo" src="images/logos/aws.svg" alt="AWS" width="40" height="40">
-        <span class="fact-k" data-en="certification">certificação</span>
-        <strong data-en="Official AWS certification">Certificação oficial AWS</strong>
-        <span class="fact-v" data-en="studying now">estudando agora</span>
-      </li>
-      <li class="fact cell">
-        <span class="fact-logo fact-badge" aria-hidden="true">PT<i></i>EN</span>
-        <span class="fact-k" data-en="languages">idiomas</span>
-        <strong data-en="Portuguese and English">Português e inglês</strong>
-        <span class="fact-v" data-en="native · advanced">nativo · avançado</span>
-      </li>
-      <li class="fact cell">
-        <span class="fact-logo fact-open" aria-hidden="true"><i></i></span>
-        <span class="fact-k" data-en="availability">disponibilidade</span>
-        <strong data-en="Internship or junior role">Estágio ou vaga júnior</strong>
-        <span class="fact-v" data-en="on-site or remote · Blumenau, Brazil">presencial ou remoto · Blumenau/SC</span>
-      </li>
-    </ul>
-    <div class="frame split">
-      <div class="cell prose">
-        <p data-en="I'm from Blumenau, in southern Brazil. I started Computer Science at the Instituto Federal Catarinense in 2025 and, in 2026, transferred to <strong>Systems Analysis and Development at IFSC</strong>, where I'll graduate in 2028.">Sou de Blumenau/SC. Comecei Ciência da Computação no Instituto Federal Catarinense em 2025 e, em 2026, fiz transferência para <strong>Análise e Desenvolvimento de Sistemas no IFSC</strong>, onde me formo em 2028.</p>
-        <p data-en="Since January 2026 I've been an apprentice at Ociani, a trucking company founded in 1981. The job started in the office and in IT support, and it led me to my first real project: rebuilding the company's website from scratch.">Desde janeiro de 2026 sou jovem aprendiz na Ociani, uma transportadora fundada em 1981. O trabalho começou no administrativo e no suporte de TI, e me levou ao meu primeiro projeto de verdade: refazer o site da empresa do zero.</p>
-        <p data-en="In the project I gathered what the company needed, integrated the site with the logistics system, checked every piece of information with the team, tested everything and took care of the launch.">No projeto, levantei o que a empresa precisava, integrei o site ao sistema de logística, conferi cada informação com a equipe, testei tudo e cuidei do lançamento.</p>
-        <p data-en="Before that, I took the <strong>Entra21</strong> and <strong>NTT DATA</strong> bootcamps, where I built my first projects in Java and Spring Boot.">Antes disso, fiz os bootcamps do <strong>Entra21</strong> e da <strong>NTT DATA</strong>, onde criei meus primeiros projetos em Java e Spring Boot.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Trajetória: like an agenda ── -->
-  <section class="sec trail-area" id="trajetoria">
-    <div class="frame sec-head">
-      <p class="mono-row trail-ignore"><span><span data-en="work and study · 2024 — now">trabalho e estudo · 2024 — hoje</span> <i class="sq" aria-hidden="true"></i></span></p>
-      <h2 class="sec-title" data-en="Journey">Trajetória</h2>
-    </div>
-    <!-- tabs filter the agenda: everything, work, or study -->
-    <div class="frame tabs trail-ignore" role="tablist" aria-label="Filtrar a trajetória" data-en-aria="Filter the journey">
-      <button class="tab" type="button" role="tab" aria-selected="true" data-kind="all"><span data-en="All">Tudo</span><i aria-hidden="true"></i></button>
-      <button class="tab" type="button" role="tab" aria-selected="false" data-kind="work"><span data-en="Work">Trabalho</span><i aria-hidden="true"></i></button>
-      <button class="tab" type="button" role="tab" aria-selected="false" data-kind="study"><span data-en="Study">Estudo</span><i aria-hidden="true"></i></button>
-      <span class="tabs-fill" aria-hidden="true"></span>
-    </div>
-    <ol class="frame agenda">
-      <li class="row" data-kind="work">
-        <p class="day">Ociani</p>
-        <div class="slot">
-          <span class="when" data-en="jan 2026 — now">jan 2026 — hoje</span>
-          <h3 data-en="Apprentice · Ociani Transportadora">Jovem Aprendiz · Ociani Transportadora</h3>
-          <p data-en="Through the SEST SENAT program. Day to day I support the administrative and accounting team (documents and data entry), repair computers and help my coworkers with IT. I also built the company's new website.">Pelo programa do SEST SENAT. No dia a dia apoio o administrativo e a contabilidade (documentos e lançamentos), faço manutenção de computadores e ajudo os colegas com TI. Também desenvolvi o novo site da empresa.</p>
-        </div>
-        <span class="tag tag-live" data-en="now">agora</span>
-      </li>
-      <li class="row" data-kind="study">
-        <p class="day">IFSC</p>
-        <div class="slot">
-          <span class="when" data-en="jul 2026 — dec 2028">jul 2026 — dez 2028</span>
-          <h3 data-en="Systems Analysis and Development">Análise e Desenvolvimento de Sistemas</h3>
-          <p data-en="Federal Institute of Santa Catarina. In progress.">Instituto Federal de Santa Catarina. Cursando.</p>
-        </div>
-        <span class="tag tag-live" data-en="now">agora</span>
-      </li>
-      <li class="row" data-kind="study">
-        <p class="day">IFC</p>
-        <div class="slot">
-          <span class="when" data-en="jan 2025 — jun 2026">jan 2025 — jun 2026</span>
-          <h3 data-en="Computer Science">Ciência da Computação</h3>
-          <p data-en="Instituto Federal Catarinense. Programming logic, data structures and my first steps in Java. Transferred to IFSC.">Instituto Federal Catarinense. Lógica, estruturas de dados e os primeiros passos em Java. Transferência para o IFSC.</p>
-        </div>
-        <span class="tag" data-en="transferred">transferido</span>
-      </li>
-      <li class="row" data-kind="study">
-        <p class="day">Bootcamps</p>
-        <div class="slot">
-          <span class="when">2024 — 2025</span>
-          <h3>Entra21 · NTT DATA</h3>
-          <p data-en="Entra21 Back-end Java Developer (220 h, 2024) and NTT DATA Java and AI for Beginners (48 h, 2025).">Entra21 Desenvolvedor Back-end Java (220 h, 2024) e NTT DATA Java e IA para Iniciantes (48 h, 2025).</p>
-        </div>
-        <span class="tag" data-en="done">concluído</span>
-      </li>
-    </ol>
-  </section>
-
-  <!-- ── Projetos ── -->
-  <section class="sec trail-area" id="projetos">
-    <div class="frame sec-head">
-      <p class="mono-row trail-ignore"><span><span data-en="1 professional · 3 personal">1 profissional · 3 pessoais</span> <i class="sq" aria-hidden="true"></i></span></p>
-      <h2 class="sec-title" data-en="Projects">Projetos</h2>
-    </div>
-    <article class="frame feature" id="ociani">
-      <div class="feature-shot trail-ignore">
-        <div class="cmp" id="cmp">
-          <img src="images/ociani.jpg" alt="Página inicial do site da Ociani Transportadora" data-en-alt="Home page of the Ociani Transportadora website" width="1440" height="900" loading="lazy">
-          <div class="cmp-before"><img src="images/ociani-antigo.jpg" alt="Site antigo da Ociani Transportadora" data-en-alt="The old Ociani Transportadora website" width="1440" height="900" loading="lazy"></div>
-          <span class="cmp-tag before" data-en="before">antes</span>
-          <span class="cmp-tag after" data-en="after">depois</span>
-          <span class="cmp-line" aria-hidden="true"></span>
-          <span class="cmp-knob" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6"/></svg></span>
-          <input class="cmp-range" type="range" min="0" max="100" step="0.1" value="0" aria-label="Comparar o site antigo com o novo" data-en-aria="Compare the old website with the new one">
-        </div>
-        <p class="shot-cap" data-en="drag to compare with the old site">arraste para comparar com o site antigo</p>
-      </div>
-      <div class="feature-info">
-        <div class="cell">
-          <p class="mono-row trail-ignore"><span class="tag tag-live" data-en="live · since 10/02/2026">no ar · desde 02/10/2026</span><span data-en="professional project · built from scratch">projeto profissional · feito do zero</span></p>
-          <h3 class="feature-title" data-en="Ociani Transportadora website">Site da Ociani Transportadora</h3>
-          <p data-en="The new website of the company where I work, connected to SSW, the logistics system the company already uses (SOAP web services).">Novo site institucional da empresa onde trabalho, integrado ao SSW, o sistema de logística que a transportadora já usa (webservices SOAP).</p>
-        </div>
-        <ul class="feats cell" aria-label="O que o site faz" data-en-aria="What the website does">
-          <li><b data-en="Quotes">Cotação</b><span class="ssw">SSW</span></li>
-          <li><b data-en="Pickups">Coleta</b><span class="ssw">SSW</span></li>
-          <li><b data-en="Tracking">Rastreamento</b><span class="ssw">SSW</span></li>
-          <li><b data-en="Customer Area">Área do Cliente</b></li>
-          <li><b data-en="Coverage map">Mapa de cobertura</b></li>
-          <li><b data-en="News (Sanity)">Notícias (Sanity)</b></li>
-        </ul>
-        <div class="cell facts"><span><b>144</b> commits</span><span>astro · typescript · cloudflare · sanity</span></div>
-        <div class="cell cell-cta trail-ignore"><a class="btn btn-green btn-wide" href="https://www.ociani.com.br/" target="_blank" rel="noopener"><span data-en="Visit the website">Visitar o site</span><span aria-hidden="true">↗</span></a></div>
-      </div>
-    </article>
-
-    <div class="frame cards">
-      <article class="cell card">
-        <p class="mono-row trail-ignore"><span>java · poo · 2025</span></p>
-        <h3 data-en="Banking simulator">Simulador bancário</h3>
-        <p data-en="A console system that simulates what a bank does: create accounts, deposit, withdraw, transfer, create investments with a yield percentage, and see a dated history of every action. My first complete system, built in the NTT DATA bootcamp.">Um sistema de console que simula o que um banco faz: criar contas, depositar, sacar, transferir, criar investimentos com rendimento em % e ver o histórico com data e hora de cada ação. Meu primeiro sistema completo, feito no bootcamp da NTT DATA.</p>
-        <a class="btn btn-line" href="https://github.com/KelvinKrauss/Aplicativo-de-Controle-de-Transacoes-Financeiras-com-Java" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg><span data-en="See the code">Ver o código</span></span><span aria-hidden="true">↗</span></a>
-      </article>
-      <article class="cell card">
-        <p class="mono-row trail-ignore"><span data-en="spring boot · microservices · 2025">spring boot · microsserviços · 2025</span></p>
-        <h3 data-en="Catalog and orders">Catálogo e pedidos</h3>
-        <p data-en="Four Spring Boot services working together: Eureka Server, product catalog, order simulator and API Gateway. Products live in an in-memory H2 database, and the API lists, searches by name, checks stock, creates and cancels orders.">Quatro serviços Spring Boot trabalhando juntos: Eureka Server, catálogo de produtos, simulador de pedidos e API Gateway. Os produtos ficam num banco H2 em memória, e a API lista, busca por nome, confere estoque, cria e cancela pedidos.</p>
-        <a class="btn btn-line" href="https://github.com/KelvinKrauss/Catalogo-e-Simulacao-de-pedido-persistente-em-h2database" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg><span data-en="See the code">Ver o código</span></span><span aria-hidden="true">↗</span></a>
-      </article>
-      <article class="cell card">
-        <p class="mono-row trail-ignore"><span>html · css · js · 2026</span></p>
-        <h3 data-en="This portfolio">Este portfólio</h3>
-        <p data-en="No framework, in two designs: this one and the main one, with liquid ink in WebGL. The assistant answers with the Gemini API in a Vercel serverless function, and can scroll the page, change the language and open links.">Sem framework, em dois visuais: este e o principal, com tinta líquida em WebGL. O assistente responde com a API do Gemini numa função serverless da Vercel, e consegue rolar a página, mudar o idioma e abrir links.</p>
-        <a class="btn btn-line" href="https://github.com/KelvinKrauss/site_kelvinkrauss" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg><span data-en="See the code">Ver o código</span></span><span aria-hidden="true">↗</span></a>
-      </article>
-    </div>
-    <p class="more-gh" data-en="More on <a href='https://github.com/KelvinKrauss' target='_blank' rel='noopener'>GitHub</a>: a hangman game in Java, a to-do list in JavaScript and my code from college classes.">Mais no <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener">GitHub</a>: jogo da forca em Java, lista de tarefas em JavaScript e os códigos das disciplinas da faculdade.</p>
-  </section>
-
-  <!-- ── Habilidades ── -->
-  <section class="sec trail-area" id="habilidades">
-    <div class="frame sec-head">
-      <p class="mono-row trail-ignore"><span><span data-en="18 technologies">18 tecnologias</span> <i class="sq" aria-hidden="true"></i></span></p>
-      <h2 class="sec-title" data-en="Skills">Habilidades</h2>
-    </div>
-    <div class="frame skills">
-      <div class="cell skill-col">
-        <p class="skill-head"><span data-en="used in production">usei em produção</span><span class="tag tag-live">11</span></p>
-        <ul><li>TypeScript</li><li>JavaScript</li><li>Astro</li><li>HTML</li><li>CSS</li><li>Cloudflare Workers</li><li>DNS</li><li data-en="SOAP APIs">APIs SOAP</li><li>Sanity</li><li>Git</li><li data-en="AI">IA</li></ul>
-      </div>
-      <div class="cell skill-col">
-        <p class="skill-head"><span data-en="studied and practiced">estudei e pratiquei</span><span class="tag">6</span></p>
-        <ul><li>Java</li><li>Spring Boot</li><li>SQL</li><li>Python</li><li>Maven</li><li>Postman</li></ul>
-      </div>
-      <div class="cell skill-col">
-        <p class="skill-head"><span data-en="studying now">estudando agora</span><span class="tag">1</span></p>
-        <ul><li><img class="logo" src="images/logos/aws.svg" alt="" width="16" height="16">AWS</li></ul>
-        <p class="skill-head skill-gap"><span data-en="languages">idiomas</span></p>
-        <ul><li data-en="Portuguese · native">Português · nativo</li><li data-en="English · advanced">Inglês · avançado</li></ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Assistente: a terminal ── -->
-  <section class="sec trail-area" id="pergunte">
-    <div class="frame sec-head">
-      <p class="mono-row trail-ignore"><span><span data-en="AI assistant · answers right away">assistente de IA · responde na hora</span> <i class="sq" aria-hidden="true"></i></span></p>
-      <h2 class="sec-title" data-en="Ask my AI assistant">Pergunte ao meu assistente</h2>
-    </div>
-    <!-- shown here while the assistant is open in the corner of the screen -->
-    <div class="frame term-away" id="term-away" hidden>
-      <p data-en="The assistant is open in the corner of the screen.">O assistente está aberto no canto da tela.</p>
-      <button class="btn btn-line" id="term-back" type="button"><span data-en="Bring it back here">Trazer de volta para cá</span><span aria-hidden="true">↓</span></button>
-    </div>
-    <div class="term frame trail-ignore" id="term">
-      <div class="term-bar"><span>visitante@kelvinkrauss.me</span><span data-en="AI assistant · Gemini">assistente de IA · Gemini</span><button class="term-close" id="term-close" type="button" aria-label="Fechar o assistente" data-en-aria="Close the assistant">✕</button></div>
-      <div class="term-out" id="term-out" aria-live="polite"></div>
-      <div class="term-chips" id="term-chips"></div>
-      <form class="term-in" id="term-form">
-        <label for="term-input" aria-hidden="true">~$</label>
-        <input id="term-input" type="text" autocomplete="off" maxlength="4000" placeholder="pergunte qualquer coisa sobre o Kelvin..." data-en-ph="ask anything about Kelvin..." aria-label="Pergunte ao assistente" data-en-aria="Ask the assistant">
-        <button class="btn btn-green" id="term-send" type="submit"><span data-en="Send">Enviar</span><span aria-hidden="true">↵</span></button>
-      </form>
-    </div>
-  </section>
-
-  <!-- ── Contato: rows ── -->
-  <section class="sec trail-area" id="contato">
-    <!-- colored tiles drawn with CSS: brackets, a prompt, a pixel cross and dots -->
-    <div class="frame invite">
-      <div class="tiles trail-ignore" aria-hidden="true">
-        <div class="tile t-brace"><span>{</span></div>
-        <div class="tile t-blue"></div>
-        <div class="tile t-cross"><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="tile t-blue2"><span>}</span></div>
-        <div class="tile t-dots"></div>
-        <div class="tile t-prompt"><span>&gt;</span><b></b></div>
-      </div>
-      <div class="invite-text cell">
-        <h2 class="invite-title" data-en="Let's build something?">Vamos construir algo?</h2>
-        <p data-en="If you have an internship or junior role, or just want to talk about a project, send me a message. I also work remotely for companies outside Brazil.">Se você tem uma vaga de estágio ou júnior, ou só quer conversar sobre um projeto, me chama. Também trabalho remoto para empresas de fora do Brasil.</p>
-        <a class="btn btn-green btn-wide" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><span class="btn-l"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg><span data-en="Talk on WhatsApp">Falar no WhatsApp</span></span><span aria-hidden="true">↗</span></a>
-      </div>
-    </div>
-    <div class="frame contact">
-      <div class="rows">
-        <div class="crow"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>e-mail</span><span class="cv" id="email">kelvin.krauss.br@gmail.com</span><button class="btn btn-line btn-sm" id="copy-email" type="button" data-en="Copy">Copiar</button></div>
-        <a class="crow" href="https://wa.me/5547999104771" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>whatsapp</span><span class="cv">+55 47 99910-4771</span><span class="arrow" aria-hidden="true">↗</span></a>
-        <a class="crow" href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-in"/></svg>linkedin</span><span class="cv">in/kelvin-krauss-04b7622b8</span><span class="arrow" aria-hidden="true">↗</span></a>
-        <a class="crow" href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg>github</span><span class="cv">github.com/KelvinKrauss</span><span class="arrow" aria-hidden="true">↗</span></a>
-        <a class="crow" data-resume href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" target="_blank" rel="noopener"><span class="ck"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="resume">currículo</span></span><span class="cv">PDF</span><span class="arrow" aria-hidden="true">↗</span></a>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer class="foot trail-area">
-  <div class="foot-row">
-    <span>© 2026 Kelvin Krauss</span>
-    <a href="https://github.com/KelvinKrauss" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-gh"/></svg>GitHub</a>
-    <a href="https://www.linkedin.com/in/kelvin-krauss-04b7622b8/" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-in"/></svg>LinkedIn</a>
-    <a href="https://wa.me/5547999104771" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
-    <span class="foot-fill" aria-hidden="true"></span>
-    <a href="/" data-en="See the current design ↗">Ver o tema atual ↗</a>
-  </div>
-</footer>
-
-<!-- the assistant from anywhere: a pixel-art speech bubble in the corner; it opens the terminal in a floating window -->
-<button class="ai-bubble" id="ai-bubble" type="button" aria-label="Abrir o assistente de IA" data-en-aria="Open the AI assistant" title="Assistente de IA" data-en-title="AI assistant" hidden>
-  <svg viewBox="0 0 14 12" shape-rendering="crispEdges" aria-hidden="true">
-    <g fill="#fff"><rect x="2" y="0" width="10" height="1"/><rect x="1" y="1" width="12" height="1"/><rect x="0" y="2" width="14" height="6"/>
-      <rect x="1" y="8" width="12" height="1"/><rect x="2" y="9" width="10" height="1"/><rect x="2" y="10" width="3" height="1"/><rect x="2" y="11" width="2" height="1"/></g>
-    <g style="fill:var(--green)"><rect class="d1" x="3" y="4" width="2" height="2"/><rect class="d2" x="6" y="4" width="2" height="2"/><rect class="d3" x="9" y="4" width="2" height="2"/></g>
-  </svg>
-  <i class="ai-unread" aria-hidden="true"></i>
-</button>
-<div class="ai-float trail-ignore" id="ai-float" hidden></div>
-
-<!-- résumé viewer: opens over the page on computers (on phones the PDF opens in a new tab) -->
-<div class="cv-view" id="cv" role="dialog" aria-modal="true" aria-labelledby="cv-title" hidden>
-  <div class="cv-box">
-    <div class="cv-bar">
-      <span id="cv-title" data-en="Resume">Currículo</span>
-      <a class="cv-dl" id="cv-dl" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" download><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span data-en="Download">Baixar</span></a>
-      <button class="cv-x" id="cv-close" type="button" aria-label="Fechar o currículo" data-en-aria="Close the resume">✕</button>
+<!-- ── Currículo (computador) ── -->
+<div class="chat-wrap" id="cv-wrap" hidden>
+  <div class="chat cv" role="dialog" aria-modal="true" aria-labelledby="cv-title">
+    <div class="chat-head">
+      <div><strong id="cv-title" data-en="Resume">Currículo</strong><small>Kelvin Krauss · PDF</small></div>
+      <a class="pill glass" href="images/curriculo.pdf" data-en-href="images/resume-en.pdf" download="Curriculo-Kelvin-Krauss.pdf" data-en-download="Resume-Kelvin-Krauss.pdf" data-en="Download">Baixar</a>
+      <button class="x" type="button" id="cv-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
     </div>
     <iframe id="cv-frame" title="Currículo de Kelvin Krauss" data-en-title="Kelvin Krauss's resume"></iframe>
   </div>
 </div>
 
-<script src="js/alt.js"></script>
+<!-- ── Chat minimizado ── -->
+<button class="glass" id="chat-bubble" type="button" hidden aria-label="Abrir o assistente" data-en-aria="Open the assistant" title="Assistente do Kelvin" data-en-title="Kelvin's assistant">
+  <span class="orb" aria-hidden="true"></span>
+  <svg class="orb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5c4.97 0 9 3.36 9 7.5s-4.03 7.5-9 7.5c-.96 0-1.89-.12-2.76-.36L4.5 20l1.13-3.8C4.3 14.86 3 13.03 3 11c0-4.14 4.03-7.5 9-7.5Z" fill="#fff"/><circle cx="8.3" cy="11" r="1.25" fill="#3b4a6b"/><circle cx="12" cy="11" r="1.25" fill="#3b4a6b"/><circle cx="15.7" cy="11" r="1.25" fill="#3b4a6b"/></svg>
+  <span class="bubble-new" aria-hidden="true"></span>
+</button>
+
+<!-- ── Chat ── -->
+<div class="chat-wrap" id="chat-wrap" hidden>
+  <div class="chat" role="dialog" aria-modal="false" aria-labelledby="chat-title">
+    <span class="rz" data-rz="l" aria-hidden="true"></span><span class="rz" data-rz="r" aria-hidden="true"></span><span class="rz" data-rz="b" aria-hidden="true"></span><span class="rz" data-rz="bl" aria-hidden="true"></span><span class="rz" data-rz="br" aria-hidden="true"></span>
+    <div class="chat-head">
+      <span class="head-orb" aria-hidden="true"><span class="orb"></span></span>
+      <div><strong id="chat-title" data-en="Kelvin's assistant">Assistente do Kelvin</strong><small data-en="AI that knows my resume">IA que conhece meu currículo</small></div>
+      <button class="x" type="button" id="chat-close" aria-label="Fechar" data-en-aria="Close"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="msgs" id="msgs" aria-live="polite"></div>
+    <div class="sugg" id="sugg"></div>
+    <form id="chat-form">
+      <div class="ask glass">
+        <input id="chat-input" type="text" autocomplete="off" maxlength="4000" aria-label="Sua pergunta" placeholder="Escreva sua pergunta..." data-en-ph="Type your question...">
+        <button class="send" type="submit" id="chat-send" aria-label="Enviar" data-en-aria="Send"><svg><use href="#i-arrow"/></svg></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/fluid.js"></script>
+<script src="js/main.js"></script>
+
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
