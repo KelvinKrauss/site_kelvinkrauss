@@ -523,3 +523,6 @@ body.mosaic-pad { padding-left: var(--pad, 0px); }
 .swim .water { position: absolute; left: 0; bottom: 0; }
 @keyframes capy-bob { 50% { transform: translateY(2px); } }
 @media (prefers-reduced-motion: reduce) { .capy .shut, .capy .step, .swim .body { animation: none !important; } }
+
+/* the menu doesn't fit the résumé cell on medium screens (the résumé is also in the buttons under the name) */
+@media (max-width: 1320px) { .nav-cv { display: none; } }
