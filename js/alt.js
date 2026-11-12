@@ -13,7 +13,7 @@
   const TXT = {
     pt: {
       hello: 'Oi! Sou a IA do portfólio do Kelvin. Pergunte o que quiser sobre ele: projetos, estudos ou como falar com ele.',
-      sugg: ['O que ele fez no site da Ociani?', 'Tenho uma vaga: ele se encaixa?', 'Quero falar com ele'],
+      sugg: ['O que ele fez no site da Ociani?', 'Quero um site: como funciona?', 'Quero falar com ele'],
       wait: 'pensando', offline: 'Não consegui responder agora. Tente de novo em instantes ou fale direto: kelvin.krauss.br@gmail.com',
       busy: 'Foram muitas perguntas seguidas. Espere um minuto e tente de novo.', done: 'Pronto!',
       copied: 'Copiado!', copy: 'Copiar',
@@ -23,7 +23,7 @@
     },
     en: {
       hello: "Hi! I'm the AI on Kelvin's portfolio. Ask me anything about him: projects, studies or how to reach him.",
-      sugg: ['What did he build for Ociani?', 'I have a job opening: is he a fit?', 'I want to talk to him'],
+      sugg: ['What did he build for Ociani?', 'I need a website: how does it work?', 'I want to talk to him'],
       wait: 'thinking', offline: "I couldn't answer right now. Try again in a moment or reach him directly: kelvin.krauss.br@gmail.com",
       busy: 'That was a lot of questions in a row. Wait a minute and try again.', done: 'Done!',
       copied: 'Copied!', copy: 'Copy',
@@ -72,20 +72,20 @@
   }
 
   /* ── Squares with programming symbols where the mouse passes ──
-     Same rules as the effect on githubuniverse.com (read from its code, "CursorTrailAnimation"):
-     - only inside the areas marked .trail-area, and only on empty space: never over a piece of text, a link,
-       a button or anything inside .trail-ignore (labels, the lead text, buttons, images, the terminal...);
-     - a 20 px grid on the screen; a new square only when the mouse enters another cell;
-     - at most 10 at once, each lit for 0.1–0.4 s, then it fades;
-     - one symbol per square from - / ) . + = > < * & (, and 30% of them empty.
-     Drawn on one canvas above the content, only while a square is alive. Mouse only, off with "reduce motion". */
+     Like the effect on githubuniverse.com, but drawn UNDER the page, so the text always stays on top:
+     - a 20 px grid on the page; a new square when the mouse enters another cell. The squares belong to the page,
+       so when you scroll they move with it;
+     - at most 10 at once, each lit for 0.1–0.4 s, then it shrinks away;
+     - full, strong color on empty space; behind text, a light version without the symbol, so reading isn't disturbed;
+     - not over the tile mosaic on the left. Solid things (buttons, images, the terminal) simply cover them.
+     One canvas behind the content, drawn only while some square is lit. Mouse only, off with "reduce motion". */
   (function symbolTrail() {
     const cv = $('#trail'), ctx = cv.getContext('2d');
     if (!ctx || calm.matches || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     const SIZE = 20, MAX = 10, FADE = 260; // FADE: how long it takes to shrink away
-    const BOX = 20, INSET = (SIZE - BOX) / 2; // the colored square fills its grid cell
-    const COLORS = ['#ae85ff', '#f73678', '#c05200', '#583af7', '#5fed83', '#bba00a'];
-    const DARK_TEXT = new Set(['#ae85ff', '#5fed83', '#bba00a']); // the light colors get dark text, the strong ones white
+    const SOFT = .32;                       // how strong a square is behind text
+    const COLORS = ['#9b5cff', '#ff2e74', '#ff6a00', '#4b3bff', '#1fd65f', '#ffc400'];
+    const DARK_TEXT = new Set(['#1fd65f', '#ffc400']); // the light colors get dark text, the strong ones white
     const SYMBOLS = ['-', '/', ')', '.', '+', '=', '>', '<', '*', '&', '('];
     const live = [];
     let raf = 0, dpr = 1, lastX = null, lastY = null;
@@ -93,36 +93,25 @@
       dpr = Math.min(devicePixelRatio || 1, 2);
       cv.width = Math.round(innerWidth * dpr); cv.height = Math.round(innerHeight * dpr);
     }
-    // Areas where a square would get in the way of reading: every element that holds text, plus images, buttons,
-    // links, tags and the .trail-ignore blocks, each grown by a margin. Measured in page coordinates (scrolling
-    // doesn't change them) and measured again only after something on the page changes.
-    const PAD = 14;
-    let blocked = [], dirty = true;
+    // Where the text really is: the box of each line of words (not the whole paragraph or list row), in page
+    // coordinates. Measured again only after something in the content changes.
+    const main = document.querySelector('main') || document.body;
+    let text = [], dirty = true;
     const markDirty = () => { dirty = true; };
     function measure() {
-      dirty = false;
-      const els = new Set(document.querySelectorAll('.frame, .foot, .name, .trail-area img, .trail-area button, .trail-area a, .trail-area input, .trail-area .btn, .trail-area .tag, .trail-area .ico, .trail-ignore'));
-      const walk = document.createTreeWalker(document.querySelector('main') || document.body, NodeFilter.SHOW_TEXT);
-      for (let n = walk.nextNode(); n; n = walk.nextNode()) if (n.nodeValue.trim() && n.parentElement) els.add(n.parentElement);
-      document.querySelectorAll('.foot-row > *').forEach(e => els.add(e));
-      blocked = [];
-      for (const el of els) {
-        const r = el.getBoundingClientRect();
-        if (!r.width || !r.height) continue; // hidden (filtered agenda rows, the other language...)
-        blocked.push([r.left + scrollX - PAD, r.top + scrollY - PAD, r.right + scrollX + PAD, r.bottom + scrollY + PAD]);
+      dirty = false; text = [];
+      const range = document.createRange(), walk = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
+      for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+        if (!n.nodeValue.trim()) continue;
+        range.selectNodeContents(n);
+        for (const r of range.getClientRects()) if (r.width && r.height) text.push([r.left + scrollX - 3, r.top + scrollY - 3, r.right + scrollX + 3, r.bottom + scrollY + 3]);
       }
     }
-    new MutationObserver(markDirty).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden', 'class', 'style'] });
+    new MutationObserver(markDirty).observe(main, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden', 'class', 'style'] });
     if ('ResizeObserver' in window) new ResizeObserver(markDirty).observe(document.body);
-    if (document.fonts) document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', markDirty);
-    // free = inside an area that allows squares, and the whole square (in page coordinates) touches no blocked area
-    function emptySpot(t, x, y) {
-      if (!t || !t.closest || !t.closest('.trail-area') || t.closest('.frame, .foot, .name, .trail-ignore, a, button, input, textarea, label, img, .btn, .tag')) return false;
-      if (dirty) measure();
-      const px = x + scrollX, py = y + scrollY;
-      for (const [l, tp, r, b] of blocked) if (px < r && px + SIZE > l && py < b && py + SIZE > tp) return false;
-      return true;
-    }
+    if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', markDirty);
+    const onText = (x, y) => { if (dirty) measure(); return text.some(([l, t, r, b]) => x < r && x + SIZE > l && y < b && y + SIZE > t); };
+    const mosaicW = () => { const m = $('#mosaic'); return m ? m.offsetWidth : 0; };
     function draw(now) {
       raf = 0;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -133,25 +122,29 @@
         // at the end of its life the square shrinks into its center (like githubuniverse.com), it doesn't fade
         const k = age < q.life ? 1 : 1 - (age - q.life) / FADE;
         if (k <= 0) { live.splice(i, 1); continue; }
-        const s = k * k * (3 - 2 * k), box = BOX * s, cx = q.x + SIZE / 2, cy = q.y + SIZE / 2; // smooth ease
+        const s = k * k * (3 - 2 * k), box = SIZE * s, cx = q.x - scrollX + SIZE / 2, cy = q.y - scrollY + SIZE / 2; // page → screen
+        ctx.globalAlpha = q.soft ? SOFT : 1;
         ctx.fillStyle = q.color; ctx.fillRect(cx - box / 2, cy - box / 2, box, box);
-        if (q.text && s > .25) {
+        if (q.text && !q.soft && s > .25) {
           ctx.font = '600 ' + (13 * s).toFixed(1) + 'px "Geist Mono", ui-monospace, monospace';
           ctx.fillStyle = DARK_TEXT.has(q.color) ? '#0b0f0c' : '#fff'; ctx.fillText(q.text, cx, cy + s);
         }
       }
+      ctx.globalAlpha = 1;
       if (live.length) raf = requestAnimationFrame(draw);
     }
     addEventListener('mousemove', e => {
-      const x = SIZE * Math.floor(e.clientX / SIZE), y = SIZE * Math.floor(e.clientY / SIZE);
+      const x = SIZE * Math.floor((e.clientX + scrollX) / SIZE), y = SIZE * Math.floor((e.clientY + scrollY) / SIZE); // a grid on the page
       if (x === lastX && y === lastY) return;            // still in the same cell
-      if (!emptySpot(e.target, x, y)) return;
       lastX = x; lastY = y;
+      const t = e.target;
+      if (!t || !t.closest || !t.closest('main') || t.closest('#ai-float') || e.clientX < mosaicW()) return;
       if (live.length >= MAX) live.shift();               // the oldest gives its place
-      live.push({ x, y, born: performance.now(), life: 100 + 300 * Math.random(),
+      live.push({ x, y, born: performance.now(), life: 100 + 300 * Math.random(), soft: onText(x, y),
         color: COLORS[(Math.random() * COLORS.length) | 0], text: Math.random() < .3 ? '' : SYMBOLS[(Math.random() * SYMBOLS.length) | 0] });
       if (!raf) raf = requestAnimationFrame(draw);
     }, { passive: true });
+    addEventListener('scroll', () => { lastX = lastY = null; }, { passive: true });
     size();
     addEventListener('resize', size);
   })();
@@ -241,9 +234,10 @@
     const box = document.createElement('div'); box.id = 'mosaic'; box.setAttribute('aria-hidden', 'true');
     document.body.prepend(box);
     const SIZE = 48, FILL = .95;
-    const COLORS = ['#0f766e', '#1f8fff', '#ae85ff', '#583af7', '#a5f3e8', '#bba00a', '#ff7be5', '#c05200'];
-    const FG = { '#0f766e': ['#bba00a', '#ff7be5'], '#1f8fff': ['#583af7', '#a5f3e8'], '#ae85ff': ['#583af7', '#ff7be5'], '#583af7': ['#ae85ff', '#a5f3e8'],
-      '#a5f3e8': ['#0f766e', '#583af7'], '#bba00a': ['#c05200', '#fff'], '#ff7be5': ['#c05200', '#583af7'], '#c05200': ['#ff7be5', '#bba00a'] };
+    // the same colors as the squares that follow the mouse, plus the theme teal
+    const COLORS = ['#9b5cff', '#ff2e74', '#ff6a00', '#4b3bff', '#1fd65f', '#ffc400', '#0f766e'];
+    const FG = { '#9b5cff': ['#4b3bff', '#ffc400'], '#ff2e74': ['#ffc400', '#4b3bff'], '#ff6a00': ['#4b3bff', '#ffc400'], '#4b3bff': ['#9b5cff', '#1fd65f'],
+      '#1fd65f': ['#0f766e', '#4b3bff'], '#ffc400': ['#ff6a00', '#ff2e74'], '#0f766e': ['#1fd65f', '#ffc400'] };
     const KINDS = ['solid', 'solid', 'dots', 'cross', 'quarter', 'quarter', 'half', 'glyph'];
     const GLYPHS = ['{', '}', '>', '<', '/', '=', '+', '*'];
     let lastKey = '';
@@ -254,9 +248,10 @@
       const hero = document.querySelector('.hero');
       let room = hero.getBoundingClientRect().left + scrollX - 12;
       if (room < SIZE) { document.body.classList.add('mosaic-pad'); document.body.style.setProperty('--pad', (SIZE + 12) + 'px'); room = SIZE; }
-      const cols = Math.max(1, Math.floor(room / SIZE)), rows = Math.ceil(document.documentElement.scrollHeight / SIZE);
-      const key = cols + 'x' + rows; if (key === lastKey) return; lastKey = key;
-      Object.assign(box.style, { width: cols * SIZE + 'px', height: rows * SIZE + 'px', gridTemplateColumns: 'repeat(' + cols + ', ' + SIZE + 'px)', gridAutoRows: SIZE + 'px' });
+      const H = Math.floor($('.foot').getBoundingClientRect().top + scrollY);
+      const cols = Math.max(1, Math.floor(room / SIZE)), rows = Math.ceil(H / SIZE);
+      const key = cols + 'x' + H; if (key === lastKey) return; lastKey = key;
+      Object.assign(box.style, { width: cols * SIZE + 'px', height: H + 'px', gridTemplateColumns: 'repeat(' + cols + ', ' + SIZE + 'px)', gridAutoRows: SIZE + 'px' });
       box.style.setProperty('--ts', SIZE + 'px');
       const frag = document.createDocumentFragment();
       for (let i = 0; i < cols * rows; i++) {
@@ -492,4 +487,17 @@
   document.querySelectorAll('a[href="#pergunte"]').forEach(a => a.addEventListener('click', e => { if (floating) { e.preventDefault(); input.focus(); } }));
 
   applyLang(lang);
+})();
+
+/* ── The capybara walks into the black bar when the page opens (from the right edge, facing left)
+   and stops next to the clock, where she keeps blinking. Skipped with "reduce motion". ── */
+(function capyWalk() {
+  const w = document.getElementById('capy'), bar = document.querySelector('.bar');
+  if (!w || !bar || !w.animate || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const dist = bar.getBoundingClientRect().right - w.getBoundingClientRect().left + 10;
+  if (dist < 40) return;
+  w.classList.add('walking');
+  const walk = w.animate([{ transform: 'translateX(' + dist + 'px) scaleX(-1)' }, { transform: 'translateX(0) scaleX(-1)' }],
+    { duration: Math.min(6000, dist / 110 * 1000), easing: 'linear', fill: 'forwards' }); // she stays facing the clock
+  walk.onfinish = () => w.classList.remove('walking');
 })();

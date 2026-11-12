@@ -56,7 +56,7 @@ button { font: inherit; color: inherit; }
 @media (min-width: 1489px) { .nav > :first-child { border-left: 1px solid var(--line); } .nav-go { border-right: 1px solid var(--line); } }
 
 /* ── Squares with symbols: one canvas, drawn only while some square is lit ── */
-#trail { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none; } /* above the content (squares only appear on empty spots), below the navigation */
+#trail { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; } /* behind the content: the text always stays on top */
 .bar, main, .foot { position: relative; z-index: 1; }
 
 /* ── The name: big, with the facts beside it ── */
@@ -428,3 +428,98 @@ body.mosaic-pad { padding-left: var(--pad, 0px); }
   .cursor, .t-prompt b, .t-ai.wait::after { animation: none; }
   .btn, .btn:hover { transition: none; }
 }
+
+/* ══ Layout v2 ══
+   Hero: one block in reading order (status, name, role, intro, WhatsApp, contacts) with "Agora" as a column beside it.
+   Sections: a narrow title column on the left that stays in view while you scroll, the content on the right. */
+.hero2 { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(280px, 1fr); margin-top: 28px; border-top: 1px solid var(--line); }
+.h-main { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; padding: 36px 32px 34px; border-right: 1px solid var(--line); min-width: 0; }
+.h-status { display: inline-flex; align-items: center; gap: 10px; padding: 6px 12px; font: 500 .86rem var(--mono); color: var(--green);
+  background: color-mix(in srgb, var(--green) 9%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--green) 45%, transparent); }
+.h-live { width: 8px; height: 8px; background: var(--green); animation: blink 1.6s steps(1) infinite; }
+.h-name { margin: 2px 0 0; font: 900 clamp(2.6rem, 5.3vw, 6.4rem)/.88 var(--display); font-stretch: 125%; letter-spacing: -.025em; }
+.h-name span { display: inline-block; white-space: nowrap; }
+.h-role { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 0; font: 400 .9rem/1.5 var(--mono); color: var(--muted); }
+.h-lead { margin: 4px 0 0; max-width: 48ch; font-size: clamp(1.15rem, 1.5vw, 1.4rem); line-height: 1.4; letter-spacing: -.01em; }
+.h-cta { display: flex; flex-wrap: wrap; gap: 12px; width: 100%; }
+.h-cta .btn { min-height: 60px; align-items: center; font-size: 1.02rem; }
+.h-cta .btn-wa { flex: 1 1 320px; max-width: 460px; }
+.btn-wa { background: #1c9e52; color: #fff; font-weight: 600; }
+.btn-wa:hover, .btn-wa:focus-visible { background: #178544; }
+.hero2 .hero-links { padding: 0; border: 0; }
+.h-now { display: flex; flex-direction: column; gap: 6px; padding: 36px 28px 30px; background: color-mix(in srgb, var(--paper) 55%, transparent); }
+.h-now-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 10px; font: 400 .8rem var(--mono); color: var(--muted); }
+.h-now-head strong { font: 500 1.9rem/1 var(--display); letter-spacing: -.03em; color: var(--ink); }
+.h-now-head strong::after { content: ""; display: inline-block; width: .3em; height: .3em; margin-left: .15em; background: var(--green); vertical-align: .1em; }
+.h-now-list { list-style: none; margin: 0; padding: 0; }
+.h-now-list li { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 10px; padding: 14px 0; border-top: 1px solid var(--line); font-size: .98rem; line-height: 1.45; }
+.h-now-list li::before { content: ""; width: 7px; height: 7px; margin-top: .5em; background: var(--ink); }
+.h-now-list li:last-child::before { background: #1c9e52; }
+
+/* nav: the WhatsApp button on the right */
+.nav-go { background: #1c9e52; }
+.nav-go:hover { background: #178544; }
+.nav-cv { min-width: 120px; }
+
+/* "Precisa de um site assim?" under the Ociani project */
+.pitch { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 28px; padding: 22px 24px; background: color-mix(in srgb, #1c9e52 7%, transparent); }
+.pitch p { margin: 0; font-size: 1.12rem; }
+.pitch .btn { min-height: 54px; align-items: center; }
+
+.sec { display: grid; grid-template-columns: 260px minmax(0, 1fr); margin: clamp(40px, 5vw, 64px) var(--edge) 0; padding-top: 0; border: 1px solid var(--line);
+  background: linear-gradient(var(--line), var(--line)) 260px 0 / 1px 100% no-repeat; }
+.sec > * { grid-column: 2; min-width: 0; margin-inline: 0 !important; }
+.sec > .frame { border: 0; border-bottom: 1px solid var(--line); }
+.sec > .frame:last-child, .sec > .more-gh:last-child { border-bottom: 0; }
+.sec > .sec-head { grid-column: 1; grid-row: 1 / span 40; align-self: start; position: sticky; top: 64px; min-height: 0; flex-direction: column-reverse; justify-content: flex-start; gap: 10px; padding: 26px 24px; border: 0; }
+.sec > .sec-head .sec-title { font-size: clamp(1.7rem, 2.3vw, 2.3rem); line-height: 1.05; }
+.sec > .sec-head .mono-row { font-size: .8rem; color: var(--muted); }
+.sec > .more-gh { padding: 14px 24px 18px; }
+.sec .tabs .tab:first-child { border-left: 0; }
+
+/* footer: a dark band across the whole width, touching the bottom of the page */
+.foot { margin: clamp(56px, 8vw, 96px) 0 0; border: 0; padding-inline: var(--edge); background: #0b0f0c; color: #e5ece7; }
+.foot-row { border-inline: 1px solid #2c3530; }
+.foot-row > * { border-color: #2c3530; padding-block: 26px; }
+.foot-row > span:first-child { color: #9aa59e; }
+.foot-row a:hover { background: #151b17; color: #fff; }
+.foot-row .foot-wa { color: #5fe08f; font-weight: 600; }   /* each link in its brand color, lighter so it reads on the dark band */
+.foot-row .foot-in { color: #6cb4ff; font-weight: 600; }
+.foot-row .foot-mail { color: #ff8a80; font-weight: 600; }
+
+@media (max-width: 1100px) { .hero2 { grid-template-columns: 1fr; } .h-main { border-right: 0; border-bottom: 1px solid var(--line); } }
+@media (max-width: 860px) {
+  .sec { grid-template-columns: 1fr; background: none; }
+  .sec > *, .sec > .sec-head { grid-column: 1; grid-row: auto; }
+  .sec > .sec-head { position: static; flex-direction: column-reverse; border-bottom: 1px solid var(--line); }
+  .h-main { padding: 26px 18px; } .h-now { padding: 26px 18px; }
+  .h-cta .btn { flex: 1 1 100%; max-width: none; }
+  .pitch { padding: 20px 18px; } .pitch .btn { width: 100%; }
+  .foot-row { border-inline: 0; } .foot-row > * { border-right: 0; border-bottom: 1px solid #2c3530; width: 100%; padding-block: 16px; }
+  .foot-fill { display: none; }
+}
+
+/* the squares live behind the page, so nothing in the content has a background tint that would hide or dim them:
+   hovering a card or a journey row shows a colored line instead */
+.card:hover, .row:hover { background: none; box-shadow: inset 3px 0 0 var(--green); }
+.tab[aria-selected="true"] { background: transparent; }
+.h-now { background: none; }
+
+/* ══ The capybara of Blumenau (pixel art, drawn as SVG rectangles) ══
+   Next to the clock in the black bar: she walks in when the page opens, then blinks now and then.
+   In the footer: she swims, with the water covering her from just under the nostrils. */
+.bar { overflow: hidden; }
+.bar-clock { display: inline-flex; align-items: center; gap: 8px; }
+.capy { position: relative; display: inline-block; flex: none; line-height: 0; vertical-align: middle; }
+.capy svg { display: block; }
+.capy .step, .capy .shut { position: absolute; inset: 0; opacity: 0; }
+.capy.blink .shut { animation: capy-shut 4.2s steps(1) infinite; }
+.capy.walking .step { animation: capy-step .36s steps(1) infinite; }
+.capy.walking .shut { animation: none; }
+@keyframes capy-shut { 0%, 93% { opacity: 0; } 94%, 97% { opacity: 1; } 98% { opacity: 0; } }
+@keyframes capy-step { 0% { opacity: 0; } 50% { opacity: 1; } }
+.swim { position: relative; display: inline-block; flex: none; overflow: hidden; vertical-align: middle; line-height: 0; }
+.swim .body { position: absolute; top: 0; animation: capy-bob 1.8s ease-in-out infinite; }
+.swim .water { position: absolute; left: 0; bottom: 0; }
+@keyframes capy-bob { 50% { transform: translateY(2px); } }
+@media (prefers-reduced-motion: reduce) { .capy .shut, .capy .step, .swim .body { animation: none !important; } }
