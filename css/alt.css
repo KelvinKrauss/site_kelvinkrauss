@@ -352,7 +352,8 @@ a.crow:hover .arrow { transform: translate(3px, -3px); }
 body.mosaic-pad { padding-left: var(--pad, 0px); }
 
 /* ── Footer: the full-width name, then a row of cells ── */
-.foot { margin: clamp(56px, 8vw, 104px) var(--edge) 96px; /* room below so the AI bubble never covers the footer */ border: 1px solid var(--line); border-bottom: 0; }
+/* a closed box with a little air below; the AI bubble steps aside while the footer is on screen (js/alt.js) */
+.foot { margin: clamp(56px, 8vw, 104px) var(--edge) 40px; border: 1px solid var(--line); }
 .foot-row { display: flex; flex-wrap: wrap; }
 .foot-row > * { padding: 20px 24px; border-right: 1px solid var(--line); font-size: .95rem; text-decoration: none; }
 .foot-row > span:first-child { color: var(--muted); }

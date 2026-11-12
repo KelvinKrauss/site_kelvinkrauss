@@ -452,7 +452,8 @@
      its place. An answer that arrives while it's closed marks the bubble. */
   const term = $('#term'), away = $('#term-away'), aiFloat = $('#ai-float'), bubble = $('#ai-bubble'), askSec = $('#pergunte');
   let floating = false, sectionInView = false;
-  const syncBubble = () => { bubble.hidden = floating || sectionInView; };
+  let footInView = false;
+  const syncBubble = () => { bubble.hidden = floating || sectionInView || footInView; };
   function openFloat() {
     if (floating) return;
     floating = true;
@@ -481,7 +482,11 @@
   $('#term-close').addEventListener('click', () => closeFloat(false));
   $('#term-back').addEventListener('click', () => closeFloat(true));
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && floating && cv.hidden) closeFloat(false); });
-  if ('IntersectionObserver' in window) new IntersectionObserver(([en]) => { sectionInView = en.isIntersecting; syncBubble(); }, { threshold: .15 }).observe(askSec);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([en]) => { sectionInView = en.isIntersecting; syncBubble(); }, { threshold: .15 }).observe(askSec);
+    // at the very end of the page the bubble would sit on the footer's links: it steps aside
+    new IntersectionObserver(([en]) => { footInView = en.isIntersecting; syncBubble(); }).observe($('.foot'));
+  }
   else syncBubble();
   // the hero's "ask my assistant" button: with the window open, it just focuses it
   document.querySelectorAll('a[href="#pergunte"]').forEach(a => a.addEventListener('click', e => { if (floating) { e.preventDefault(); input.focus(); } }));
