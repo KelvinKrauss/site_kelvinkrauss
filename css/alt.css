@@ -514,15 +514,17 @@ body.mosaic-pad { padding-left: var(--pad, 0px); }
 .capy svg { display: block; }
 .capy .step, .capy .shut { position: absolute; inset: 0; opacity: 0; }
 .capy.blink .shut { animation: capy-shut 4.2s steps(1) infinite; }
-.capy.walking .step { animation: capy-step .36s steps(1) infinite; }
+.capy.walking svg { animation: capy-waddle .64s steps(1) infinite; }            /* the body goes up 1 pixel on each step */
+.capy.walking .step { animation: capy-step .64s steps(1) infinite, capy-waddle .64s steps(1) infinite; }
 .capy.walking .shut { animation: none; }
-@keyframes capy-shut { 0%, 93% { opacity: 0; } 94%, 97% { opacity: 1; } 98% { opacity: 0; } }
+@keyframes capy-shut { 0%, 91% { opacity: 0; } 92%, 97% { opacity: 1; } 98% { opacity: 0; } } /* eyes shut for about a quarter of a second */
 @keyframes capy-step { 0% { opacity: 0; } 50% { opacity: 1; } }
+@keyframes capy-waddle { 0% { translate: 0 0; } 50% { translate: 0 -1px; } }
 .swim { position: relative; display: inline-block; flex: none; overflow: hidden; vertical-align: middle; line-height: 0; }
 .swim .body { position: absolute; top: 0; animation: capy-bob 1.8s ease-in-out infinite; }
 .swim .water { position: absolute; left: 0; bottom: 0; }
 @keyframes capy-bob { 50% { transform: translateY(2px); } }
-@media (prefers-reduced-motion: reduce) { .capy .shut, .capy .step, .swim .body { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .capy svg, .capy .shut, .capy .step, .swim .body { animation: none !important; } }
 
 /* the menu doesn't fit the résumé cell on medium screens (the résumé is also in the buttons under the name) */
 @media (max-width: 1320px) { .nav-cv { display: none; } }

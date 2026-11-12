@@ -489,15 +489,20 @@
   applyLang(lang);
 })();
 
-/* ── The capybara walks into the black bar when the page opens (from the right edge, facing left)
-   and stops next to the clock, where she keeps blinking. Skipped with "reduce motion". ── */
+/* ── The capybara walks into the black bar when the page opens (facing left) and stops next to the clock,
+   where she keeps blinking. A calm walk: 45 px per second, and at most 360 px; when the bar is wider than
+   that she fades in on the way instead of crossing all of it. Skipped with "reduce motion". ── */
 (function capyWalk() {
   const w = document.getElementById('capy'), bar = document.querySelector('.bar');
   if (!w || !bar || !w.animate || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const dist = bar.getBoundingClientRect().right - w.getBoundingClientRect().left + 10;
-  if (dist < 40) return;
+  const room = bar.getBoundingClientRect().right - w.getBoundingClientRect().left + 10;
+  if (room < 40) return;
+  const dist = Math.min(room, 360), fade = dist < room;
   w.classList.add('walking');
-  const walk = w.animate([{ transform: 'translateX(' + dist + 'px) scaleX(-1)' }, { transform: 'translateX(0) scaleX(-1)' }],
-    { duration: Math.min(6000, dist / 110 * 1000), easing: 'linear', fill: 'forwards' }); // she stays facing the clock
+  const walk = w.animate([
+    { transform: 'translateX(' + dist + 'px) scaleX(-1)', opacity: fade ? 0 : 1 },
+    { opacity: 1, offset: fade ? .2 : 0 },
+    { transform: 'translateX(0) scaleX(-1)', opacity: 1 }
+  ], { duration: dist / 45 * 1000, easing: 'linear', fill: 'forwards' }); // she stays facing the clock
   walk.onfinish = () => w.classList.remove('walking');
 })();
