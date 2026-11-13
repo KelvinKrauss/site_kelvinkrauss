@@ -71,6 +71,50 @@
     navLinks.forEach(a => { const s = document.querySelector(a.getAttribute('href')); if (s) obs.observe(s); });
   }
 
+  /* ── The dot on the menu: how far you are through each section ──
+     The reading line is the middle of the screen. Inside a section, the dot sits at the same fraction of that
+     section's menu cell (halfway through the section = halfway under its name). Between sections it waits at the
+     end of the cell, which is where the next cell starts, so it never jumps. Hidden above the first section and
+     when the menu cells are hidden (phones). */
+  (function navDot() {
+    const nav = document.querySelector('.nav');
+    const pairs = navLinks.map(a => [a, document.querySelector(a.getAttribute('href'))]).filter(p => p[1]);
+    if (!nav || !pairs.length) return;
+    const dot = document.createElement('span'), trace = document.createElement('span');
+    dot.className = 'nav-dot'; trace.className = 'nav-trace';
+    // a little pixel-art UFO (20 x 9 pixels, 2 px each) riding the line; its lights blink in turns
+    dot.innerHTML = '<svg viewBox="0 0 20 9" width="40" height="18" shape-rendering="crispEdges"><rect x="8" y="0" width="4" height="1" fill="#0b0f0c"/><rect x="6" y="1" width="2" height="1" fill="#0b0f0c"/><rect x="8" y="1" width="1" height="1" fill="#a5f3e8"/><rect x="9" y="1" width="1" height="1" fill="#ffffff"/><rect x="10" y="1" width="2" height="1" fill="#a5f3e8"/><rect x="12" y="1" width="2" height="1" fill="#0b0f0c"/><rect x="5" y="2" width="1" height="1" fill="#0b0f0c"/><rect x="6" y="2" width="2" height="1" fill="#a5f3e8"/><rect x="8" y="2" width="1" height="1" fill="#ffffff"/><rect x="9" y="2" width="5" height="1" fill="#a5f3e8"/><rect x="14" y="2" width="1" height="1" fill="#0b0f0c"/><rect x="3" y="3" width="14" height="1" fill="#0b0f0c"/><rect x="1" y="4" width="1" height="1" fill="#0b0f0c"/><rect x="2" y="4" width="16" height="1" fill="#2dd4bf"/><rect x="18" y="4" width="1" height="1" fill="#0b0f0c"/><rect x="0" y="5" width="1" height="1" fill="#0b0f0c"/><rect x="1" y="5" width="2" height="1" fill="#0f766e"/><rect class="ufo-a" x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="3" height="1" fill="#0f766e"/><rect class="ufo-b" x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="4" height="1" fill="#0f766e"/><rect class="ufo-a" x="12" y="5" width="1" height="1"/><rect x="13" y="5" width="3" height="1" fill="#0f766e"/><rect class="ufo-b" x="16" y="5" width="1" height="1"/><rect x="17" y="5" width="2" height="1" fill="#0f766e"/><rect x="19" y="5" width="1" height="1" fill="#0b0f0c"/><rect x="1" y="6" width="1" height="1" fill="#0b0f0c"/><rect x="2" y="6" width="16" height="1" fill="#0f766e"/><rect x="18" y="6" width="1" height="1" fill="#0b0f0c"/><rect x="3" y="7" width="2" height="1" fill="#0b0f0c"/><rect x="5" y="7" width="10" height="1" fill="#0a4d47"/><rect x="15" y="7" width="2" height="1" fill="#0b0f0c"/><rect x="5" y="8" width="10" height="1" fill="#0b0f0c"/></svg>';
+    dot.setAttribute('aria-hidden', 'true'); trace.setAttribute('aria-hidden', 'true');
+    nav.append(trace, dot);
+    let queued = false;
+    function place() {
+      queued = false;
+      const navBox = nav.getBoundingClientRect(), y = innerHeight * .5;
+      const atEnd = scrollY + innerHeight >= document.documentElement.scrollHeight - 2;
+      let x = null, cellLeft = 0;
+      for (let i = pairs.length - 1; i >= 0; i--) {
+        const [a, sec] = pairs[i], s = sec.getBoundingClientRect(), c = a.getBoundingClientRect();
+        if (!c.width) break;                                   // the menu cells are hidden on this screen
+        if (s.top > y && !(atEnd && i === pairs.length - 1)) continue;
+        // the last section can't reach the middle of the screen at the bottom of the page: finish it there
+        const p = atEnd && i === pairs.length - 1 ? 1 : Math.min(1, Math.max(0, (y - s.top) / s.height));
+        x = c.left - navBox.left + p * c.width; cellLeft = c.left - navBox.left;
+        break;
+      }
+      const on = x !== null;
+      dot.classList.toggle('show', on); trace.classList.toggle('show', on);
+      if (!on) return;
+      dot.style.transform = 'translateX(' + x + 'px)';
+      trace.style.transform = 'translateX(' + cellLeft + 'px) scaleX(' + Math.max(0, x - cellLeft) + ')';
+    }
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(place); } };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    document.fonts && document.fonts.ready.then(queue);
+    new MutationObserver(queue).observe(nav, { subtree: true, characterData: true, childList: true }); // language switch
+    queue();
+  })();
+
   /* ── Squares with programming symbols where the mouse passes ──
      Like the effect on githubuniverse.com, but drawn UNDER the page, so the text always stays on top:
      - a 20 px grid on the page; a new square when the mouse enters another cell. The squares belong to the page,
