@@ -489,20 +489,77 @@
   applyLang(lang);
 })();
 
-/* ── The capybara walks into the black bar when the page opens (facing left) and stops next to the clock,
-   where she keeps blinking. A calm walk: 45 px per second, and at most 360 px; when the bar is wider than
-   that she fades in on the way instead of crossing all of it. Skipped with "reduce motion". ── */
-(function capyWalk() {
+/* ── The capybara's life in the black bar ──
+   1. When the page opens she walks in (facing left, 45 px per second, at most 360 px; on wide bars she fades in
+      on the way) and stops next to the clock, where she blinks and flicks her ear now and then.
+   2. Every 7–15 s a grass tuft grows somewhere to her right (never over the text). She turns to it, walks over,
+      lowers her head and chews while the grass shrinks bite by bite. Then she stays where she is.
+   Skipped with "reduce motion". ── */
+(function capyLife() {
   const w = document.getElementById('capy'), bar = document.querySelector('.bar');
   if (!w || !bar || !w.animate || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const room = bar.getBoundingClientRect().right - w.getBoundingClientRect().left + 10;
-  if (room < 40) return;
-  const dist = Math.min(room, 360), fade = dist < room;
-  w.classList.add('walking');
-  const walk = w.animate([
-    { transform: 'translateX(' + dist + 'px) scaleX(-1)', opacity: fade ? 0 : 1 },
-    { opacity: 1, offset: fade ? .2 : 0 },
-    { transform: 'translateX(0) scaleX(-1)', opacity: 1 }
-  ], { duration: dist / 45 * 1000, easing: 'linear', fill: 'forwards' }); // she stays facing the clock
-  walk.onfinish = () => w.classList.remove('walking');
+  const SPEED = 45, GRASS = '<svg viewBox="0 0 12 10" width="12" height="10" shape-rendering="crispEdges" aria-hidden="true"><rect x="5" y="0" width="1" height="1" fill="#7ddc6a"/><rect x="2" y="1" width="1" height="1" fill="#7ddc6a"/><rect x="5" y="1" width="1" height="1" fill="#7ddc6a"/><rect x="9" y="1" width="1" height="1" fill="#7ddc6a"/><rect x="2" y="2" width="1" height="1" fill="#7ddc6a"/><rect x="5" y="2" width="2" height="1" fill="#7ddc6a"/><rect x="9" y="2" width="1" height="1" fill="#7ddc6a"/><rect x="2" y="3" width="2" height="1" fill="#7ddc6a"/><rect x="5" y="3" width="1" height="1" fill="#2f9e44"/><rect x="6" y="3" width="1" height="1" fill="#7ddc6a"/><rect x="8" y="3" width="2" height="1" fill="#7ddc6a"/><rect x="0" y="4" width="1" height="1" fill="#7ddc6a"/><rect x="3" y="4" width="1" height="1" fill="#7ddc6a"/><rect x="5" y="4" width="1" height="1" fill="#2f9e44"/><rect x="6" y="4" width="1" height="1" fill="#7ddc6a"/><rect x="8" y="4" width="1" height="1" fill="#7ddc6a"/><rect x="11" y="4" width="1" height="1" fill="#7ddc6a"/><rect x="0" y="5" width="2" height="1" fill="#7ddc6a"/><rect x="3" y="5" width="1" height="1" fill="#7ddc6a"/><rect x="4" y="5" width="2" height="1" fill="#2f9e44"/><rect x="6" y="5" width="1" height="1" fill="#7ddc6a"/><rect x="8" y="5" width="1" height="1" fill="#7ddc6a"/><rect x="9" y="5" width="1" height="1" fill="#2f9e44"/><rect x="11" y="5" width="1" height="1" fill="#7ddc6a"/><rect x="1" y="6" width="1" height="1" fill="#2f9e44"/><rect x="2" y="6" width="1" height="1" fill="#7ddc6a"/><rect x="3" y="6" width="2" height="1" fill="#2f9e44"/><rect x="5" y="6" width="1" height="1" fill="#7ddc6a"/><rect x="6" y="6" width="1" height="1" fill="#2f9e44"/><rect x="7" y="6" width="1" height="1" fill="#7ddc6a"/><rect x="8" y="6" width="2" height="1" fill="#2f9e44"/><rect x="10" y="6" width="1" height="1" fill="#7ddc6a"/><rect x="11" y="6" width="1" height="1" fill="#2f9e44"/><rect x="0" y="7" width="2" height="1" fill="#2f9e44"/><rect x="2" y="7" width="1" height="1" fill="#7ddc6a"/><rect x="3" y="7" width="2" height="1" fill="#2f9e44"/><rect x="5" y="7" width="1" height="1" fill="#7ddc6a"/><rect x="6" y="7" width="3" height="1" fill="#2f9e44"/><rect x="9" y="7" width="1" height="1" fill="#7ddc6a"/><rect x="10" y="7" width="2" height="1" fill="#2f9e44"/><rect x="0" y="8" width="12" height="1" fill="#2f9e44"/><rect x="0" y="9" width="12" height="1" fill="#2f9e44"/></svg>', GW = 12, GH = 10;
+  const Wd = w.offsetWidth;
+  let anim = null, pos = 0;                           // pos: how far right of her resting place she is, in px
+  const pose = (p, d) => 'translateX(' + p + 'px) scaleX(' + d + ')';
+  const restLeft = () => w.getBoundingClientRect().left - pos;
+  const room = () => Math.min(380, bar.getBoundingClientRect().right - restLeft() - Wd - 16);
+  function move(keys, ms, done) {
+    if (anim) { anim.commitStyles(); anim.cancel(); }
+    w.classList.add('walking');
+    anim = w.animate(keys, { duration: ms, easing: 'linear', fill: 'forwards' });
+    anim.onfinish = () => { w.classList.remove('walking'); done(); };
+  }
+  const later = ms => setTimeout(grass, ms);
+  function grass() {
+    const r = room();
+    if (r < 60 || document.hidden) return later(5000);
+    let t; do { t = 8 + Math.random() * (r - 8); } while (Math.abs(t - pos) < 45);   // where she will stand to eat
+    const d = t > pos ? 1 : -1;
+    const g = document.createElement('span');
+    g.className = 'grass'; g.setAttribute('aria-hidden', 'true'); g.innerHTML = GRASS;
+    // her mouth is at her right edge when she faces right, at her left edge when she faces left
+    g.style.left = (w.offsetLeft + (d > 0 ? t + Wd - 3 : t - GW + 3)) + 'px';
+    g.style.top = (w.offsetTop + w.offsetHeight - GH) + 'px';
+    w.parentElement.appendChild(g);
+    setTimeout(() => {                                 // she notices it after it has grown
+      move([{ transform: pose(pos, d) }, { transform: pose(t, d) }], Math.abs(t - pos) / SPEED * 1000, () => {
+        pos = t;
+        w.classList.add('eating'); g.classList.add('eaten');
+        setTimeout(() => { g.remove(); w.classList.remove('eating'); later(7000 + Math.random() * 8000); }, 2600);
+      });
+    }, 1600);
+  }
+  const enter = Math.min(bar.getBoundingClientRect().right - restLeft() + 10, 360), fade = enter === 360;
+  if (enter < 40) return;
+  move([{ transform: pose(enter, -1), opacity: fade ? 0 : 1 }, { opacity: 1, offset: fade ? .2 : 0 }, { transform: pose(0, -1), opacity: 1 }],
+    enter / SPEED * 1000, () => later(4000 + Math.random() * 4000));
+})();
+
+/* ── "Why a capybara?": a small note on hover (mouse), tap (phone) or Enter, on the walking and the swimming one ── */
+(function capyNote() {
+  const tip = document.getElementById('capy-tip');
+  if (!tip) return;
+  let tipFor = null, raf = 0;
+  function place() {
+    if (!tipFor) return;
+    const r = tipFor.getBoundingClientRect(), w = tip.offsetWidth;
+    const left = Math.max(16, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - 16));
+    const below = r.bottom + 8 + tip.offsetHeight < innerHeight;
+    tip.style.left = (left + scrollX) + 'px';
+    tip.style.top = ((below ? r.bottom + 8 : r.top - tip.offsetHeight - 8) + scrollY) + 'px';
+    raf = requestAnimationFrame(place);                // follows her while she walks
+  }
+  const show = el => { tipFor = el; tip.hidden = false; cancelAnimationFrame(raf); place(); };
+  const hide = () => { tipFor = null; tip.hidden = true; cancelAnimationFrame(raf); };
+  document.querySelectorAll('.capy-hit').forEach(el => {
+    // hover only for a real mouse: on a phone a tap also fires "enter", which would open and then close the note
+    el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(el); });
+    el.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hide(); });
+    el.addEventListener('click', e => { e.stopPropagation(); if (tipFor === el && !matchMedia('(hover: hover)').matches) hide(); else show(el); });
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tipFor === el ? hide() : show(el); } });
+    el.addEventListener('blur', hide);
+  });
+  document.addEventListener('click', hide);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
 })();

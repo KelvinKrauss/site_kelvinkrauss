@@ -505,26 +505,55 @@ body.mosaic-pad { padding-left: var(--pad, 0px); }
 .tab[aria-selected="true"] { background: transparent; }
 .h-now { background: none; }
 
-/* ══ The capybara of Blumenau (pixel art, drawn as SVG rectangles) ══
-   Next to the clock in the black bar: she walks in when the page opens, then blinks now and then.
-   In the footer: she swims, with the water covering her from just under the nostrils. */
+/* ══ The capybara of Blumenau (pixel art, 48 x 28 pixels, drawn as SVG rectangles) ══
+   Next to the clock in the black bar: she walks in when the page opens, blinks and flicks her ear now and then,
+   and walks over to eat the grass that grows in the bar. In the footer: she swims.
+   Each pose is its own picture stacked on top of the standing one; only one shows at a time. */
 .bar { overflow: hidden; }
-.bar-clock { display: inline-flex; align-items: center; gap: 8px; }
+.bar-clock { position: relative; display: inline-flex; align-items: center; gap: 8px; }
 .capy { position: relative; display: inline-block; flex: none; line-height: 0; vertical-align: middle; }
 .capy svg { display: block; }
-.capy .step, .capy .shut { position: absolute; inset: 0; opacity: 0; }
+.capy .step, .capy .shut, .capy .ear, .capy .eat1, .capy .eat2 { position: absolute; inset: 0; opacity: 0; }
+/* standing: blink every 4.2 s, two quick ear flicks every 5.4 s (the standing picture hides while the ear one shows) */
+.capy.blink > svg:first-child { animation: capy-ear-base 5.4s steps(1) 1.3s infinite; }
+.capy.blink .ear { animation: capy-ear 5.4s steps(1) 1.3s infinite; }
 .capy.blink .shut { animation: capy-shut 4.2s steps(1) infinite; }
-.capy.walking svg { animation: capy-waddle .64s steps(1) infinite; }            /* the body goes up 1 pixel on each step */
-.capy.walking .step { animation: capy-step .64s steps(1) infinite, capy-waddle .64s steps(1) infinite; }
-.capy.walking .shut { animation: none; }
+/* walking: standing and step pictures take turns (4 legs at a time), and the body goes up 1 pixel on each step */
+.capy.walking > svg:first-child { animation: capy-base .64s steps(1) infinite, capy-waddle .64s steps(1) infinite; }
+.capy.walking .step { animation: capy-stepf .64s steps(1) infinite, capy-waddle .64s steps(1) infinite; }
+/* eating: head down, nodding while she chews */
+.capy.eating > svg:first-child { animation: none; opacity: 0; }
+.capy.eating .eat1 { animation: capy-base .5s steps(1) infinite; }
+.capy.eating .eat2 { animation: capy-stepf .5s steps(1) infinite; }
+.capy.walking .shut, .capy.walking .ear, .capy.eating .shut, .capy.eating .ear { animation: none; opacity: 0; }
 @keyframes capy-shut { 0%, 91% { opacity: 0; } 92%, 97% { opacity: 1; } 98% { opacity: 0; } } /* eyes shut for about a quarter of a second */
-@keyframes capy-step { 0% { opacity: 0; } 50% { opacity: 1; } }
+@keyframes capy-ear { 0%, 59% { opacity: 0; } 60%, 62% { opacity: 1; } 63%, 65% { opacity: 0; } 66%, 68% { opacity: 1; } 69% { opacity: 0; } }
+@keyframes capy-ear-base { 0%, 59% { opacity: 1; } 60%, 62% { opacity: 0; } 63%, 65% { opacity: 1; } 66%, 68% { opacity: 0; } 69% { opacity: 1; } }
+@keyframes capy-base { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes capy-stepf { 0% { opacity: 0; } 50% { opacity: 1; } }
 @keyframes capy-waddle { 0% { translate: 0 0; } 50% { translate: 0 -1px; } }
+/* the grass grows up out of the bar's floor, and goes down bite by bite while she eats */
+.grass { position: absolute; line-height: 0; pointer-events: none; animation: grass-grow 1.2s steps(4) both; }
+.grass svg { display: block; }
+.grass.eaten { animation: grass-eat 2.4s steps(4) forwards; }
+@keyframes grass-grow { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0); } }
+@keyframes grass-eat { from { clip-path: inset(0); } to { clip-path: inset(100% 0 0 0); } }
 .swim { position: relative; display: inline-block; flex: none; overflow: hidden; vertical-align: middle; line-height: 0; }
 .swim .body { position: absolute; top: 0; animation: capy-bob 1.8s ease-in-out infinite; }
 .swim .water { position: absolute; left: 0; bottom: 0; }
-@keyframes capy-bob { 50% { transform: translateY(2px); } }
-@media (prefers-reduced-motion: reduce) { .capy svg, .capy .shut, .capy .step, .swim .body { animation: none !important; } }
+@keyframes capy-bob { 50% { transform: translateY(1px); } }
+/* "why a capybara?": hover, tap or Enter shows a small note, styled like Google's classic tooltips */
+.capy-hit { cursor: help; }
+.capy-hit:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.capy-tip { position: absolute; z-index: 60; max-width: min(240px, calc(100vw - 32px)); padding: 6px 8px; border-radius: 4px;
+  background: rgba(60, 64, 67, .92); color: #fff; font: 400 12px/1.4 Roboto, Arial, sans-serif; letter-spacing: .2px;
+  pointer-events: none; animation: capy-tip-in .15s ease-out; }
+@keyframes capy-tip-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .capy svg, .swim .body, .grass { animation: none !important; }
+  .capy svg:first-child { opacity: 1 !important; }
+  .capy .step, .capy .shut, .capy .ear, .capy .eat1, .capy .eat2 { opacity: 0 !important; }
+}
 
 /* the menu doesn't fit the résumé cell on medium screens (the résumé is also in the buttons under the name) */
 @media (max-width: 1320px) { .nav-cv { display: none; } }
