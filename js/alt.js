@@ -9,6 +9,28 @@
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
   };
 
+  /* ── The site always opens at the top (the KK), even after a reload or from an old address like /#sobre ──
+     The menu links scroll to their section without writing "#sobre" in the address, so the browser never
+     remembers (or autocompletes) an address that opens in the middle of the page. */
+  // (window.history: further down, "history" is the chat's own list of messages)
+  if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
+  if (location.hash) {
+    window.history.replaceState(null, '', location.pathname + location.search);
+    const toTop = () => scrollTo({ top: 0, behavior: 'instant' });
+    toTop(); addEventListener('load', toTop, { once: true });
+  }
+  document.addEventListener('click', e => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest && e.target.closest('a[href^="#"]');
+    const id = a && a.getAttribute('href').slice(1), target = id && document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: calm.matches ? 'auto' : 'smooth', block: 'start' });
+    // keyboard users continue from the section they jumped to
+    if (!target.matches('a, button, input, textarea, select, [tabindex]')) target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+  });
+
   /* ── Texts used by the script ── */
   const TXT = {
     pt: {
@@ -105,7 +127,9 @@
       dot.classList.toggle('show', on); trace.classList.toggle('show', on);
       if (!on) return;
       dot.style.transform = 'translateX(' + x + 'px)';
-      trace.style.transform = 'translateX(' + cellLeft + 'px) scaleX(' + Math.max(0, x - cellLeft) + ')';
+      // a real width (not a stretched 1 px line): with Windows display scaling a stretched line came out short
+      trace.style.transform = 'translateX(' + cellLeft + 'px)';
+      trace.style.width = Math.max(0, x - cellLeft) + 'px';
     }
     const queue = () => { if (!queued) { queued = true; requestAnimationFrame(place); } };
     addEventListener('scroll', queue, { passive: true });

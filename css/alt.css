@@ -60,7 +60,7 @@ button { font: inherit; color: inherit; }
 @keyframes ufo-b { 0% { fill: #ffd0df; } 50% { fill: #ff2e74; } }
 @keyframes ufo-bob { 0% { translate: 0 0; } 50% { translate: 0 -1px; } }
 @media (prefers-reduced-motion: reduce) { .nav-dot svg, .ufo-a, .ufo-b { animation: none; } }
-.nav-trace { bottom: -1px; height: 3px; width: 1px; transform-origin: left; background: var(--green); }
+.nav-trace { bottom: -1px; height: 3px; width: 0; background: var(--green); }
 .nav-dot.show, .nav-trace.show { opacity: 1; }
 .nav-fill { flex: 1; padding: 0; }
 .nav-lang { min-width: 72px; border: 0; border-right: 1px solid var(--line); background: none; cursor: pointer; justify-content: center; font: 500 .9rem var(--mono); }
