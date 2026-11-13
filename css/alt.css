@@ -13,7 +13,7 @@
   --black: #000;
   /* the layers revealed under a button on hover, and the pixel colors */
   --p1: #a855f7; --p2: #ff8a3d; --p3: #ff4fd8; --p4: #3da5ff;
-  --display: "Mona Sans", "Arial Black", system-ui, sans-serif;
+  --display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
   --mono: "Geist Mono", ui-monospace, Consolas, monospace;
   --gutter: clamp(16px, 2vw, 24px);
   /* like githubuniverse.com: the content stops at 1440px and stays centered; only the black bar and the lines go edge to edge */
@@ -554,6 +554,14 @@ body.mosaic-pad { padding-left: var(--pad, 0px); }
   .capy svg:first-child { opacity: 1 !important; }
   .capy .step, .capy .shut, .capy .ear, .capy .eat1, .capy .eat2 { opacity: 0 !important; }
 }
+
+/* ══ Rounded corners ══
+   Big boxes (hero, sections, chat window, résumé viewer) 14 px; buttons 8 px; small labels and tags 6 px.
+   "clip" (not "hidden") cuts the content to the round corners without breaking the sticky section titles. */
+:root { --r: 14px; --rb: 8px; --rt: 6px; }
+.hero2, .sec, .ai-float .term, .cv-box { border-radius: var(--r); overflow: clip; }
+.btn, .ai-bubble { border-radius: var(--rb); }
+.h-status, .tag, .cmp-tag, .shot-cap, .fact-badge, .fact-open, .fact-shot, .term-chips button, .capy-tip { border-radius: var(--rt); }
 
 /* the menu doesn't fit the résumé cell on medium screens (the résumé is also in the buttons under the name) */
 @media (max-width: 1320px) { .nav-cv { display: none; } }
